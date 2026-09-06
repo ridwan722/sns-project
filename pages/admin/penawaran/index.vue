@@ -35,7 +35,7 @@
           Informasi Utama
         </div>
         <v-row>
-          <v-col >
+          <v-col>
             <a-select-new
               v-model="newPenawaran.id_perusahaan"
               label="Client"
@@ -45,22 +45,22 @@
               :items="customerStore.getDataCustomer"
             />
           </v-col>
-          <v-col >
+          <v-col>
             <a-date-picker-new
               v-model="newPenawaran.tanggal_penawaran"
               label="Quotation Date"
             />
           </v-col>
-            </v-row>
-             <a-text-field-new
-             class="mt-2"
-              v-model="newPenawaran.alamat_perusahaan"
-              label="Address"
-              disabled
-              placeholder="*Auto"
-            />
-            <v-row>
-          <v-col >
+        </v-row>
+        <a-text-field-new
+          class="mt-2"
+          v-model="newPenawaran.alamat_perusahaan"
+          label="Address"
+          disabled
+          placeholder="*Auto"
+        />
+        <v-row>
+          <v-col>
             <a-text-field-new
               v-model="newPenawaran.pic"
               label="PIC"
@@ -68,7 +68,7 @@
               placeholder="*Auto"
             />
           </v-col>
-          <v-col >
+          <v-col>
             <a-text-field-new
               v-model="newPenawaran.no_telp"
               label="Phone Number"
@@ -76,7 +76,7 @@
               placeholder="*Auto"
             />
           </v-col>
-          <v-col >
+          <v-col>
             <a-text-field-new
               v-model="newPenawaran.vessel"
               label="Vessel"
@@ -124,25 +124,17 @@
             <span class="text-caption font-weight-bold text-grey-darken-2"
               >Item #{{ index + 1 }}</span
             >
-            <v-btn
-              icon="mdi-trash-can-outline"
-              size="x-small"
-              variant="text"
-              color="error"
-              @click="hapusBarisPenawaran(index)"
-            />
           </div>
 
-          <a-textarea-new
+
+             <a-textarea-new
             v-model="item.nama"
             label="Description"
             placeholder="Description"
-            rows="2"
-            class="mb-2"
           />
 
           <v-row density="compact">
-            <v-col cols="6" sm="3">
+            <v-col cols="6" sm="2">
               <a-field-number-new
                 v-model="item.qty"
                 label="Qty"
@@ -176,7 +168,17 @@
                 disabled
               />
             </v-col>
+            <v-col cols="1" sm="1">
+               <v-btn
+              icon="mdi-trash-can-outline"
+              size="x-small"
+              variant="text"
+              color="error"
+              @click="hapusBarisPenawaran(index)"
+            />
+            </v-col>
           </v-row>
+          
         </div>
 
         <v-divider class="my-4 border-opacity-50" />
@@ -199,22 +201,22 @@
       </v-card-text>
 
       <v-divider />
-      <v-card-actions class="pa-4 bg-grey-lighten-5">
+      <v-card-actions class="pa-4">
         <v-spacer class="hidden-xs-only" />
         <v-btn
-          size="medium"
+          size="small"
           variant="outlined"
           color="grey-darken-1"
-          class="px-5 text-none rounded-lg flex-grow-1 flex-sm-grow-0"
+          class=" flex-grow-1 flex-sm-grow-0"
           @click="data.dialogTambahPenawaran = false"
         >
           Batal
         </v-btn>
         <v-btn
-          size="medium"
+          size="small"
           color="primary"
           variant="flat"
-          class="px-6 text-none rounded-lg font-weight-bold flex-grow-1 flex-sm-grow-0"
+          class=" font-weight-bold flex-grow-1 flex-sm-grow-0"
           @click="simpanPenawaranDialog"
         >
           {{ data.penawaranAddEdit === "add" ? "Save" : "Edit" }}
@@ -386,14 +388,6 @@ const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
   null,
 );
 
-const filterStatusOptions = [
-  { label: "Semua Status", value: "" },
-  { label: "Draft", value: "Draft" },
-  { label: "Pending", value: "Pending" },
-  { label: "Disetujui", value: "Disetujui" },
-  { label: "Ditolak", value: "Ditolak" },
-];
-
 const data = reactive({
   searchPenawaran: "",
 
@@ -428,7 +422,13 @@ function emptyPenawaran(): penawaranM {
     status: "Draft",
     perihal: "",
     penawaran_item: [
-      { nama: "", qty: 1, uom: "Unit", amount: 0, subtotal_item: 0 },
+      {
+        nama: "",
+        qty: 1,
+        uom: "Unit",
+        amount: 0,
+        subtotal_item: 0,
+      },
     ],
     subtotal_penawaran: 0,
     grand_total_penawaran: 0,
@@ -508,7 +508,7 @@ function openDialogEditPenawaran(item: penawaranM) {
       dataCustomer.nama === item.id_perusahaan ||
       dataCustomer.nama === item.nama_perusahaan ||
       dataCustomer.pic === item.pic ||
-      dataCustomer.vessel === item.vessel
+      dataCustomer.vessel === item.vessel,
   );
 
   const penawaran = JSON.parse(JSON.stringify(item)) as penawaranM;

@@ -1,5 +1,3 @@
-import type { itemKategoriM } from "./master/kategoriModel";
-
 export interface penawaranM {
   id?: string;
   id_penawaran?: string;

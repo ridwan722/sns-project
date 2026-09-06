@@ -6,6 +6,9 @@ import type { ConfirmationDialog } from "#components";
 
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import dialogBuatInvoice from "~/components/Admin/Penawaran/dialog-buat-invoice.vue";
+import { ref } from "vue";
+
+const activeTab = ref(0);
 
 definePageMeta({ layout: "admin" });
 
@@ -200,11 +203,10 @@ const handlePrint = () => {
   <!-- DIALOG BUAT INVOICE -->
   <dialog-buat-invoice
     v-model="data.dialogAdd"
-    :penawaran="detailpenawaran" 
+    :penawaran="detailpenawaran"
     @saved="navigateTo('/admin/invoice')"
   />
 
-  <!-- PAGE -->
   <div v-if="detailpenawaran" class="quotation-page">
     <!-- STICKY HEADER WRAPPER -->
     <header class="top-sticky-container">
@@ -222,28 +224,18 @@ const handlePrint = () => {
           </v-btn>
         </div>
 
-        <!-- PAGE HEADER -->
         <div class="page-heading">
           <div>
             <h1 class="page-title">Detail Quotation</h1>
-            <p class="page-subtitle">
-              Detail informasi dan preview dokumen penawaran
-            </p>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- MAIN GRID CONTAINER -->
     <div class="grid-wrapper">
       <div class="quotation-grid">
-        <!-- ========================================= -->
-        <!-- LEFT : INFORMATION (SIDEBAR) -->
-        <!-- ========================================= -->
         <aside class="quotation-sidebar">
-          <!-- INFO CARD -->
           <section class="info-card">
-            <!-- CARD HEADER -->
             <div class="info-card-header">
               <div class="header-icon">
                 <v-icon size="19"> mdi-file-document-outline </v-icon>
@@ -257,7 +249,6 @@ const handlePrint = () => {
               </div>
             </div>
 
-            <!-- NOMOR PENAWARAN -->
             <div class="quotation-number-box">
               <div class="field-label">NO. PENAWARAN</div>
               <div class="quotation-number">
@@ -276,7 +267,6 @@ const handlePrint = () => {
               </div>
             </div>
 
-            <!-- DETAIL -->
             <div class="info-section">
               <!-- PERIHAL -->
               <div class="info-field">
@@ -286,7 +276,6 @@ const handlePrint = () => {
                 </div>
               </div>
 
-              <!-- CLIENT -->
               <div class="info-field">
                 <div class="field-label">KLIEN / PERUSAHAAN</div>
                 <div class="field-value strong">
@@ -294,7 +283,6 @@ const handlePrint = () => {
                 </div>
               </div>
 
-              <!-- PIC -->
               <div class="info-field">
                 <div class="field-label">PIC</div>
                 <div class="contact-row">
@@ -305,7 +293,6 @@ const handlePrint = () => {
                 </div>
               </div>
 
-              <!-- PHONE -->
               <div class="info-field">
                 <div class="field-label">TELEPON</div>
                 <div class="contact-row">
@@ -317,7 +304,6 @@ const handlePrint = () => {
               </div>
             </div>
 
-            <!-- ACTION -->
             <div class="info-card-footer text-center">
               <v-btn
                 :disabled="detailpenawaran.status == 'INVOICE'"
@@ -339,14 +325,16 @@ const handlePrint = () => {
                   >Invoice telah dibuat</span
                 >
               </div>
-              <nuxtLink class="text-blue text-caption ml-1" style="text-decoration: underline;"  v-if="detailpenawaran.status == 'INVOICE'">lihat invoice</nuxtLink>
+              <nuxtLink
+                class="text-blue text-caption ml-1"
+                style="text-decoration: underline"
+                v-if="detailpenawaran.status == 'INVOICE'"
+                >lihat invoice</nuxtLink
+              >
             </div>
           </section>
         </aside>
 
-        <!-- ========================================= -->
-        <!-- RIGHT : DOCUMENT PREVIEW -->
-        <!-- ========================================= -->
         <main class="quotation-preview">
           <div class="preview-header">
             <div class="preview-title-wrapper">
@@ -366,9 +354,50 @@ const handlePrint = () => {
             </div>
           </div>
 
-          <!-- PAPER AREA -->
+          <!-- TAB SELECTION -->
+          <div class="preview-tabs-wrapper">
+            <v-tabs
+              v-model="activeTab"
+              color="primary"
+              density="compact"
+              align-tabs="start"
+              class="preview-tabs"
+            >
+              <v-tab :value="0" class="tab-item">
+                <v-icon start size="18">mdi-file-document-outline</v-icon>
+                Asli
+              </v-tab>
+              <v-tab :value="1" class="tab-item">
+                <v-icon start size="18"
+                  >mdi-file-document-multiple-outline</v-icon
+                >
+                PT Lain
+              </v-tab>
+
+               <v-tab :value="2" class="tab-item">
+                <v-icon start size="18"
+                  >mdi-file-document-multiple-outline</v-icon
+                >
+                CV Lain
+              </v-tab>
+            </v-tabs>
+          </div>
+
+          <!-- CANVAS AREA WITH TAB WINDOW -->
           <div class="paper-container">
-            <canvas-penawaran :detailpenawaran="detailpenawaran" />
+            <v-window v-model="activeTab">
+              <v-window-item :value="0">
+                <canvas-penawaran :detailpenawaran="detailpenawaran" />
+              </v-window-item>
+
+              <v-window-item :value="1">
+                <canvas-penawaran-pt :detailpenawaran="detailpenawaran" />
+              </v-window-item>
+
+                <v-window-item :value="2">
+                <canvas-penawaran-cv :detailpenawaran="detailpenawaran" />
+              </v-window-item>
+            </v-window>
           </div>
         </main>
       </div>
@@ -384,10 +413,6 @@ const handlePrint = () => {
   box-sizing: border-box;
 }
 
-/* =========================================================
-   TOP STICKY CONTAINER
-   ========================================================= */
-
 .top-sticky-container {
   position: sticky;
   top: 60px;
@@ -398,7 +423,6 @@ const handlePrint = () => {
   border-bottom: 1px solid rgba(226, 232, 240, 0.9);
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
   box-sizing: border-box;
-
 }
 
 .sticky-inner-content {
@@ -435,16 +459,6 @@ const handlePrint = () => {
   letter-spacing: -0.4px;
 }
 
-.page-subtitle {
-  margin: 2px 0 0;
-  font-size: 13px;
-  color: #64748b;
-}
-
-/* =========================================================
-   MAIN CONTENT WRAPPER & GRID
-   ========================================================= */
-
 .grid-wrapper {
   padding: 24px 28px 50px;
 }
@@ -459,23 +473,18 @@ const handlePrint = () => {
   align-items: start;
 }
 
-/* =========================================================
-   LEFT SIDEBAR (SMOOTH STICKY FIX)
-   ========================================================= */
-
 .quotation-sidebar {
   width: 100%;
   min-width: 0;
   position: sticky;
-  /* Menggunakan calc agar tinggi mengunci otomatis persis di bawah header sticky */
+
   top: calc(185px + 24px);
   max-height: calc(100vh - (105px + 48px));
   overflow-y: auto;
-  /* Menghilangkan scrollbar agar tetap estetik */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
 
-  /* GPU Acceleration untuk rendering scroll yang mulus */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
   will-change: transform;
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
@@ -483,12 +492,8 @@ const handlePrint = () => {
 }
 
 .quotation-sidebar::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
-
-/* =========================================================
-   INFORMATION CARD
-   ========================================================= */
 
 .info-card {
   width: 100%;
@@ -620,10 +625,6 @@ const handlePrint = () => {
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
 }
 
-/* =========================================================
-   RIGHT PREVIEW
-   ========================================================= */
-
 .quotation-preview {
   min-width: 0;
   width: 100%;
@@ -708,10 +709,6 @@ const handlePrint = () => {
   margin-right: auto !important;
 }
 
-/* =========================================================
-   RESPONSIVE - LARGE TABLET
-   ========================================================= */
-
 @media (max-width: 1200px) {
   .top-sticky-container {
     padding-left: 20px;
@@ -731,10 +728,6 @@ const handlePrint = () => {
     padding: 0px;
   }
 }
-
-/* =========================================================
-   RESPONSIVE - TABLET
-   ========================================================= */
 
 @media (max-width: 960px) {
   .top-sticky-container {
@@ -770,10 +763,6 @@ const handlePrint = () => {
   }
 }
 
-/* =========================================================
-   RESPONSIVE - MOBILE
-   ========================================================= */
-
 @media (max-width: 600px) {
   .top-sticky-container {
     padding: 12px 14px 10px;
@@ -789,11 +778,6 @@ const handlePrint = () => {
 
   .page-title {
     font-size: 20px;
-  }
-
-  .page-subtitle {
-    font-size: 11px;
-    line-height: 1.4;
   }
 
   .info-card {
@@ -854,6 +838,33 @@ const handlePrint = () => {
 
   .paper-container {
     padding: 10px;
+  }
+}
+
+.preview-tabs-wrapper {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e9edf2;
+  padding: 0 16px;
+}
+
+.preview-tabs {
+  height: 44px;
+}
+
+.tab-item {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+@media (max-width: 600px) {
+  .preview-tabs-wrapper {
+    padding: 0 8px;
+  }
+
+  .tab-item {
+    font-size: 12px !important;
   }
 }
 </style>

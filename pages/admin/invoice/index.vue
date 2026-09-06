@@ -108,11 +108,14 @@
           :key="index"
           class="bg-grey-lighten-5 rounded-lg pa-4 mb-4 border border-dashed"
         >
-          <a-textarea-new
+
+             <a-textarea-new
             v-model="item.nama"
-            label="Deskripsi"
-            placeholder="Deskripsi"
+            label="Description"
+            placeholder="Description"
           />
+
+
           <v-row align="center" density="compact" class="mb-2">
             <v-col cols="6" md="2">
               <a-field-number-new
@@ -404,7 +407,6 @@ import type { ConfirmationDialog } from "#components";
 import type { customerM } from "~/types/customerModel";
 import type { invoiceM } from "~/types/invoice";
 import { useinvoiceStore } from "~/stores/invoiceStore";
-import Index from "../index.vue";
 
 definePageMeta({
   layout: "admin",
@@ -465,8 +467,6 @@ function emptyCustomer(): customerM {
     createdBy: "",
   };
 }
-
-const newCustomer = ref<customerM>(emptyCustomer());
 
 function emptyInvoice(): invoiceM {
   return {
@@ -599,6 +599,7 @@ function openDialogEditInvoice(item: invoiceM) {
 function tambahBarisInvoice() {
   newInvoice.value.item_pekerjaan.push({
     nama: "",
+    kode_barang: "",
     amount: 0,
     uom: "",
     qty: 0,
@@ -664,48 +665,6 @@ async function hapusInvoice(id: string) {
   );
   if (!confirmed) return notificationStore.showError("Penghapusan dibatalkan");
   await invoiceStore.deleteInvoiceAct(id);
-}
-
-function openDialogAddCustomer() {
-  data.customerAddEdit = "add";
-  newCustomer.value = emptyCustomer();
-  data.dialogCustomer = true;
-}
-
-function openDialogEditCustomer(item: customerM) {
-  data.customerAddEdit = "edit";
-  newCustomer.value = { ...item };
-  data.dialogCustomer = true;
-}
-
-async function simpanCustomer() {
-  if (!newCustomer.value.nama) {
-    return notificationStore.showError("Nama customer tidak boleh kosong");
-  }
-  if (!newCustomer.value.alamat) {
-    return notificationStore.showError("Alamat customer tidak boleh kosong");
-  }
-
-  if (data.customerAddEdit === "add") {
-    newCustomer.value.createdAt = moment().unix();
-    newCustomer.value.createdBy = userStore.getEmail;
-    await customerStore.addCustomerAct(newCustomer.value);
-  } else {
-    newCustomer.value.updatedAt = moment().unix();
-    newCustomer.value.updatedBy = userStore.getEmail;
-    await customerStore.updateCustomerAct(newCustomer.value);
-  }
-  data.dialogCustomer = false;
-}
-
-async function hapusCustomer(id: string) {
-  const confirmed = await confirmationDialog.value?.show(
-    "Konfirmasi Hapus",
-    "Anda yakin ingin menghapus customer ini?",
-    { variant: "danger" },
-  );
-  if (!confirmed) return notificationStore.showError("Penghapusan dibatalkan");
-  await customerStore.deleteCustomerAct(id);
 }
 
 async function refreshData() {

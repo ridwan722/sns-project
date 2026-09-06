@@ -1030,8 +1030,8 @@ export const setPenawaran = async (data: penawaranM) => {
             const newnumber = datanomor!.no_penawaran + 1;
             const stringnewnumber = _.toString(newnumber).padStart(5, "0");
             const year = moment().format("YYYY");
-            const no_penawaran = `QT/ICI/${year}/SNS/${stringnewnumber}`;
-            const id_penawaran = `QT-ICI-${year}-SNS-${stringnewnumber}`;
+            const no_penawaran = `QT/SNS/${year}/${stringnewnumber}`;
+            const id_penawaran = `QT-SNS-${year}-${stringnewnumber}`;
             const setdata = {
                 ...data,
                 no_penawaran,

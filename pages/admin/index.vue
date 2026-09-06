@@ -138,7 +138,7 @@ definePageMeta({
           <div class="card-header">
             <div class="header-title-group">
               <v-icon icon="mdi-wallet-outline" size="18" class="header-icon" />
-              <h2>OPERASIONAL</h2>
+              <h2>MASTER & OPERASIONAL</h2>
             </div>
           </div>
 

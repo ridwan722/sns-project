@@ -35,10 +35,10 @@
             <thead>
               <tr>
                 <th style="width: 5%;">No.</th>
-                <th style="width: 45%;" class="text-left">Item / Services</th>
+                <th style="width: 45%;" class="text-left">Description</th>
                 <th style="width: 8%; text-align: center;">Qty</th>
-                <th style="width: 10%; text-align: center;">Satuan</th>
-                <th style="width: 15%; text-align: right;">Harga Satuan</th>
+                <th style="width: 10%; text-align: center;">UOM</th>
+                <th style="width: 15%; text-align: right;">Amount/pcs</th>
                 <th style="width: 15%; text-align: right;">Subtotal</th>
               </tr>
             </thead>
@@ -124,18 +124,19 @@ const emptyForm = (): invoiceM => ({
   id_customer: "",
   nama_customer: "",
   alamat_customer: "",
-  pic: "",
+  vessel: "",
   no_telp: "",
-  tanggal: moment().format("YYYY-MM-DD"),
+  pic: "",
+  tanggal: "",
+  perihal: "",
   item_pekerjaan: [],
   pakai_ppn: false,
   subtotal_invoice: 0,
   ppn: 0,
-  perihal: "",
   grandtotal_invoice: 0,
-  status: "Draft",
+  status: "",
   createdAt: 0,
-  createdBy: "",
+  createdBy: ""
 });
 
 const form = ref<invoiceM>(emptyForm());

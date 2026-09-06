@@ -310,8 +310,9 @@ function printInvoice() {
           <!-- Main Table -->
           <table class="main-table">
             <thead>
-              <tr>
+              <tr v-for="(item, index) in invoiceDetail.item_pekerjaan">
                 <th width="3%">NO.</th>
+                <th width="3%" v-if="item.kode_barang">KODE BARANG</th>
                 <th width="47%">DESCRIPTION</th>
                 <th width="5%">QTY</th>
                 <th width="5%">UOM</th>
@@ -328,6 +329,15 @@ function printInvoice() {
                     <span> {{ index + 1 }}. </span>
                   </div>
                 </td>
+
+                 <td class="desc-cell" v-if="item.kode_barang">
+                  <div class="font-weight-bold">
+                    <span style="white-space: pre-line">
+                      {{ item.kode_barang }}
+                    </span>
+                  </div>
+                </td>
+
 
                 <td class="desc-cell">
                   <div class="font-weight-bold">

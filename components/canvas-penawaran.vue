@@ -45,6 +45,27 @@
     </v-card>
   </v-dialog>
 
+  <!-- Top Action Bar (Language Switcher) -->
+  <div class="top-bar-actions d-flex justify-center align-center mb-4 no-print">
+    <v-btn-toggle
+      v-model="lang"
+      mandatory
+      color="primary"
+      variant="outlined"
+      density="comfortable"
+      class="rounded-lg bg-white elevation-1"
+    >
+      <v-btn value="id" class="px-4 font-weight-bold text-caption">
+        <v-icon start size="16">mdi-translate</v-icon>
+        Bahasa Indonesia
+      </v-btn>
+      <v-btn value="en" class="px-4 font-weight-bold text-caption">
+        <v-icon start size="16">mdi-earth</v-icon>
+        English
+      </v-btn>
+    </v-btn-toggle>
+  </div>
+
   <div>
     <!-- Container Penawaran -->
     <div id="offer-to-print" class="offer-card">
@@ -103,43 +124,47 @@
         <div class="info-grid-card">
           <div class="grid-col">
             <div class="meta-row">
-              <span class="lbl">Quotation Ref No</span>
+              <span class="lbl">{{ t.refNo }}</span>
               <span class="sep">:</span>
-              <span class="val bold">{{
-                props.detailpenawaran.no_penawaran || "-"
-              }}</span>
+              <span class="val bold">{{ props.detailpenawaran.no_penawaran }}</span>
             </div>
             <div class="meta-row">
-              <span class="lbl">To</span>
+              <span class="lbl">{{ t.to }}</span>
               <span class="sep">:</span>
               <span class="val bold">{{
                 props.detailpenawaran.nama_perusahaan || "-"
               }}</span>
             </div>
             <div class="meta-row">
-              <span class="lbl">Attn</span>
+              <span class="lbl">{{ t.attn }}</span>
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.pic || "-" }}</span>
             </div>
 
             <div class="meta-row">
-              <span class="lbl">Telp</span>
+              <span class="lbl">{{ t.phone }}</span>
               <span class="sep">:</span>
               <span class="val">{{
                 props.detailpenawaran.no_telp || "-"
               }}</span>
             </div>
+
+            <div class="meta-row">
+              <span class="lbl">{{ t.location }}</span>
+              <span class="sep">:</span>
+              <span class="val">Batam</span>
+            </div>
           </div>
           <div class="grid-col">
             <div class="meta-row">
-              <span class="lbl">Subject</span>
+              <span class="lbl">{{ t.subject }}</span>
               <span class="sep">:</span>
               <span class="val bold-navy">{{
                 props.detailpenawaran.perihal || "-"
               }}</span>
             </div>
             <div class="meta-row">
-              <span class="lbl">Vessel</span>
+              <span class="lbl">{{ t.vessel }}</span>
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.vessel }}</span>
             </div>
@@ -148,13 +173,18 @@
 
         <!-- Salutation & Opening Paragraph -->
         <div class="text-salutation">
-          <p class="salutation-title">Dengan Hormat,</p>
-          <p class="salutation-body">
+          <p class="salutation-title">{{ t.salutationTitle }}</p>
+          <p class="salutation-body" v-if="lang === 'id'">
             Sehubungan dengan kebutuhan operasional perusahaan Bapak/Ibu,
             bersama surat ini kami mengajukan penawaran harga untuk
             <strong>{{ props.detailpenawaran.perihal }}</strong> kepada
             <strong>{{ props.detailpenawaran.nama_perusahaan }}</strong> dengan
             rincian sebagai berikut:
+          </p>
+          <p class="salutation-body" v-else>
+            In response to your company's operational requirements, we are pleased to submit our quotation for
+            <strong>{{ props.detailpenawaran.perihal }}</strong> to
+            <strong>{{ props.detailpenawaran.nama_perusahaan }}</strong>, with the following details:
           </p>
         </div>
 
@@ -174,9 +204,9 @@
                   :style="{ color: warnaTeksHeader }"
                 >
                   <v-tooltip location="top">
-                    <template #activator="{ props }">
+                    <template #activator="{ props: tooltipProps }">
                       <v-btn
-                        v-bind="props"
+                        v-bind="tooltipProps"
                         class="no-print theme-btn"
                         size="20"
                         variant="flat"
@@ -195,33 +225,34 @@
                 >
                   NO
                 </th>
+                 
                 <th
                   width="500"
                   class="text-left"
                   :style="{ color: warnaTeksHeader }"
                 >
-                  DESCRIPTION / KETERANGAN
+                  {{ t.thDescription }}
                 </th>
                 <th
                   width="60"
                   class="text-center"
                   :style="{ color: warnaTeksHeader }"
                 >
-                  QTY
+                  {{ t.thQty }}
                 </th>
                 <th
                   width="65"
                   class="text-center"
                   :style="{ color: warnaTeksHeader }"
                 >
-                  UOM
+                  {{ t.thUom }}
                 </th>
                 <th
                   width="125"
                   class="text-right"
                   :style="{ color: warnaTeksHeader }"
                 >
-                  UNIT PRICE
+                  {{ t.thUnitPrice }}
                 </th>
                 <th
                   width="135"
@@ -254,6 +285,7 @@
                     <span>{{ index + 1 }}.</span>
                   </div>
                 </td>
+              
                 <td
                   class="text-left text-slate-800"
                   style="white-space: pre-line"
@@ -275,7 +307,7 @@
             <tfoot>
               <!-- Subtotal Row -->
               <tr class="summary-row subtotal-row">
-                <td colspan="5" class="text-right text-slate-600">SUBTOTAL</td>
+                <td colspan="5" class="text-right text-slate-600">{{ t.subtotal }}</td>
                 <td class="text-right text-slate-800">
                   Rp
                   {{
@@ -290,7 +322,7 @@
               <!-- Grand Total Row -->
               <tr class="summary-row grand-total-row">
                 <td colspan="5" class="text-right font-weight-bold text-navy">
-                  GRAND TOTAL
+                  {{ t.grandTotal }}
                 </td>
                 <td class="text-right font-weight-bold text-navy gt-text">
                   Rp {{ rupiah(props.detailpenawaran.grand_total_penawaran) }}
@@ -301,13 +333,10 @@
               <tr class="terbilang-row">
                 <td colspan="6">
                   <div class="terbilang-inner">
-                    <span class="terbilang-lbl">TERBILANG:</span>
+                    <span class="terbilang-lbl">{{ t.amountInWords }}:</span>
                     <span class="terbilang-val"
                       >#
-                      {{
-                        jadirupiah(props.detailpenawaran.grand_total_penawaran)
-                      }}
-                      Rupiah
+                      {{ teksTerbilang }}
                     </span>
                   </div>
                 </td>
@@ -318,14 +347,13 @@
 
         <!-- Closing Paragraph -->
         <p class="closing-paragraph" v-if="showTable">
-          Demikian penawaran harga ini kami sampaikan. Atas perhatian dan
-          kerjasamanya, kami ucapkan terima kasih.
+          {{ t.closingText }}
         </p>
 
         <!-- Signature Section -->
         <div class="signatures-wrapper">
           <div class="sig-block">
-            <p class="sig-header">Hormat Kami,</p>
+            <p class="sig-header">{{ t.sigHeaderLeft }}</p>
             <p class="sig-sub">CV. SOLUSI NUSA SEGARA</p>
             <div class="sig-img-container">
               <img
@@ -338,7 +366,7 @@
           </div>
 
           <div class="sig-block">
-            <p class="sig-header">Disetujui Oleh,</p>
+            <p class="sig-header">{{ t.sigHeaderRight }}</p>
             <p class="sig-sub">
               {{ props.detailpenawaran.nama_perusahaan || "" }}
             </p>
@@ -346,25 +374,13 @@
             <p class="sig-person-name">
               ( .................................... )
             </p>
-            <p class="sig-person-role">Stamp & Signature</p>
+            <p class="sig-person-role">{{ t.sigRoleRight }}</p>
           </div>
         </div>
       </div>
 
       <!-- Footer Wave Graphic -->
-      <div class="footer-wave">
-        <!-- <svg viewBox="0 0 500 120" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color: #0f2b48; stop-opacity: 1" />
-              <stop offset="100%" style="stop-color: #1a4f8b; stop-opacity: 1" />
-            </linearGradient>
-          </defs>
-          <path d="M0,0 C150,80 350,80 500,0 L500,120 L0,120 Z" fill="#2563eb" opacity="0.12"></path>
-          <path d="M0,25 C150,90 350,90 500,25 L500,120 L0,120 Z" fill="#1d4ed8" opacity="0.25"></path>
-          <path d="M0,50 C150,110 350,110 500,50 L500,120 L0,120 Z" fill="url(#grad1)"></path>
-        </svg> -->
-      </div>
+      <div class="footer-wave"></div>
     </div>
 
     <!-- Document Actions -->
@@ -380,7 +396,7 @@
         class="quotation-action-btn text-capitalize font-weight-bold rounded-lg text-subtitle-2"
         @click="handlePrint"
       >
-        Print Quotation
+        {{ t.btnPrint }}
       </v-btn>
       <v-btn
         width="300"
@@ -393,27 +409,131 @@
         :disabled="isSavingPdf"
         @click="handleSavePdf"
       >
-        Simpan PDF
+        {{ t.btnPdf }}
       </v-btn>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import type { penawaranM } from "~/types/penawaranModel";
-
-const labelSubTotal = ref("SUB TOTAL");
 
 const props = defineProps<{
   detailpenawaran: penawaranM;
 }>();
+
+// Switch Bahasa (id / en)
+const lang = ref<"id" | "en">("en");
+
+const labelSubTotal = ref("TOTAL AMOUNT");
+
+// Update otomatis header kolom terakhir bila bahasa diganti
+watch(lang, (newLang) => {
+  labelSubTotal.value = newLang === "id" ? "TOTAL HARGA" : "TOTAL AMOUNT";
+});
 
 const dialogWarna = ref(false);
 const warnaBackgroundCustom = ref("#F02424");
 const showTable = ref(true);
 const tableBodyRef = ref<HTMLElement | null>(null);
 const isSavingPdf = ref(false);
+
+// Kamus Teks Multi-Bahasa
+const t = computed(() => {
+  if (lang.value === "id") {
+    return {
+      refNo: "No. Penawaran",
+      to: "Kepada",
+      attn: "Up.",
+      phone: "No. Telp",
+      location: "Lokasi",
+      subject: "Perihal",
+      vessel: "Kapal/Vessel",
+      salutationTitle: "Dengan hormat,",
+      thDescription: "DESKRIPSI / KETERANGAN",
+      thQty: "QTY",
+      thUom: "SATUAN",
+      thUnitPrice: "HARGA SATUAN",
+      subtotal: "SUBTOTAL",
+      grandTotal: "GRAND TOTAL",
+      amountInWords: "Terbilang",
+      closingText:
+        "Demikian surat penawaran harga ini kami sampaikan untuk menjadi bahan pertimbangan. Atas perhatian dan kerjasamanya kami ucapkan terima kasih.",
+      sigHeaderLeft: "Hormat Kami,",
+      sigHeaderRight: "Disetujui Oleh,",
+      sigRoleRight: "Cap & Tanda Tangan",
+      btnPrint: "Cetak Penawaran",
+      btnPdf: "Simpan PDF",
+    };
+  }
+  return {
+    refNo: "Quotation Ref No",
+    to: "To",
+    attn: "Attn",
+    phone: "Telp",
+    location: "Location",
+    subject: "Subject",
+    vessel: "Vessel",
+    salutationTitle: "Dear Sir/Madam,",
+    thDescription: "DESCRIPTION / KETERANGAN",
+    thQty: "QTY",
+    thUom: "UOM",
+    thUnitPrice: "UNIT PRICE",
+    subtotal: "SUBTOTAL",
+    grandTotal: "GRAND TOTAL",
+    amountInWords: "Amount in words",
+    closingText:
+      "We hereby submit our price quotation for your consideration. Thank you for your attention and cooperation.",
+    sigHeaderLeft: "Yours faithfully,",
+    sigHeaderRight: "Approve by,",
+    sigRoleRight: "Stamp & Signature",
+    btnPrint: "Print Quotation",
+    btnPdf: "Save PDF",
+  };
+});
+
+// Helper Konversi Terbilang (Terbilang ID / EN)
+function terbilangIndonesia(angka: number): string {
+  const bil = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+  if (angka < 12) return bil[angka];
+  if (angka < 20) return terbilangIndonesia(angka - 10) + " Belas";
+  if (angka < 100) return terbilangIndonesia(Math.floor(angka / 10)) + " Puluh " + terbilangIndonesia(angka % 10);
+  if (angka < 200) return "Seratus " + terbilangIndonesia(angka - 100);
+  if (angka < 1000) return terbilangIndonesia(Math.floor(angka / 100)) + " Ratus " + terbilangIndonesia(angka % 100);
+  if (angka < 2000) return "Seribu " + terbilangIndonesia(angka - 1000);
+  if (angka < 1000000) return terbilangIndonesia(Math.floor(angka / 1000)) + " Ribu " + terbilangIndonesia(angka % 1000);
+  if (angka < 1000000000) return terbilangIndonesia(Math.floor(angka / 1000000)) + " Juta " + terbilangIndonesia(angka % 1000000);
+  if (angka < 1000000000000) return terbilangIndonesia(Math.floor(angka / 1000000000)) + " Miliar " + terbilangIndonesia(angka % 1000000000);
+  return "";
+}
+
+function numberToWordsEnglish(n: number): string {
+  if (n === 0) return "Zero";
+  const units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  
+  function convert(num: number): string {
+    if (num < 20) return units[num];
+    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? " " + units[num % 10] : "");
+    if (num < 1000) return units[Math.floor(num / 100)] + " Hundred" + (num % 100 ? " " + convert(num % 100) : "");
+    if (num < 1000000) return convert(Math.floor(num / 1000)) + " Thousand" + (num % 1000 ? " " + convert(num % 1000) : "");
+    if (num < 1000000000) return convert(Math.floor(num / 1000000)) + " Million" + (num % 1000000 ? " " + convert(num % 1000000) : "");
+    return convert(Math.floor(num / 1000000000)) + " Billion" + (num % 1000000000 ? " " + convert(num % 1000000000) : "");
+  }
+
+  return convert(n).trim();
+}
+
+const teksTerbilang = computed(() => {
+  const total = props.detailpenawaran?.grand_total_penawaran || 0;
+  if (!total) return "-";
+
+  if (lang.value === "id") {
+    return `${terbilangIndonesia(total).replace(/\s+/g, " ").trim()} Rupiah`;
+  }
+  return `${numberToWordsEnglish(total).replace(/\s+/g, " ").trim()} Rupiah`;
+});
 
 // Menghitung kontras warna teks (gelap/terang) berdasarkan background
 const warnaTeksHeader = computed(() => {
@@ -430,7 +550,7 @@ const warnaTeksHeader = computed(() => {
 
 const formatTanggal = (tanggal: string) => {
   if (!tanggal) return "-";
-  return new Intl.DateTimeFormat("id-ID", {
+  return new Intl.DateTimeFormat(lang.value === "id" ? "id-ID" : "en-US", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -590,14 +710,11 @@ const handleSavePdf = async () => {
     const imageHeight = (canvas.height * pageWidth) / canvas.width;
     const image = canvas.toDataURL("image/png");
 
-    // Dokumen dapat melewati satu halaman bila isi tabel bertambah.
     let heightLeft = imageHeight;
     let position = 0;
     pdf.addImage(image, "PNG", 0, position, pageWidth, imageHeight);
     heightLeft -= pageHeight;
 
-    // Toleransi mencegah halaman kedua kosong akibat selisih pecahan mm
-    // saat tinggi canvas sebenarnya sama dengan tinggi A4.
     while (heightLeft > 1) {
       position = heightLeft - imageHeight;
       pdf.addPage();
@@ -771,7 +888,7 @@ const handleSavePdf = async () => {
 }
 
 .meta-row .lbl {
-  width: 95px;
+  width: 105px;
   color: #64748b;
   font-weight: 600;
   flex-shrink: 0;

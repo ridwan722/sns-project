@@ -44,6 +44,11 @@
           label="Phone Number"
           placeholder="+00 0000"
         />
+         <a-text-field-new
+          v-model="newCustomer.email"
+          label="Email"
+          placeholder="@gmail.com"
+        />
 
         <a-text-field-new
           v-model="newCustomer.vessel"
@@ -186,6 +191,7 @@ const data = reactive({
     width: "450px",
   },
     { title: "Phone Number", value: "no_telp", sortable: true },
+     { title: "Email", value: "email", sortable: true },
     { title: "Aksi", align: "center" as const, value: "aksi", width: "100px" },
   ],
   filterStatus: "",
@@ -197,6 +203,7 @@ function emptyCustomer(): customerM {
     pic: "",
     alamat: "",
     no_telp: "",
+    email: "",
     vessel: "",
     createdAt: 0,
     createdBy: "",
@@ -235,6 +242,10 @@ async function simpanCustomer() {
 
   if (!newCustomer.value.no_telp) {
     return notificationStore.showError("Phone Number tidak boleh kosong");
+  }
+
+  if (!newCustomer.value.email) {
+    return notificationStore.showError("Email tidak boleh kosong");
   }
 
   if (!newCustomer.value.vessel) {

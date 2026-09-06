@@ -17,6 +17,7 @@ export interface invoiceM {
   id_penawaran?: string,
   no_penawaran?: string,
   no_telp: string;
+  email: string;
   pic: string,
   tanggal: string;
   perihal: string;

@@ -1,5 +1,4 @@
 <template>
-  <!-- Dialog Color Picker -->
   <v-dialog v-model="dialogWarna" max-width="360px">
     <v-card class="rounded-xl elevation-8">
       <v-card-title
@@ -45,7 +44,6 @@
     </v-card>
   </v-dialog>
 
-  <!-- Top Action Bar (Language Switcher) -->
   <div class="top-bar-actions d-flex justify-center align-center mb-4 no-print">
     <v-btn-toggle
       v-model="lang"
@@ -67,18 +65,15 @@
   </div>
 
   <div>
-    <!-- Container Penawaran -->
     <div id="offer-to-print" class="offer-card">
-      <!-- Watermark Background -->
       <div class="watermark">
         <img src="/public/Logo-SNS.png" alt="Logo Watermark" />
       </div>
 
-      <!-- Section Kop Surat -->
       <div class="header-section">
         <div class="header-brand">
           <div class="logo-wrapper">
-            <img src="/public/Logo-SNS.png" alt="Logo Header" />
+            <img src="/public/logo-SNS.png" alt="Logo Header" />
           </div>
           <div class="company-titles">
             <h1 class="company-name">CV. SOLUSI NUSA SEGARA</h1>
@@ -95,7 +90,6 @@
         </div>
       </div>
 
-      <!-- Accent Divider Line -->
       <div class="header-divider">
         <div
           class="accent-bar"
@@ -104,9 +98,7 @@
         <div class="secondary-bar"></div>
       </div>
 
-      <!-- Main Document Content -->
       <div class="content-body">
-        <!-- Top Info Line (Document Title & Date) -->
         <div class="doc-meta-header">
           <div
             class="doc-badge"
@@ -120,19 +112,28 @@
           </div>
         </div>
 
-        <!-- Info Grid (Two Columns Cards) -->
         <div class="info-grid-card">
           <div class="grid-col">
             <div class="meta-row">
               <span class="lbl">{{ t.refNo }}</span>
               <span class="sep">:</span>
-              <span class="val bold">{{ props.detailpenawaran.no_penawaran }}</span>
+              <span class="val bold">{{
+                props.detailpenawaran.no_penawaran
+              }}</span>
             </div>
             <div class="meta-row">
               <span class="lbl">{{ t.to }}</span>
               <span class="sep">:</span>
               <span class="val bold">{{
                 props.detailpenawaran.nama_perusahaan || "-"
+              }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="lbl">{{ t.address }}</span>
+              <span class="sep">:</span>
+              <span class="val bold">{{
+                props.detailpenawaran.alamat_perusahaan || "-"
               }}</span>
             </div>
             <div class="meta-row">
@@ -150,9 +151,9 @@
             </div>
 
             <div class="meta-row">
-              <span class="lbl">{{ t.location }}</span>
+              <span class="lbl">{{ t.email }}</span>
               <span class="sep">:</span>
-              <span class="val">Batam</span>
+              <span class="val">{{ props.detailpenawaran.email || "-" }}</span>
             </div>
           </div>
           <div class="grid-col">
@@ -168,10 +169,15 @@
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.vessel }}</span>
             </div>
+
+            <div class="meta-row">
+              <span class="lbl">{{ t.location }}</span>
+              <span class="sep">:</span>
+              <span class="val">Batam</span>
+            </div>
           </div>
         </div>
 
-        <!-- Salutation & Opening Paragraph -->
         <div class="text-salutation">
           <p class="salutation-title">{{ t.salutationTitle }}</p>
           <p class="salutation-body" v-if="lang === 'id'">
@@ -182,13 +188,14 @@
             rincian sebagai berikut:
           </p>
           <p class="salutation-body" v-else>
-            In response to your company's operational requirements, we are pleased to submit our quotation for
+            In response to your company's operational requirements, we are
+            pleased to submit our quotation for
             <strong>{{ props.detailpenawaran.perihal }}</strong> to
-            <strong>{{ props.detailpenawaran.nama_perusahaan }}</strong>, with the following details:
+            <strong>{{ props.detailpenawaran.nama_perusahaan }}</strong
+            >, with the following details:
           </p>
         </div>
 
-        <!-- Main Items Table -->
         <div class="table-container">
           <table class="modern-table">
             <thead>
@@ -225,7 +232,7 @@
                 >
                   NO
                 </th>
-                 
+
                 <th
                   width="500"
                   class="text-left"
@@ -255,7 +262,7 @@
                   {{ t.thUnitPrice }}
                 </th>
                 <th
-                  width="135"
+                  width="165"
                   class="text-right"
                   :style="{ color: warnaTeksHeader }"
                 >
@@ -276,7 +283,6 @@
                 :key="index"
                 :class="{ 'zebra-row': index % 2 === 1 }"
               >
-                <!-- Drag Handle & Numbering Cell -->
                 <td class="text-center row-num drag-handle" width="36">
                   <div style="display: flex; align-items: center">
                     <v-icon size="12" class="drag-icon no-print mr-1"
@@ -285,7 +291,7 @@
                     <span>{{ index + 1 }}.</span>
                   </div>
                 </td>
-              
+
                 <td
                   class="text-left text-slate-800"
                   style="white-space: pre-line"
@@ -303,11 +309,11 @@
               </tr>
             </tbody>
 
-            <!-- Table Footer for Subtotal, Grand Total & Terbilang -->
             <tfoot>
-              <!-- Subtotal Row -->
               <tr class="summary-row subtotal-row">
-                <td colspan="5" class="text-right text-slate-600">{{ t.subtotal }}</td>
+                <td colspan="5" class="text-right text-slate-600">
+                  {{ t.subtotal }}
+                </td>
                 <td class="text-right text-slate-800">
                   Rp
                   {{
@@ -319,7 +325,6 @@
                 </td>
               </tr>
 
-              <!-- Grand Total Row -->
               <tr class="summary-row grand-total-row">
                 <td colspan="5" class="text-right font-weight-bold text-navy">
                   {{ t.grandTotal }}
@@ -329,7 +334,6 @@
                 </td>
               </tr>
 
-              <!-- Terbilang Row -->
               <tr class="terbilang-row">
                 <td colspan="6">
                   <div class="terbilang-inner">
@@ -345,12 +349,36 @@
           </table>
         </div>
 
-        <!-- Closing Paragraph -->
         <p class="closing-paragraph" v-if="showTable">
           {{ t.closingText }}
         </p>
 
-        <!-- Signature Section -->
+        <div class="closing-paragraph" v-if="showTable">
+          <p><strong>TERMS &amp; CONDITIONS:</strong></p>
+          <ul class="ml-3">
+            <li>
+              <strong>Price:</strong> Prices quoted are net of taxes and do not
+              include any applicable local withholding tax.
+            </li>
+            <li><strong>Delivery Terms:</strong> Batam, Indonesia.</li>
+            <li><strong>Warranty:</strong> -</li>
+            <li>
+              <strong>Payment Terms:</strong> 50% down payment upon receipt of
+              Purchase Order (PO), balance payment upon delivery.
+            </li>
+            <li><strong>Lead Time:</strong> 3 days.</li>
+            <li>
+              <strong>Quotation Validity:</strong> This quotation is valid for 7
+              days from the quotation date.
+            </li>
+            <li>
+              <strong>Purchase Order:</strong> The agreed Purchase Order (PO)
+              shall be issued to PT. Index Cool Indonesia within 3 working days
+              from the date of order confirmation.
+            </li>
+          </ul>
+        </div>
+
         <div class="signatures-wrapper">
           <div class="sig-block">
             <p class="sig-header">{{ t.sigHeaderLeft }}</p>
@@ -379,11 +407,9 @@
         </div>
       </div>
 
-      <!-- Footer Wave Graphic -->
       <div class="footer-wave"></div>
     </div>
 
-    <!-- Document Actions -->
     <div
       class="document-actions d-flex flex-wrap justify-center align-center mt-6 mb-12 no-print"
     >
@@ -423,23 +449,20 @@ const props = defineProps<{
   detailpenawaran: penawaranM;
 }>();
 
-// Switch Bahasa (id / en)
 const lang = ref<"id" | "en">("en");
 
 const labelSubTotal = ref("TOTAL AMOUNT");
 
-// Update otomatis header kolom terakhir bila bahasa diganti
 watch(lang, (newLang) => {
   labelSubTotal.value = newLang === "id" ? "TOTAL HARGA" : "TOTAL AMOUNT";
 });
 
 const dialogWarna = ref(false);
-const warnaBackgroundCustom = ref("#F02424");
+const warnaBackgroundCustom = ref("#061b3c");
 const showTable = ref(true);
 const tableBodyRef = ref<HTMLElement | null>(null);
 const isSavingPdf = ref(false);
 
-// Kamus Teks Multi-Bahasa
 const t = computed(() => {
   if (lang.value === "id") {
     return {
@@ -447,6 +470,8 @@ const t = computed(() => {
       to: "Kepada",
       attn: "Up.",
       phone: "No. Telp",
+      email: "Email",
+      address: "Alamat",
       location: "Lokasi",
       subject: "Perihal",
       vessel: "Kapal/Vessel",
@@ -471,8 +496,10 @@ const t = computed(() => {
     refNo: "Quotation Ref No",
     to: "To",
     attn: "Attn",
-    phone: "Telp",
+    phone: "Phone",
+    email: "Email",
     location: "Location",
+    address: "Address",
     subject: "Subject",
     vessel: "Vessel",
     salutationTitle: "Dear Sir/Madam,",
@@ -493,33 +520,124 @@ const t = computed(() => {
   };
 });
 
-// Helper Konversi Terbilang (Terbilang ID / EN)
 function terbilangIndonesia(angka: number): string {
-  const bil = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+  const bil = [
+    "",
+    "Satu",
+    "Dua",
+    "Tiga",
+    "Empat",
+    "Lima",
+    "Enam",
+    "Tujuh",
+    "Delapan",
+    "Sembilan",
+    "Sepuluh",
+    "Sebelas",
+  ];
   if (angka < 12) return bil[angka];
   if (angka < 20) return terbilangIndonesia(angka - 10) + " Belas";
-  if (angka < 100) return terbilangIndonesia(Math.floor(angka / 10)) + " Puluh " + terbilangIndonesia(angka % 10);
+  if (angka < 100)
+    return (
+      terbilangIndonesia(Math.floor(angka / 10)) +
+      " Puluh " +
+      terbilangIndonesia(angka % 10)
+    );
   if (angka < 200) return "Seratus " + terbilangIndonesia(angka - 100);
-  if (angka < 1000) return terbilangIndonesia(Math.floor(angka / 100)) + " Ratus " + terbilangIndonesia(angka % 100);
+  if (angka < 1000)
+    return (
+      terbilangIndonesia(Math.floor(angka / 100)) +
+      " Ratus " +
+      terbilangIndonesia(angka % 100)
+    );
   if (angka < 2000) return "Seribu " + terbilangIndonesia(angka - 1000);
-  if (angka < 1000000) return terbilangIndonesia(Math.floor(angka / 1000)) + " Ribu " + terbilangIndonesia(angka % 1000);
-  if (angka < 1000000000) return terbilangIndonesia(Math.floor(angka / 1000000)) + " Juta " + terbilangIndonesia(angka % 1000000);
-  if (angka < 1000000000000) return terbilangIndonesia(Math.floor(angka / 1000000000)) + " Miliar " + terbilangIndonesia(angka % 1000000000);
+  if (angka < 1000000)
+    return (
+      terbilangIndonesia(Math.floor(angka / 1000)) +
+      " Ribu " +
+      terbilangIndonesia(angka % 1000)
+    );
+  if (angka < 1000000000)
+    return (
+      terbilangIndonesia(Math.floor(angka / 1000000)) +
+      " Juta " +
+      terbilangIndonesia(angka % 1000000)
+    );
+  if (angka < 1000000000000)
+    return (
+      terbilangIndonesia(Math.floor(angka / 1000000000)) +
+      " Miliar " +
+      terbilangIndonesia(angka % 1000000000)
+    );
   return "";
 }
 
 function numberToWordsEnglish(n: number): string {
   if (n === 0) return "Zero";
-  const units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-  
+  const units = [
+    "",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+  ];
+  const tens = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety",
+  ];
+
   function convert(num: number): string {
     if (num < 20) return units[num];
-    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? " " + units[num % 10] : "");
-    if (num < 1000) return units[Math.floor(num / 100)] + " Hundred" + (num % 100 ? " " + convert(num % 100) : "");
-    if (num < 1000000) return convert(Math.floor(num / 1000)) + " Thousand" + (num % 1000 ? " " + convert(num % 1000) : "");
-    if (num < 1000000000) return convert(Math.floor(num / 1000000)) + " Million" + (num % 1000000 ? " " + convert(num % 1000000) : "");
-    return convert(Math.floor(num / 1000000000)) + " Billion" + (num % 1000000000 ? " " + convert(num % 1000000000) : "");
+    if (num < 100)
+      return (
+        tens[Math.floor(num / 10)] + (num % 10 ? " " + units[num % 10] : "")
+      );
+    if (num < 1000)
+      return (
+        units[Math.floor(num / 100)] +
+        " Hundred" +
+        (num % 100 ? " " + convert(num % 100) : "")
+      );
+    if (num < 1000000)
+      return (
+        convert(Math.floor(num / 1000)) +
+        " Thousand" +
+        (num % 1000 ? " " + convert(num % 1000) : "")
+      );
+    if (num < 1000000000)
+      return (
+        convert(Math.floor(num / 1000000)) +
+        " Million" +
+        (num % 1000000 ? " " + convert(num % 1000000) : "")
+      );
+    return (
+      convert(Math.floor(num / 1000000000)) +
+      " Billion" +
+      (num % 1000000000 ? " " + convert(num % 1000000000) : "")
+    );
   }
 
   return convert(n).trim();
@@ -535,7 +653,6 @@ const teksTerbilang = computed(() => {
   return `${numberToWordsEnglish(total).replace(/\s+/g, " ").trim()} Rupiah`;
 });
 
-// Menghitung kontras warna teks (gelap/terang) berdasarkan background
 const warnaTeksHeader = computed(() => {
   const hex = warnaBackgroundCustom.value.replace("#", "");
   if (hex.length !== 6) return "#0f2b48";
@@ -696,15 +813,23 @@ const handleSavePdf = async () => {
       backgroundColor: "#ffffff",
       logging: false,
       onclone: (clonedDocument) => {
-        clonedDocument.querySelectorAll(".no-print, .no-print-cell, .drag-icon").forEach((element) => {
-          (element as HTMLElement).style.display = "none";
-        });
-        clonedDocument.querySelectorAll(".print-only-cell").forEach((element) => {
-          (element as HTMLElement).style.display = "table-cell";
-        });
+        clonedDocument
+          .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
+          .forEach((element) => {
+            (element as HTMLElement).style.display = "none";
+          });
+        clonedDocument
+          .querySelectorAll(".print-only-cell")
+          .forEach((element) => {
+            (element as HTMLElement).style.display = "table-cell";
+          });
       },
     });
-    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const imageHeight = (canvas.height * pageWidth) / canvas.width;
@@ -731,7 +856,6 @@ const handleSavePdf = async () => {
 </script>
 
 <style scoped>
-/* Page Paper Box */
 .offer-card {
   width: 210mm;
   min-height: 297mm;
@@ -751,7 +875,6 @@ const handleSavePdf = async () => {
   box-sizing: border-box;
 }
 
-/* Background Watermark */
 .watermark {
   position: absolute;
   top: 67%;
@@ -766,7 +889,6 @@ const handleSavePdf = async () => {
   width: 100%;
 }
 
-/* Kop Surat Header */
 .header-section {
   display: flex;
   justify-content: space-between;
@@ -813,7 +935,6 @@ const handleSavePdf = async () => {
   max-width: 250px;
 }
 
-/* Header Divider Lines */
 .header-divider {
   display: flex;
   flex-direction: column;
@@ -835,13 +956,11 @@ const handleSavePdf = async () => {
   background-color: #cbd5e1;
 }
 
-/* Document Content Body */
 .content-body {
   position: relative;
   z-index: 1;
 }
 
-/* Meta Top Row (Title Badge & Date) */
 .doc-meta-header {
   display: flex;
   justify-content: space-between;
@@ -865,7 +984,6 @@ const handleSavePdf = async () => {
   color: #475569;
 }
 
-/* Info Card */
 .info-grid-card {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -919,7 +1037,6 @@ const handleSavePdf = async () => {
   color: #0f2b48;
 }
 
-/* Opening Text */
 .text-salutation {
   font-size: 11px;
   line-height: 1.5;
@@ -938,7 +1055,6 @@ const handleSavePdf = async () => {
   margin: 0;
 }
 
-/* Modern Items Table */
 .table-container {
   border-radius: 8px;
   overflow: hidden;
@@ -978,7 +1094,6 @@ const handleSavePdf = async () => {
   border-bottom: 1px solid #cbd5e1;
 }
 
-/* Table Footer Summary Styles */
 .modern-table tfoot .summary-row td {
   padding: 6px 10px;
   font-size: 10px;
@@ -1023,7 +1138,6 @@ const handleSavePdf = async () => {
   color: #0f2b48;
 }
 
-/* Drag Handle Styles */
 .drag-handle {
   cursor: move !important;
   user-select: none;
@@ -1047,7 +1161,6 @@ const handleSavePdf = async () => {
   display: none;
 }
 
-/* Closing Paragraph */
 .closing-paragraph {
   font-size: 10.5px;
   color: #475569;
@@ -1055,7 +1168,6 @@ const handleSavePdf = async () => {
   margin-bottom: 20px;
 }
 
-/* Signature Grid */
 .signatures-wrapper {
   display: flex;
   justify-content: space-between;
@@ -1115,7 +1227,6 @@ const handleSavePdf = async () => {
   margin-top: 2px;
 }
 
-/* Bottom Decorative SVG Wave */
 .footer-wave {
   position: absolute;
   bottom: 0;
@@ -1132,7 +1243,6 @@ const handleSavePdf = async () => {
   display: block;
 }
 
-/* Helpers & Utilities */
 .text-navy {
   color: #0f2b48;
 }
@@ -1157,7 +1267,6 @@ const handleSavePdf = async () => {
   box-shadow: none !important;
 }
 
-/* Vuetify Field Overrides Dynamic Text Color */
 :deep(.header-input-field input) {
   text-align: right !important;
   font-size: 9.5px !important;

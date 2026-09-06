@@ -8,6 +8,7 @@ export interface penawaranM {
   nama_perusahaan: string;
   alamat_perusahaan?: string;
   no_telp: string;
+  email: string;
   vessel: string;
 
   tanggal_penawaran: string;

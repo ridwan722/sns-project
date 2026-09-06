@@ -68,6 +68,15 @@
               placeholder="*Auto"
             />
           </v-col>
+           <v-col>
+            <a-text-field-new
+              v-model="newInvoice.email"
+              class="mt-2"
+               label="Email"
+              disabled
+              placeholder="@gmail.com"
+            />
+          </v-col>
           <v-col>
             <a-text-field-new
               v-model="newInvoice.vessel"
@@ -462,6 +471,7 @@ function emptyCustomer(): customerM {
     pic: "",
     alamat: "",
     no_telp: "",
+    email: "",
     vessel: "",
     createdAt: 0,
     createdBy: "",
@@ -476,6 +486,7 @@ function emptyInvoice(): invoiceM {
     alamat_customer: "",
     vessel: "",
     no_telp: "",
+    email: "",
     pic: "",
     tanggal: "",
     perihal: "",

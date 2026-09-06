@@ -20,6 +20,7 @@
             <a-text-field-new type="text" v-model="form.nama_customer" disabled  />
             <a-text-field-new type="text" v-model="form.pic" disabled  />
             <a-text-field-new type="text" v-model="form.no_telp" disabled  />
+            <a-text-field-new type="text" v-model="form.email" disabled  />
         </div>
          <a-textarea-new v-model="form.alamat_customer" disabled></a-textarea-new>
 
@@ -126,6 +127,7 @@ const emptyForm = (): invoiceM => ({
   alamat_customer: "",
   vessel: "",
   no_telp: "",
+  email: "",
   pic: "",
   tanggal: "",
   perihal: "",
@@ -155,6 +157,8 @@ watch(
       nama_customer: props.penawaran.nama_perusahaan,
       alamat_customer: props.penawaran.alamat_perusahaan || "",
       no_telp: props.penawaran.no_telp || "",
+      email: props.penawaran.email || "",
+      vessel: props.penawaran.vessel || "",
       perihal: props.penawaran.perihal || "",
       pic: props.penawaran.pic,
       item_pekerjaan: (props.penawaran.penawaran_item || []).map((item) => ({

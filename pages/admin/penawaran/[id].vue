@@ -310,6 +310,7 @@ const handlePrint = () => {
                 block
                 color="primary"
                 variant="flat"
+                size="small"
                 prepend-icon="mdi-file-document-plus-outline"
                 class="invoice-button"
                 @click="opendialogaddinv"
@@ -373,13 +374,6 @@ const handlePrint = () => {
                 >
                 PT Lain
               </v-tab>
-
-               <v-tab :value="2" class="tab-item">
-                <v-icon start size="18"
-                  >mdi-file-document-multiple-outline</v-icon
-                >
-                CV Lain
-              </v-tab>
             </v-tabs>
           </div>
 
@@ -392,10 +386,6 @@ const handlePrint = () => {
 
               <v-window-item :value="1">
                 <canvas-penawaran-pt :detailpenawaran="detailpenawaran" />
-              </v-window-item>
-
-                <v-window-item :value="2">
-                <canvas-penawaran-cv :detailpenawaran="detailpenawaran" />
               </v-window-item>
             </v-window>
           </div>
@@ -478,7 +468,7 @@ const handlePrint = () => {
   min-width: 0;
   position: sticky;
 
-  top: calc(185px + 24px);
+  top: calc(145px + 24px);
   max-height: calc(100vh - (105px + 48px));
   overflow-y: auto;
 
@@ -617,9 +607,9 @@ const handlePrint = () => {
 }
 
 .invoice-button {
-  min-height: 42px !important;
-  border-radius: 9px !important;
-  font-size: 13px !important;
+
+
+
   font-weight: 650 !important;
   text-transform: none !important;
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);

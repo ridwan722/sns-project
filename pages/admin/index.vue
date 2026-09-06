@@ -181,7 +181,37 @@ definePageMeta({
               </NuxtLink>
               </div>
 
-              <div class="action-grid-1 mt-2">
+               <div class="action-grid-1 mt-2">
+                <NuxtLink to="/admin/master/barang" class="compact-action-card">
+                <div class="action-icon">
+                  <v-icon icon="mdi-package-variant-closed" size="18" />
+                </div>
+                <div class="action-text">
+                  <span class="title">Master Barang</span>
+                  <span class="sub"
+                    >Master Barang dan Harga Modal</span
+                  >
+                </div>
+                <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
+              </NuxtLink>
+              </div>
+
+               <div class="action-grid-1 mt-2">
+                <NuxtLink to="/admin/master/termcondition" class="compact-action-card">
+                <div class="action-icon">
+                  <v-icon icon="mdi-information-variant-circle-outline" size="18" />
+                </div>
+                <div class="action-text">
+                  <span class="title">Master T&C</span>
+                  <span class="sub"
+                    >Master Term & Condition</span
+                  >
+                </div>
+                <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
+              </NuxtLink>
+              </div>
+
+              <!-- <div class="action-grid-1 mt-2">
                 <NuxtLink
                 to="/admin/petty-cash"
                 class="compact-action-card highlight"
@@ -197,7 +227,7 @@ definePageMeta({
                 </div>
                 <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
               </NuxtLink>
-              </div>
+              </div> -->
             </div>
           </div>
         </section>

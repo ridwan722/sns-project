@@ -78,6 +78,14 @@
           </v-col>
           <v-col>
             <a-text-field-new
+              v-model="newPenawaran.email"
+              label="Email"
+              disabled
+              placeholder="@gmail.com"
+            />
+          </v-col>
+          <v-col>
+            <a-text-field-new
               v-model="newPenawaran.vessel"
               label="Vessel"
               disabled
@@ -95,16 +103,94 @@
           rows="2"
         />
 
-        <v-divider class="my-4 border-opacity-50" />
-
         <!-- Section: Rincian Item -->
         <div class="d-flex align-center justify-space-between mb-3">
           <span class="text-subtitle-2 font-weight-bold text-primary">
             Rincian Item & Penawaran
           </span>
+        </div>
+
+        <!-- Loop Item Penawaran -->
+        <v-row
+          v-for="(item, index) in newPenawaran.penawaran_item"
+          :key="index"
+          class="bg-grey-lighten-5 rounded-lg pa-3 pa-sm-4 mb-4 border border-dashed position-relative"
+        >
+          <v-col cols="11">
+            <div class="d-flex justify-space-between align-center mb-2">
+              <span class="text-body-1 font-weight-bold text-primary"
+                >#{{ index + 1 }}.</span
+              >
+            </div>
+
+            <a-textarea-new
+              v-model="item.nama"
+              label="Description"
+              placeholder="Description"
+            />
+
+            <v-row density="compact">
+              <v-col cols="6" sm="2">
+                <a-field-number-new
+                  v-model="item.qty"
+                  label="Qty"
+                  placeholder="0"
+                />
+              </v-col>
+              <v-col cols="6" sm="2">
+                <a-select-new
+                  :items="['Unit', 'Pcs', 'Kg']"
+                  v-model="item.uom"
+                  label="UOM"
+                  placeholder="Select"
+                />
+              </v-col>
+              <v-col cols="12" sm="2">
+                <a-field-number-new label="HPP" placeholder="0" />
+              </v-col>
+              <v-col cols="12" sm="3">
+                <a-field-number-new
+                  v-model="item.amount"
+                  label="Amount/Pcs (Rp)"
+                  placeholder="0"
+                />
+              </v-col>
+              <v-col cols="12" sm="3">
+                <a-text-field-new
+                  :model-value="
+                    (
+                      Number(item.qty || 0) * Number(item.amount || 0)
+                    ).toLocaleString('id-ID')
+                  "
+                  label="Subtotal"
+                  placeholder="0"
+                  disabled
+                />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-btn
+              icon="mdi-trash-can-outline"
+              size="x-small"
+              variant="outlined"
+              color="error"
+              style="border-radius: 8px; height: 100%"
+              @mouseover="
+                $event.currentTarget.style.backgroundColor = '#ffebee'
+              "
+              @mouseout="
+                $event.currentTarget.style.backgroundColor = 'transparent'
+              "
+              @click="hapusBarisPenawaran(index)"
+            />
+          </v-col>
+        </v-row>
+
+        <div class="text-center">
           <v-btn
             size="small"
-            variant="tonal"
+            variant="flat"
             color="primary"
             prepend-icon="mdi-plus"
             class="text-none font-weight-semibold rounded-lg"
@@ -112,73 +198,6 @@
           >
             Tambah Baris
           </v-btn>
-        </div>
-
-        <!-- Loop Item Penawaran -->
-        <div
-          v-for="(item, index) in newPenawaran.penawaran_item"
-          :key="index"
-          class="bg-grey-lighten-5 rounded-lg pa-3 pa-sm-4 mb-4 border border-dashed position-relative"
-        >
-          <div class="d-flex justify-space-between align-center mb-2">
-            <span class="text-caption font-weight-bold text-grey-darken-2"
-              >Item #{{ index + 1 }}</span
-            >
-          </div>
-
-
-             <a-textarea-new
-            v-model="item.nama"
-            label="Description"
-            placeholder="Description"
-          />
-
-          <v-row density="compact">
-            <v-col cols="6" sm="2">
-              <a-field-number-new
-                v-model="item.qty"
-                label="Qty"
-                placeholder="0"
-              />
-            </v-col>
-            <v-col cols="6" sm="3">
-              <a-select-new
-                :items="['Unit', 'Pcs', 'Kg']"
-                v-model="item.uom"
-                label="UOM"
-                placeholder="Select"
-              />
-            </v-col>
-            <v-col cols="12" sm="3">
-              <a-field-number-new
-                v-model="item.amount"
-                label="Amount/Pcs (Rp)"
-                placeholder="0"
-              />
-            </v-col>
-            <v-col cols="12" sm="3">
-              <a-text-field-new
-                :model-value="
-                  (
-                    Number(item.qty || 0) * Number(item.amount || 0)
-                  ).toLocaleString('id-ID')
-                "
-                label="Subtotal"
-                placeholder="0"
-                disabled
-              />
-            </v-col>
-            <v-col cols="1" sm="1">
-               <v-btn
-              icon="mdi-trash-can-outline"
-              size="x-small"
-              variant="text"
-              color="error"
-              @click="hapusBarisPenawaran(index)"
-            />
-            </v-col>
-          </v-row>
-          
         </div>
 
         <v-divider class="my-4 border-opacity-50" />
@@ -198,6 +217,40 @@
             </span>
           </div>
         </v-card>
+
+       <div class="mt-4">
+  <span class="text-caption">
+    <strong>TERMS &amp; CONDITIONS:</strong>
+  </span>
+
+  <ul
+    style="
+      list-style: none;
+      padding: 0;
+      margin: 4px 0 0 0;
+      font-size: 11px;
+    "
+  >
+    <li style="display: flex; align-items: flex-start;">
+     <v-checkbox
+  density="compact"
+  hide-details
+  color="primary"
+  style="
+    margin-top: -6px;
+    transform: scale(0.7);
+    transform-origin: top left;
+  "
+/>
+
+      <span>
+        Price:
+        Prices quoted are net of taxes and do not include any applicable local
+        withholding tax.
+      </span>
+    </li>
+  </ul>
+</div>
       </v-card-text>
 
       <v-divider />
@@ -207,7 +260,7 @@
           size="small"
           variant="outlined"
           color="grey-darken-1"
-          class=" flex-grow-1 flex-sm-grow-0"
+          class="flex-grow-1 flex-sm-grow-0"
           @click="data.dialogTambahPenawaran = false"
         >
           Batal
@@ -216,7 +269,7 @@
           size="small"
           color="primary"
           variant="flat"
-          class=" font-weight-bold flex-grow-1 flex-sm-grow-0"
+          class="font-weight-bold flex-grow-1 flex-sm-grow-0"
           @click="simpanPenawaranDialog"
         >
           {{ data.penawaranAddEdit === "add" ? "Save" : "Edit" }}
@@ -416,6 +469,7 @@ function emptyPenawaran(): penawaranM {
     nama_perusahaan: "",
     alamat_perusahaan: "",
     no_telp: "",
+    email: "",
     tanggal_penawaran: moment().format("YYYY-MM-DD"),
     created_at: 0,
     created_by: "",
@@ -479,6 +533,7 @@ watch(
     newPenawaran.value.pic = customer.pic;
     newPenawaran.value.no_telp = customer.no_telp;
     newPenawaran.value.vessel = customer.vessel;
+    newPenawaran.value.email = customer.email;
   },
 );
 
@@ -508,7 +563,9 @@ function openDialogEditPenawaran(item: penawaranM) {
       dataCustomer.nama === item.id_perusahaan ||
       dataCustomer.nama === item.nama_perusahaan ||
       dataCustomer.pic === item.pic ||
-      dataCustomer.vessel === item.vessel,
+      dataCustomer.vessel === item.vessel ||
+      dataCustomer.email === item.email ||
+      dataCustomer.no_telp === item.no_telp,
   );
 
   const penawaran = JSON.parse(JSON.stringify(item)) as penawaranM;

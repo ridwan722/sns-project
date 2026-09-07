@@ -365,24 +365,8 @@
         <div class="closing-paragraph" v-if="showTable">
           <p><strong>TERMS &amp; CONDITIONS:</strong></p>
           <ul class="ml-3">
-            <li>
-              <strong>Price:</strong> Prices quoted are net of taxes and do not
-              include any applicable local withholding tax.
-            </li>
-            <li><strong>Delivery Terms:</strong> Batam, Indonesia.</li>
-            <li><strong>Warranty:</strong> Unit dryer 12 months</li>
-            <li>
-              <strong>Payment Terms:</strong> Cash upon PO received.
-            </li>
-            <li><strong>Lead Time:</strong> 4-5 days</li>
-            <li>
-              <strong>Quotation Validity:</strong> This quotation is valid for 7
-              days from the quotation date.
-            </li>
-            <li>
-              <strong>Purchase Order:</strong> The agreed Purchase Order (PO)
-              shall be issued to PT. Index Cool Indonesia within 3 working days
-              from the date of order confirmation.
+            <li v-for="item in detailpenawaran.termCondition">
+                {{ item.nama_term }}
             </li>
           </ul>
         </div>

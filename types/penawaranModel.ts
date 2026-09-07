@@ -36,8 +36,6 @@ export interface penawaranM {
   invoice_at?: number;
   invoice_by?: string;
 
-  id_termcondition?: string;
-  nama_term?: string;
   termCondition?: { id: string; nama_term: string }[];
 }
 

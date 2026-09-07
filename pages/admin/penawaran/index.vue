@@ -56,8 +56,8 @@
           disabled
           placeholder="*Auto"
         />
-        <v-row>
-          <v-col>
+        <v-row no-gutters>
+          <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.pic"
               label="PIC"
@@ -65,7 +65,7 @@
               placeholder="*Auto"
             />
           </v-col>
-          <v-col>
+          <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.no_telp"
               label="Phone Number"
@@ -73,7 +73,7 @@
               placeholder="*Auto"
             />
           </v-col>
-          <v-col>
+          <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.email"
               label="Email"
@@ -81,7 +81,7 @@
               placeholder="@gmail.com"
             />
           </v-col>
-          <v-col>
+          <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.vessel"
               label="Vessel"

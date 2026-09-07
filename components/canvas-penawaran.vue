@@ -309,7 +309,7 @@
               </tr>
             </tbody>
 
-            <tfoot>
+            <tfoot v-if="showTotal">
               <tr class="summary-row subtotal-row">
                 <td colspan="5" class="text-right text-slate-600">
                   {{ t.subtotal }}
@@ -346,7 +346,25 @@
                 </td>
               </tr>
             </tfoot>
+            
           </table>
+          <div class="text-center mx-auto no-print">
+             <v-chip
+
+                  :prepend-icon="
+                    showTotal ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
+                  "
+                  size="x-small"
+                  class="my-1"
+                  @click="showTotal = !showTotal"
+                >
+                  {{
+                    showTotal
+                      ? "Sembunyikan Rincian Harga"
+                      : "Tampilkan Rincian Harga"
+                  }}
+                </v-chip>
+          </div>
         </div>
 
         <p class="closing-paragraph" v-if="showTable">
@@ -452,6 +470,7 @@ const props = defineProps<{
 const lang = ref<"id" | "en">("en");
 
 const labelSubTotal = ref("TOTAL AMOUNT");
+const showTotal = ref(true);
 
 watch(lang, (newLang) => {
   labelSubTotal.value = newLang === "id" ? "TOTAL HARGA" : "TOTAL AMOUNT";
@@ -506,7 +525,7 @@ const t = computed(() => {
     thDescription: "DESCRIPTION / KETERANGAN",
     thQty: "QTY",
     thUom: "UOM",
-    thUnitPrice: "UNIT PRICE",
+    thUnitPrice: "UNIT/PRICE",
     subtotal: "SUBTOTAL",
     grandTotal: "GRAND TOTAL",
     amountInWords: "Amount in words",

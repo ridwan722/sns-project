@@ -187,7 +187,7 @@ definePageMeta({
                   <v-icon icon="mdi-package-variant-closed" size="18" />
                 </div>
                 <div class="action-text">
-                  <span class="title">Master Barang</span>
+                  <span class="title">Master Barang / Service</span>
                   <span class="sub"
                     >Master Barang dan Harga Modal</span
                   >

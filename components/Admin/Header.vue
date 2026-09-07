@@ -50,12 +50,8 @@ const logout = async () => {
 
 <template>
   <v-app-bar flat color="white" height="68" class="app-bar-border">
-    <!-- =====================================================
-         HEADER KIRI
-    ====================================================== -->
     <template #prepend>
       <div class="header-left">
-        <!-- LOGO -->
         <div class="logo-box">
           <img
             src="/public/Logo-SNS.png"
@@ -64,14 +60,11 @@ const logout = async () => {
           />
         </div>
 
-        <!-- COMPANY INFO -->
         <div class="company-info">
-          <!-- Desktop -->
           <span class="company-name desktop-company">
             CV. SOLUSI NUSA SEGARA
           </span>
 
-          <!-- Mobile -->
           <span class="company-name mobile-company">
             CV. SOLUSI NUSA SEGARA
           </span>
@@ -79,39 +72,32 @@ const logout = async () => {
           <span class="company-subtitle"> Enterprise Management System </span>
         </div>
 
-        <!-- VERSION -->
         <v-chip
           size="x-small"
           color="primary"
           variant="outlined"
           class="version-chip"
         >
-          Update Version. 2
+          Update Version. 1.3
         </v-chip>
 
         <v-btn
-    variant="outlined"
-    color="primary"
-    size="small"
-    prepend-icon="mdi-home-outline"
-    to="/admin"
-    class="text-capitalize font-weight-bold"
-  >
-    Home
-  </v-btn>
+          variant="outlined"
+          color="primary"
+          size="small"
+          prepend-icon="mdi-home-outline"
+          to="/admin"
+          class="text-capitalize font-weight-bold"
+        >
+          Home
+        </v-btn>
       </div>
     </template>
 
     <v-spacer />
 
-    <!-- =====================================================
-         HEADER KANAN
-    ====================================================== -->
     <template #append>
       <div class="header-right">
-        <!-- =================================================
-             NOTIFICATION
-        ================================================== -->
         <v-btn
           icon
           variant="text"
@@ -124,19 +110,14 @@ const logout = async () => {
           </v-badge>
         </v-btn>
 
-        <!-- DIVIDER -->
         <v-divider vertical inset class="header-divider" />
 
-        <!-- =================================================
-             USER PROFILE
-        ================================================== -->
         <v-menu
           rounded="xl"
           transition="slide-y-transition"
           :offset="[12, 0]"
           elevation="16"
         >
-          <!-- ACTIVATOR -->
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
@@ -144,14 +125,12 @@ const logout = async () => {
               class="user-profile-btn"
               height="48"
             >
-              <!-- AVATAR -->
               <v-avatar size="36" class="avatar-shadow">
                 <div class="avatar-placeholder text-uppercase font-weight-bold">
                   {{ displayname[0] }}
                 </div>
               </v-avatar>
 
-              <!-- USER INFORMATION -->
               <div class="user-info">
                 <p class="user-name">
                   {{ displayname }}
@@ -162,21 +141,16 @@ const logout = async () => {
                 </p>
               </div>
 
-              <!-- CHEVRON -->
               <v-icon size="18" class="profile-chevron">
                 mdi-chevron-down
               </v-icon>
             </v-btn>
           </template>
 
-          <!-- =================================================
-               PROFILE DROPDOWN
-          ================================================== -->
           <v-card
             min-width="260"
             class="profile-card border-thin overflow-hidden rounded-xl"
           >
-            <!-- PROFILE HEADER -->
             <div class="pa-4 profile-card-header d-flex align-center">
               <v-avatar size="44" class="mr-3 avatar-shadow">
                 <div class="avatar-placeholder text-h6 font-weight-bold">
@@ -204,7 +178,6 @@ const logout = async () => {
 
             <v-divider />
 
-            <!-- MENU -->
             <div class="pa-2">
               <v-list density="compact" nav class="bg-transparent pa-0">
                 <v-list-item
@@ -220,7 +193,6 @@ const logout = async () => {
 
             <v-divider />
 
-            <!-- LOGOUT -->
             <div class="pa-2 bg-slate-50">
               <v-btn
                 block

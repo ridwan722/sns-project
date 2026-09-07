@@ -31,7 +31,7 @@
         />
         <a-field-number-new
           v-model="newBarang.harga_hpp"
-          label="Harga Modal"
+          label="Harga HPP"
           placeholder="0"
         />
       </v-card-text>
@@ -63,7 +63,7 @@
     <v-col cols="10">
       <v-breadcrumbs>
         <v-breadcrumbs-item>
-          <span class="font-weight-medium text-h5">Master Barang</span>
+          <span class="font-weight-medium text-h5">Master Barang / Service</span>
         </v-breadcrumbs-item>
       </v-breadcrumbs>
     </v-col>

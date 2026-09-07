@@ -338,7 +338,7 @@
           :to="'/admin/invoice/' + item.no_inv"
           class="penawaran-link font-weight-medium"
         >
-          #INV/ICI/2026/SNS/{{ item.no_inv }}
+          #INV/SNS/2026/{{ item.no_inv }}
         </NuxtLink>
       </template>
 

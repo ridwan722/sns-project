@@ -30,10 +30,7 @@
       </v-card-item>
 
       <v-card-text class="pa-4 pa-sm-6">
-        <!-- Section: Informasi Utama -->
-        <div class="text-subtitle-2 font-weight-bold text-primary mb-3">
-          Informasi Utama
-        </div>
+
         <v-row>
           <v-col>
             <a-select-new
@@ -139,7 +136,7 @@
               </v-col>
               <v-col cols="6" sm="2">
                 <a-select-new
-                  :items="['Unit', 'Pcs', 'Kg']"
+                  :items="['Unit', 'Pcs', 'Kg', 'Lot', 'Lumpsum']"
                   v-model="item.uom"
                   label="UOM"
                   placeholder="Select"
@@ -218,39 +215,72 @@
           </div>
         </v-card>
 
-       <div class="mt-4">
-  <span class="text-caption">
-    <strong>TERMS &amp; CONDITIONS:</strong>
-  </span>
+        <div class="mt-4">
+          <span class="text-caption">
+            <strong>TERMS &amp; CONDITIONS:</strong>
+          </span>
 
-  <ul
-    style="
-      list-style: none;
-      padding: 0;
-      margin: 4px 0 0 0;
-      font-size: 11px;
-    "
-  >
-    <li style="display: flex; align-items: flex-start;">
-     <v-checkbox
-  density="compact"
-  hide-details
-  color="primary"
+          <table
   style="
-    margin-top: -6px;
-    transform: scale(0.7);
-    transform-origin: top left;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    border: 1px solid #9CA3AF;
   "
-/>
+>
+  <tbody>
+    <tr
+      v-for="(item, index) in termconditionStore.getDataTermcondition"
+      :key="index"
+    >
+      <td
+        style="
+          width: 25px;
+          padding: 3px 5px;
+          vertical-align: top;
+          text-align: center;
+          border: 1px solid #9CA3AF;
+        "
+      >
+        {{ index + 1 }}.
+      </td>
 
-      <span>
-        Price:
-        Prices quoted are net of taxes and do not include any applicable local
-        withholding tax.
-      </span>
-    </li>
-  </ul>
-</div>
+      <td
+        style="
+          width: 30px;
+
+
+          border: 1px solid #9CA3AF;
+
+        "
+      >
+        <v-checkbox
+          density="compact"
+          hide-details
+          color="primary"
+          style="
+            margin: -6px 0 0 0;
+            padding: 0;
+            transform: scale(0.7);
+            transform-origin: center;
+          "
+        />
+      </td>
+
+      <td
+        style="
+          padding: 4px 6px;
+          vertical-align: top;
+          line-height: 1.4;
+          border: 1px solid #9CA3AF;
+        "
+      >
+        {{ item.nama_term }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+        </div>
       </v-card-text>
 
       <v-divider />
@@ -433,6 +463,7 @@ definePageMeta({
 
 const router = useRouter();
 const customerStore = usecustomerStore();
+const termconditionStore = usetermconditionStore();
 const penawaranStore = usePenawaranStore();
 const invoiceStore = useinvoiceStore();
 const userStore = useUserStore();
@@ -441,12 +472,19 @@ const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
   null,
 );
 
+onMounted(async () => {
+  await customerStore.tarikDataCustomerAct();
+  await penawaranStore.tarikDataPenawaranAct();
+  await termconditionStore.tarikDataTermconditionAct();
+});
+
 const data = reactive({
   searchPenawaran: "",
 
   dialogTambahPenawaran: false,
   penawaranAddEdit: "add" as "add" | "edit",
   editOriginalCustomerId: "",
+  editOriginalTermconditionId: "",
   headPenawaran: [
     { title: "No", value: "no", width: "10px" },
     { title: "Date", value: "tanggal_penawaran", sortable: true },
@@ -487,6 +525,8 @@ function emptyPenawaran(): penawaranM {
     subtotal_penawaran: 0,
     grand_total_penawaran: 0,
     terbilang: "",
+    id_termcondition: "",
+    nama_term: "",
   };
 }
 
@@ -501,7 +541,7 @@ function generateNoPenawaran(): string {
     0,
   );
 
-  return `QT/ICI/${year}/SNS/${String(lastSequence + 1).padStart(5, "0")}`;
+  return `QT/SNS/${year}/${String(lastSequence + 1).padStart(5, "0")}`;
 }
 
 const newPenawaran = ref<penawaranM>(emptyPenawaran());
@@ -537,10 +577,23 @@ watch(
   },
 );
 
-onMounted(async () => {
-  await customerStore.tarikDataCustomerAct();
-  await penawaranStore.tarikDataPenawaranAct();
-});
+watch(
+  () => newPenawaran.value.id_termcondition,
+  (idTermcondition) => {
+    if (
+      data.penawaranAddEdit === "edit" &&
+      idTermcondition === data.editOriginalTermconditionId
+    ) {
+      return;
+    }
+    const termcondition = termconditionStore.getDataTermcondition.find(
+      (item: any) => item.id === idTermcondition,
+    );
+    if (!termcondition) return;
+    newPenawaran.value.id_termcondition = termcondition.id ?? "";
+    newPenawaran.value.nama_term = termcondition.nama_term;
+  },
+);
 
 function statusColor(status: string) {
   if (status === "INVOICE") return "warning";
@@ -566,6 +619,12 @@ function openDialogEditPenawaran(item: penawaranM) {
       dataCustomer.vessel === item.vessel ||
       dataCustomer.email === item.email ||
       dataCustomer.no_telp === item.no_telp,
+  );
+
+  const termcondition = termconditionStore.getDataTermcondition.find(
+    (dataTermcondition: any) =>
+      dataTermcondition.id === item.id_termcondition ||
+      dataTermcondition.nama_term === item.id_termcondition,
   );
 
   const penawaran = JSON.parse(JSON.stringify(item)) as penawaranM;
@@ -607,14 +666,15 @@ async function simpanPenawaranDialog() {
   ) {
     return notificationStore.showError("Tanggal dan perihal wajib diisi");
   }
-  if (
-    !newPenawaran.value.penawaran_item.length ||
-    newPenawaran.value.penawaran_item.some(
-      (item) => !item.nama || item.qty <= 0 || item.amount <= 0,
-    )
-  ) {
-    return notificationStore.showError("Setiap item harus dilengkapi");
-  }
+  // if (
+  //   !newPenawaran.value.penawaran_item.length ||
+  //   newPenawaran.value.penawaran_item.some(
+  //     (item) => !item.nama || item.qty <= 0 || item.amount <= 0,
+  //   )
+  // ) 
+  // {
+  //   return notificationStore.showError("Setiap item harus dilengkapi");
+  // }
 
   newPenawaran.value.penawaran_item.forEach((item) => {
     item.subtotal_item = Number(item.qty) * Number(item.amount);

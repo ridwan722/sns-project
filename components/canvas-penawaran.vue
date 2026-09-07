@@ -266,14 +266,7 @@
                   class="text-right"
                   :style="{ color: warnaTeksHeader }"
                 >
-                  <v-text-field
-                    v-model="labelSubTotal"
-                    variant="plain"
-                    density="compact"
-                    hide-details
-                    class="header-input-field"
-                    :style="{ '--header-text-color': warnaTeksHeader }"
-                  />
+                  Total Amount
                 </th>
               </tr>
             </thead>
@@ -346,24 +339,22 @@
                 </td>
               </tr>
             </tfoot>
-            
           </table>
           <div class="text-center mx-auto no-print">
-             <v-chip
-
-                  :prepend-icon="
-                    showTotal ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
-                  "
-                  size="x-small"
-                  class="my-1"
-                  @click="showTotal = !showTotal"
-                >
-                  {{
-                    showTotal
-                      ? "Sembunyikan Rincian Harga"
-                      : "Tampilkan Rincian Harga"
-                  }}
-                </v-chip>
+            <v-chip
+              :prepend-icon="
+                showTotal ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
+              "
+              size="x-small"
+              class="my-1"
+              @click="showTotal = !showTotal"
+            >
+              {{
+                showTotal
+                  ? "Sembunyikan Rincian Harga"
+                  : "Tampilkan Rincian Harga"
+              }}
+            </v-chip>
           </div>
         </div>
 
@@ -379,12 +370,11 @@
               include any applicable local withholding tax.
             </li>
             <li><strong>Delivery Terms:</strong> Batam, Indonesia.</li>
-            <li><strong>Warranty:</strong> -</li>
+            <li><strong>Warranty:</strong> Unit dryer 12 months</li>
             <li>
-              <strong>Payment Terms:</strong> 50% down payment upon receipt of
-              Purchase Order (PO), balance payment upon delivery.
+              <strong>Payment Terms:</strong> Cash upon PO received.
             </li>
-            <li><strong>Lead Time:</strong> 3 days.</li>
+            <li><strong>Lead Time:</strong> 4-5 days</li>
             <li>
               <strong>Quotation Validity:</strong> This quotation is valid for 7
               days from the quotation date.
@@ -440,7 +430,7 @@
         class="quotation-action-btn text-capitalize font-weight-bold rounded-lg text-subtitle-2"
         @click="handlePrint"
       >
-        {{ t.btnPrint }}
+        Print Quotation
       </v-btn>
       <v-btn
         width="300"
@@ -453,7 +443,7 @@
         :disabled="isSavingPdf"
         @click="handleSavePdf"
       >
-        {{ t.btnPdf }}
+        Save PDF
       </v-btn>
     </div>
   </div>
@@ -507,8 +497,6 @@ const t = computed(() => {
       sigHeaderLeft: "Hormat Kami,",
       sigHeaderRight: "Disetujui Oleh,",
       sigRoleRight: "Cap & Tanda Tangan",
-      btnPrint: "Cetak Penawaran",
-      btnPdf: "Simpan PDF",
     };
   }
   return {
@@ -534,8 +522,6 @@ const t = computed(() => {
     sigHeaderLeft: "Yours faithfully,",
     sigHeaderRight: "Approve by,",
     sigRoleRight: "Stamp & Signature",
-    btnPrint: "Print Quotation",
-    btnPdf: "Save PDF",
   };
 });
 
@@ -867,7 +853,11 @@ const handleSavePdf = async () => {
     }
 
     const number = props.detailpenawaran?.no_penawaran || "SNS";
-    pdf.save(`${number.replace(/[^a-z0-9-_]/gi, "_")}.pdf`);
+    const nama = props.detailpenawaran?.pic || "SNS";
+    const subject = props.detailpenawaran?.perihal || "";
+    const nomorQT = number.match(/\d{5}$/)?.[0] || "00000";
+
+    pdf.save(`Quotation ${subject} #${nomorQT}.pdf`);
   } finally {
     isSavingPdf.value = false;
   }

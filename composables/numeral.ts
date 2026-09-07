@@ -41,18 +41,6 @@ export const rubahtanggalbulanunix = (unix: number) => {
   return moment.unix(unix).format("YYYY-MMM-DD");
 };
 
-// export const hitungcolly = (data: orderitemM[]) => {
-//   return _.sumBy(data, "jumlah_colly");
-// };
-
-// export const nooutgoing = (data: orderitemM[]) => {
-//   return _.sumBy(data, "no_outgoing");
-// };
-
-// export const hitungkg = (data: orderitemM[]) => {
-//   return _.sumBy(data, "actual_berat");
-// };
-
 export const rubahbulantahun = (unix: number) => {
   return moment.unix(unix).format("MMMM YYYY");
 };
@@ -82,20 +70,6 @@ export const rubahtanggalharilengkappettycash = (date: string) => {
 
 export const rubahkejam = (unix: number) => {
   return moment.unix(unix).format("H:mm:ss");
-};
-
-export const jthtempodepate = (dep_date: string) => {
-  let b = moment(dep_date, "YYYY-MM-DD");
-  b.add(45, "days");
-  return b.format("DD-MM-YYYY");
-};
-
-export const umurorderan = (dep_date: string) => {
-  const b = moment(dep_date, "YYYY-MM-DD");
-  const tanggalsekarangmoment = moment();
-  const c = tanggalsekarangmoment.diff(b, "days");
-
-  return c;
 };
 
 export const tanggalunixskrg = () => {
@@ -163,21 +137,6 @@ export const jadirupiah = (nilai: number) => {
 
   // mengambalikan nilai yang ada dalam variabel penyimpanan
   return penyimpanan;
-};
-
-export const pushnotif = async (token: string, body: string, title: string) => {
-  const b = await sendnotifikasi(token, body, title);
-  return b;
-};
-
-export const cekidgroup = async (nama: string) => {
-  if (nama == "soechi") {
-    return "JY3TbnUIgEMYbmwtrpPU";
-  } else if (nama == "limin") {
-    return "Lx2fQIGkVH316dGa6Akm";
-  } else {
-    return "";
-  }
 };
 
 export const terbilang = (nilai: number) => {

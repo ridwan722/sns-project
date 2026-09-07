@@ -204,7 +204,7 @@ async function save() {
   const penawaran = JSON.parse(JSON.stringify(props.penawaran)) as penawaranM;
   const penawaranUpdated = await penawaranStore.updatePenawaranAct({
     ...penawaran,
-    status: "INVOICE",
+    status: "Draft",
     invoice_at: moment().unix(),
     invoice_by: userStore.getEmail,
   });

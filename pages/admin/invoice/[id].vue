@@ -187,10 +187,12 @@ function printInvoice() {
                 INVOICE
               </div>
               <div class="text-h6 font-weight-bold primary--text">
-                #INV/ICI/2026/SNS/{{ invoiceDetail.id }}
+                #INV/SNS/2026/{{ invoiceDetail.id }}
               </div>
               <div class="text-caption font-italic">
-                No. Quotation : {{ invoiceDetail.no_penawaran }}
+                <nuxtLink :to="'/admin/penawaran/' + invoiceDetail.id_penawaran"
+                  >No. Quotation : {{ invoiceDetail.no_penawaran }}</nuxtLink
+                >
               </div>
             </div>
           </v-col>
@@ -290,7 +292,7 @@ function printInvoice() {
                   <tr>
                     <td width="110">Invoice No</td>
                     <td width="10">:</td>
-                    <td>INV/ICI/2026/SNS/{{ invoiceDetail.no_inv }}</td>
+                    <td>INV/SNS/2026/{{ invoiceDetail.no_inv }}</td>
                   </tr>
                   <tr>
                     <td>Inv Date</td>
@@ -310,9 +312,8 @@ function printInvoice() {
           <!-- Main Table -->
           <table class="main-table">
             <thead>
-              <tr v-for="(item, index) in invoiceDetail.item_pekerjaan">
+              <tr>
                 <th width="3%">NO.</th>
-                <th width="3%" v-if="item.kode_barang">KODE BARANG</th>
                 <th width="47%">DESCRIPTION</th>
                 <th width="5%">QTY</th>
                 <th width="5%">UOM</th>
@@ -329,15 +330,6 @@ function printInvoice() {
                     <span> {{ index + 1 }}. </span>
                   </div>
                 </td>
-
-                 <td class="desc-cell" v-if="item.kode_barang">
-                  <div class="font-weight-bold">
-                    <span style="white-space: pre-line">
-                      {{ item.kode_barang }}
-                    </span>
-                  </div>
-                </td>
-
 
                 <td class="desc-cell">
                   <div class="font-weight-bold">
@@ -414,8 +406,9 @@ function printInvoice() {
           <div class="terbilang-strip">
             <strong
               >Terbilang :
-              {{ jadirupiah(invoiceDetail.grandtotal_invoice) }}Rupiah</strong
-            >
+              <!-- {{ jadirupiah(invoiceDetail.grandtotal_invoice) }}Rupiah -->
+              #Sixteen Million Two Hundred Thousand Rupiah.
+            </strong>
           </div>
 
           <table>
@@ -431,9 +424,7 @@ function printInvoice() {
                         <strong>Lead time 10-15 Days</strong>
                       </li>
                       <li>
-                        <strong>
-                          Payment Cash
-                        </strong>
+                        <strong> Payment Cash </strong>
                       </li>
                       <li>
                         <strong>

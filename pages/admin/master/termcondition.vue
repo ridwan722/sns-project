@@ -19,12 +19,12 @@
         class="px-4 text-subtitle-1 font-weight-bold bg-primary pa-3"
       >
         {{
-          data.tncAddEdit === "add" ? "TAMBAH CLIENT" : "EDIT CLIENT"
+          data.tncAddEdit === "add" ? "TAMBAH T&C" : "EDIT T&C"
         }}
       </v-card-title>
 
       <v-card-text>
-        <a-text-field-new
+        <a-textarea-new
           v-model="newTnc.nama_term"
           label="T&C"
           placeholder="input term & condition"

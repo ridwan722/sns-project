@@ -143,7 +143,11 @@
                 />
               </v-col>
               <v-col cols="12" sm="2">
-                <a-field-number-new label="HPP" placeholder="0" />
+                <a-field-number-new
+                  v-model="item.harga_hpp"
+                  label="HPP"
+                  placeholder="0"
+                />
               </v-col>
               <v-col cols="12" sm="3">
                 <a-field-number-new
@@ -523,6 +527,7 @@ function emptyPenawaran(): penawaranM {
         uom: "Unit",
         amount: 0,
         subtotal_item: 0,
+        harga_hpp: 0,
       },
     ],
     subtotal_penawaran: 0,
@@ -660,6 +665,7 @@ function tambahBarisPenawaran() {
     uom: "",
     qty: 1,
     subtotal_item: 0,
+    harga_hpp: 0,
   });
 }
 
@@ -691,6 +697,7 @@ async function simpanPenawaranDialog() {
   // }
 
   newPenawaran.value.penawaran_item.forEach((item) => {
+    item.harga_hpp = Number(item.harga_hpp) || 0;
     item.subtotal_item = Number(item.qty) * Number(item.amount);
   });
   newPenawaran.value.subtotal_penawaran = subtotalPenawaran.value;
@@ -706,6 +713,7 @@ async function simpanPenawaranDialog() {
     useloadingStore().setLoading(true);
     const result = await setPenawaran(newPenawaran.value);
     if (result !== "ok") {
+      useloadingStore().setLoading(false);
       notificationStore.showError(result || "Gagal menyimpan penawaran");
       return;
     }

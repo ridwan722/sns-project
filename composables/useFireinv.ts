@@ -1044,6 +1044,19 @@ export const setPenawaran = async (data: penawaranM) => {
             const penawaranRef = doc(db, "penawaran", id_penawaran);
             // Simpan dokumen utama laporan
             transaction.set(penawaranRef, setdata, { merge: true });
+            for (const item of data.penawaran_item) {
+                const harga_hpp = Number(item.harga_hpp);
+                if (!Number.isFinite(harga_hpp) || harga_hpp <= 0) continue;
+
+                const barangRef = doc(collection(db, "barang"));
+                transaction.set(barangRef, {
+                    // Keep the existing master barang page compatible.
+                    nama_barang: item.nama,
+                    harga_hpp,
+                    createdAt: now,
+                    createdBy: data.created_by || "-",
+                });
+            }
             transaction.update(nomorInvRef, { no_penawaran: newnumber });
         }).then(() => {
             return "ok";

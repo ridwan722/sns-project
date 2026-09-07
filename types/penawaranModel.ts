@@ -43,10 +43,10 @@ export interface penawaranM {
 
 export interface penawaranItemM {
   nama: string;
+  harga_hpp?: number;
   qty: number;
   uom: string;
   amount: number;
   subtotal_item: number;
 }
-
 

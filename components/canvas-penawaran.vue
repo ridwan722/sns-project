@@ -67,13 +67,13 @@
   <div>
     <div id="offer-to-print" class="offer-card">
       <div class="watermark">
-        <img src="/public/Logo-SNS.png" alt="Logo Watermark" />
+        <img src="/Logo-SNS.png" alt="Logo Watermark" />
       </div>
 
       <div class="header-section">
         <div class="header-brand">
           <div class="logo-wrapper">
-            <img src="/public/logo-SNS.png" alt="Logo Header" />
+            <img src="/Logo-SNS.png" alt="Logo Header" />
           </div>
           <div class="company-titles">
             <h1 class="company-name">CV. SOLUSI NUSA SEGARA</h1>
@@ -377,7 +377,7 @@
             <p class="sig-sub">CV. SOLUSI NUSA SEGARA</p>
             <div class="sig-img-container">
               <img
-                src="/public/ttd_ridwan.png"
+                src="/ttd_ridwan.png"
                 alt="Signature"
                 class="sig-image"
               />

@@ -73,7 +73,7 @@
       <div class="header-section">
         <div class="header-brand">
           <div class="logo-wrapper">
-            <img src="/public/logo-SNS.png" alt="Logo Header" />
+            <img src="/public/Logo-SNS.png" alt="Logo Header" />
           </div>
           <div class="company-titles">
             <h1 class="company-name">CV. SOLUSI NUSA SEGARA</h1>

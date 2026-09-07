@@ -231,7 +231,7 @@
   <tbody>
     <tr
       v-for="(item, index) in termconditionStore.getDataTermcondition"
-      :key="index"
+      :key="item.id ?? index"
     >
       <td
         style="
@@ -255,6 +255,9 @@
         "
       >
         <v-checkbox
+          v-model="newPenawaran.termCondition"
+          :value="{ id: item.id ?? '', nama_term: item.nama_term }"
+          :value-comparator="sameTermCondition"
           density="compact"
           hide-details
           color="primary"
@@ -527,6 +530,7 @@ function emptyPenawaran(): penawaranM {
     terbilang: "",
     id_termcondition: "",
     nama_term: "",
+    termCondition: [],
   };
 }
 
@@ -545,6 +549,15 @@ function generateNoPenawaran(): string {
 }
 
 const newPenawaran = ref<penawaranM>(emptyPenawaran());
+
+function sameTermCondition(
+  left: NonNullable<penawaranM['termCondition']>[number],
+  right: NonNullable<penawaranM['termCondition']>[number],
+) {
+  return left.id && right.id
+    ? left.id === right.id
+    : left.nama_term === right.nama_term;
+}
 
 const subtotalPenawaran = computed(() =>
   newPenawaran.value.penawaran_item.reduce(
@@ -628,6 +641,7 @@ function openDialogEditPenawaran(item: penawaranM) {
   );
 
   const penawaran = JSON.parse(JSON.stringify(item)) as penawaranM;
+  penawaran.termCondition ??= [];
   if (customer?.id) {
     penawaran.id_perusahaan = customer.id;
     penawaran.nama_perusahaan = customer.nama;

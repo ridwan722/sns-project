@@ -38,6 +38,7 @@ export interface penawaranM {
 
   id_termcondition?: string;
   nama_term?: string;
+  termCondition?: { id: string; nama_term: string }[];
 }
 
 export interface penawaranItemM {
@@ -47,6 +48,5 @@ export interface penawaranItemM {
   amount: number;
   subtotal_item: number;
 }
-
 
 

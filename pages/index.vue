@@ -50,7 +50,7 @@ async function verifyPin() {
         <div class="logo-wrapper">
           <div class="logo-badge">
             <img
-              src="/Logo-SNS.png"
+              src="/public/Logo-SNS.png"
               alt="SNS Logo"
               class="logo-img"
             />

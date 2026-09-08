@@ -364,9 +364,12 @@
 
         <div class="closing-paragraph" v-if="showTable">
           <p><strong>TERMS &amp; CONDITIONS:</strong></p>
-          <ul class="ml-3">
-            <li v-for="item in detailpenawaran.termCondition">
-                {{ item.nama_term }}
+          <ul class="ml-3" style="list-style: none; padding-left: 0">
+            <li
+              v-for="(item, index) in detailpenawaran.termCondition"
+              :key="index"
+            >
+              {{ index + 1 }}. {{ item.nama_term }}
             </li>
           </ul>
         </div>
@@ -376,11 +379,7 @@
             <p class="sig-header">{{ t.sigHeaderLeft }}</p>
             <p class="sig-sub">CV. SOLUSI NUSA SEGARA</p>
             <div class="sig-img-container">
-              <img
-                src="/ttd_ridwan.png"
-                alt="Signature"
-                class="sig-image"
-              />
+              <img src="/ttd_ridwan.png" alt="Signature" class="sig-image" />
             </div>
             <p class="sig-person-name">Muhammad Ridwan</p>
           </div>

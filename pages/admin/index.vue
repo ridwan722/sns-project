@@ -4,6 +4,21 @@ import { useDisplay } from "vuetify";
 definePageMeta({
   layout: "admin",
 });
+
+// Penanganan otomatis jika chunk JS gagal dimuat (misal setelah deployment baru Vercel)
+onErrorCaptured((err: unknown) => {
+  const errorMessage = err instanceof Error ? err.message : String(err);
+
+  if (
+    errorMessage.includes("Failed to fetch dynamically imported module") ||
+    errorMessage.includes("Importing a module script failed") ||
+    errorMessage.includes("Failed to load module script")
+  ) {
+    // Reload halaman otomatis agar browser mengambil bundle/chunk versi terbaru
+    window.location.reload();
+    return false; // Hentikan propagasi error
+  }
+});
 </script>
 
 <template>
@@ -61,23 +76,7 @@ definePageMeta({
               </div>
             </div>
 
-            <!-- Sub Group: SPK -->
-
-            <!-- <div class="action-grid-1">
-                <NuxtLink to="/admin/spk" class="compact-action-card">
-                  <div class="action-icon">
-                    <v-icon icon="mdi-file-cog-outline" size="18" />
-                  </div>
-                  <div class="action-text">
-                    <span class="title">Daftar SPK</span>
-                    <span class="sub">Kelola perintah kerja & penugasan</span>
-                  </div>
-                  <v-icon icon="mdi-chevron-right" size="16" class="arrow" />
-                </NuxtLink>
-              </div> -->
-
             <!-- Sub Group: Berita Acara -->
-
             <div class="action-grid-2">
               <NuxtLink to="/admin/delivery-order" class="compact-action-card">
                 <div class="action-icon">
@@ -168,66 +167,48 @@ definePageMeta({
 
               <div class="action-grid-1 mt-2">
                 <NuxtLink to="/admin/master/client" class="compact-action-card">
-                <div class="action-icon">
-                  <v-icon icon="mdi-domain" size="18" />
-                </div>
-                <div class="action-text">
-                  <span class="title">Master Client</span>
-                  <span class="sub"
-                    >Direktori klien dan data kontak perusahaan</span
-                  >
-                </div>
-                <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
-              </NuxtLink>
+                  <div class="action-icon">
+                    <v-icon icon="mdi-domain" size="18" />
+                  </div>
+                  <div class="action-text">
+                    <span class="title">Master Client</span>
+                    <span class="sub"
+                      >Direktori klien dan data kontak perusahaan</span
+                    >
+                  </div>
+                  <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
+                </NuxtLink>
               </div>
 
-               <div class="action-grid-1 mt-2">
+              <div class="action-grid-1 mt-2">
                 <NuxtLink to="/admin/master/barang" class="compact-action-card">
-                <div class="action-icon">
-                  <v-icon icon="mdi-package-variant-closed" size="18" />
-                </div>
-                <div class="action-text">
-                  <span class="title">Master Barang / Service</span>
-                  <span class="sub"
-                    >Master Barang dan Harga Modal</span
-                  >
-                </div>
-                <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
-              </NuxtLink>
+                  <div class="action-icon">
+                    <v-icon icon="mdi-package-variant-closed" size="18" />
+                  </div>
+                  <div class="action-text">
+                    <span class="title">Master Barang / Service</span>
+                    <span class="sub"
+                      >Master Barang dan Harga Modal</span
+                    >
+                  </div>
+                  <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
+                </NuxtLink>
               </div>
 
-               <div class="action-grid-1 mt-2">
+              <div class="action-grid-1 mt-2">
                 <NuxtLink to="/admin/master/termcondition" class="compact-action-card">
-                <div class="action-icon">
-                  <v-icon icon="mdi-information-variant-circle-outline" size="18" />
-                </div>
-                <div class="action-text">
-                  <span class="title">Master T&C</span>
-                  <span class="sub"
-                    >Master Term & Condition</span
-                  >
-                </div>
-                <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
-              </NuxtLink>
+                  <div class="action-icon">
+                    <v-icon icon="mdi-information-variant-circle-outline" size="18" />
+                  </div>
+                  <div class="action-text">
+                    <span class="title">Master T&C</span>
+                    <span class="sub"
+                      >Master Term & Condition</span
+                    >
+                  </div>
+                  <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
+                </NuxtLink>
               </div>
-
-              <!-- <div class="action-grid-1 mt-2">
-                <NuxtLink
-                to="/admin/petty-cash"
-                class="compact-action-card highlight"
-              >
-                <div class="action-icon primary">
-                  <v-icon icon="mdi-cash-register" size="20" />
-                </div>
-                <div class="action-text">
-                  <span class="title">Petty Cash</span>
-                  <span class="sub"
-                    >Pencatatan kas kecil & pengeluaran Harian</span
-                  >
-                </div>
-                <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
-              </NuxtLink>
-              </div> -->
             </div>
           </div>
         </section>
@@ -288,7 +269,7 @@ definePageMeta({
                 <v-icon icon="mdi-chevron-right" size="16" class="arrow" />
               </NuxtLink>
 
-              <NuxtLink  class="compact-action-card">
+              <NuxtLink class="compact-action-card">
                 <div class="action-icon">
                   <v-icon icon="mdi-domain" size="18" />
                 </div>
@@ -504,7 +485,7 @@ definePageMeta({
 
 .compact-action-card.highlight2:hover {
   border-color: #1b41ff; /* Touch of Red Accent on Hover */
-  background: rgba(0, 110, 255, 0.389)
+  background: rgba(0, 110, 255, 0.389);
 }
 
 .action-icon {

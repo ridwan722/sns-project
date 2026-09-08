@@ -30,7 +30,6 @@
       </v-card-item>
 
       <v-card-text class="pa-4 pa-sm-6">
-
         <v-row>
           <v-col>
             <a-select-new
@@ -49,7 +48,7 @@
             />
           </v-col>
         </v-row>
-        <a-text-field-new
+        <a-textarea-new
           class="mt-2"
           v-model="newPenawaran.alamat_perusahaan"
           label="Address"
@@ -225,68 +224,66 @@
           </span>
 
           <table
-  style="
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
-    border: 1px solid #9CA3AF;
-  "
->
-  <tbody>
-    <tr
-      v-for="(item, index) in termconditionStore.getDataTermcondition"
-      :key="item.id ?? index"
-    >
-      <td
-        style="
-          width: 25px;
-          padding: 3px 5px;
-          vertical-align: top;
-          text-align: center;
-          border: 1px solid #9CA3AF;
-        "
-      >
-        {{ index + 1 }}.
-      </td>
+            style="
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 11px;
+              border: 1px solid #9ca3af;
+            "
+          >
+            <tbody>
+              <tr
+                v-for="(item, index) in sortedTermConditions"
+                :key="item.id ?? index"
+              >
+                <td
+                  style="
+                    width: 25px;
+                    padding: 3px 5px;
+                    vertical-align: top;
+                    text-align: center;
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  {{ index + 1 }}.
+                </td>
 
-      <td
-        style="
-          width: 30px;
+                <td
+                  style="
+                    width: 30px;
 
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  <v-checkbox
+                    v-model="newPenawaran.termCondition"
+                    :value="{ id: item.id ?? '', nama_term: item.nama_term }"
+                    :value-comparator="sameTermCondition"
+                    density="compact"
+                    hide-details
+                    color="primary"
+                    style="
+                      margin: -6px 0 0 0;
+                      padding: 0;
+                      transform: scale(0.7);
+                      transform-origin: center;
+                    "
+                  />
+                </td>
 
-          border: 1px solid #9CA3AF;
-
-        "
-      >
-        <v-checkbox
-          v-model="newPenawaran.termCondition"
-          :value="{ id: item.id ?? '', nama_term: item.nama_term }"
-          :value-comparator="sameTermCondition"
-          density="compact"
-          hide-details
-          color="primary"
-          style="
-            margin: -6px 0 0 0;
-            padding: 0;
-            transform: scale(0.7);
-            transform-origin: center;
-          "
-        />
-      </td>
-
-      <td
-        style="
-          padding: 4px 6px;
-          vertical-align: top;
-          line-height: 1.4;
-          border: 1px solid #9CA3AF;
-        "
-      >
-        {{ item.nama_term }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+                <td
+                  style="
+                    padding: 4px 6px;
+                    vertical-align: top;
+                    line-height: 1.4;
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  {{ item.nama_term }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </v-card-text>
 
@@ -539,6 +536,34 @@ function emptyPenawaran(): penawaranM {
   };
 }
 
+const sortedTermConditions = computed(() => {
+  const terms = [...termconditionStore.getDataTermcondition];
+  const selected = newPenawaran.value.termCondition || [];
+
+  // Yang dipilih mengikuti urutan saat dipilih
+  const selectedTerms = selected
+    .map((selectedItem: any) => {
+      return terms.find((term: any) =>
+        term.id
+          ? term.id === selectedItem.id
+          : term.nama_term === selectedItem.nama_term,
+      );
+    })
+    .filter(Boolean);
+
+  // Yang belum dipilih tetap mengikuti urutan asli
+  const unselectedTerms = terms.filter(
+    (term: any) =>
+      !selected.some((selectedItem: any) =>
+        term.id
+          ? term.id === selectedItem.id
+          : term.nama_term === selectedItem.nama_term,
+      ),
+  );
+
+  return [...selectedTerms, ...unselectedTerms];
+});
+
 function generateNoPenawaran(): string {
   const year = moment().format("YYYY");
   const pattern = new RegExp(`^QT/ICI/${year}/SNS/(\\d{5})$`);
@@ -556,8 +581,8 @@ function generateNoPenawaran(): string {
 const newPenawaran = ref<penawaranM>(emptyPenawaran());
 
 function sameTermCondition(
-  left: NonNullable<penawaranM['termCondition']>[number],
-  right: NonNullable<penawaranM['termCondition']>[number],
+  left: NonNullable<penawaranM["termCondition"]>[number],
+  right: NonNullable<penawaranM["termCondition"]>[number],
 ) {
   return left.id && right.id
     ? left.id === right.id
@@ -691,7 +716,7 @@ async function simpanPenawaranDialog() {
   //   newPenawaran.value.penawaran_item.some(
   //     (item) => !item.nama || item.qty <= 0 || item.amount <= 0,
   //   )
-  // ) 
+  // )
   // {
   //   return notificationStore.showError("Setiap item harus dilengkapi");
   // }

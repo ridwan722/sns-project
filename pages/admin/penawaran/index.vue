@@ -99,6 +99,7 @@
           rows="2"
         />
 
+
         <!-- Section: Rincian Item -->
         <div class="d-flex align-center justify-space-between mb-3">
           <span class="text-subtitle-2 font-weight-bold text-primary">
@@ -106,13 +107,14 @@
           </span>
         </div>
 
+
         <!-- Loop Item Penawaran -->
         <v-row
           v-for="(item, index) in newPenawaran.penawaran_item"
           :key="index"
           class="bg-grey-lighten-5 rounded-lg pa-3 pa-sm-4 mb-4 border border-dashed position-relative"
         >
-          <v-col cols="11">
+          <v-col cols="10" md="11">
             <div class="d-flex justify-space-between align-center mb-2">
               <span class="text-body-1 font-weight-bold text-primary"
                 >#{{ index + 1 }}.</span
@@ -125,15 +127,25 @@
               placeholder="Description"
             />
 
-            <v-row density="compact">
-              <v-col cols="6" sm="2">
+            <!-- KODE BARU (SOLUSI) -->
+<v-chip 
+  v-for="(barang, idxBarang) in barangStore.getDataBarang" 
+  :key="barang.id ?? idxBarang"
+  size="x-small"
+  class="mr-1 mb-1"
+>
+  {{ barang.nama_barang }} : Rp {{ rupiah(barang.harga_hpp) }}
+</v-chip>
+
+            <v-row density="compact" no-gutters>
+              <v-col cols="6" sm="2" class="pa-1"> 
                 <a-field-number-new
                   v-model="item.qty"
                   label="Qty"
                   placeholder="0"
                 />
               </v-col>
-              <v-col cols="6" sm="2">
+              <v-col cols="6" sm="2" class="pa-1">
                 <a-select-new
                   :items="['Unit', 'Pcs', 'Kg', 'Lot', 'Lumpsum']"
                   v-model="item.uom"
@@ -141,21 +153,21 @@
                   placeholder="Select"
                 />
               </v-col>
-              <v-col cols="12" sm="2">
+              <v-col cols="12" sm="2" class="pa-1">
                 <a-field-number-new
                   v-model="item.harga_hpp"
                   label="HPP"
                   placeholder="0"
                 />
               </v-col>
-              <v-col cols="12" sm="3">
+              <v-col cols="12" sm="3" class="pa-1">
                 <a-field-number-new
                   v-model="item.amount"
                   label="Amount/Pcs (Rp)"
                   placeholder="0"
                 />
               </v-col>
-              <v-col cols="12" sm="3">
+              <v-col cols="12" sm="3" class="pa-1">
                 <a-text-field-new
                   :model-value="
                     (
@@ -169,7 +181,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col>
+          <v-col cols="2" md="1">
             <v-btn
               icon="mdi-trash-can-outline"
               size="x-small"
@@ -327,6 +339,8 @@
     >
       Create New Quotation
     </v-btn>
+
+    
   </div>
 
   <!-- Main Table Card -->
@@ -427,6 +441,7 @@
           </v-btn>
 
           <v-btn
+          :disabled="item.status !== 'Draft'"
             size="28"
             variant="tonal"
             color="grey"
@@ -468,6 +483,7 @@ definePageMeta({
 const router = useRouter();
 const customerStore = usecustomerStore();
 const termconditionStore = usetermconditionStore();
+const barangStore = usebarangStore();
 const penawaranStore = usePenawaranStore();
 const invoiceStore = useinvoiceStore();
 const userStore = useUserStore();
@@ -480,6 +496,7 @@ onMounted(async () => {
   await customerStore.tarikDataCustomerAct();
   await penawaranStore.tarikDataPenawaranAct();
   await termconditionStore.tarikDataTermconditionAct();
+  await barangStore.tarikDataBarangAct();
 });
 
 const data = reactive({
@@ -489,6 +506,7 @@ const data = reactive({
   penawaranAddEdit: "add" as "add" | "edit",
   editOriginalCustomerId: "",
   editOriginalTermconditionId: "",
+  editOriginalBarangId: "",
   headPenawaran: [
     { title: "No", value: "no", width: "10px" },
     { title: "Date", value: "tanggal_penawaran", sortable: true },
@@ -533,6 +551,9 @@ function emptyPenawaran(): penawaranM {
     id_termcondition: "",
     nama_term: "",
     termCondition: [],
+    id_barang: "",
+    nama_barang: "",
+    harga_hpp: "",
   };
 }
 
@@ -638,6 +659,24 @@ watch(
   },
 );
 
+watch(
+  () => newPenawaran.value.id_barang,
+  (idBarang) => {
+    if (
+      data.penawaranAddEdit === "edit" &&
+      idBarang === data.editOriginalBarangId
+    ) {
+      return;
+    }
+    const barang = barangStore.getDataBarang.find(
+      (item: any) => item.id === idBarang,
+    );
+    if (!barang) return;
+    newPenawaran.value.id_barang = barang.id ?? "";
+    newPenawaran.value.nama_barang = barang.nama_barang;
+  },
+);
+
 function statusColor(status: string) {
   if (status === "INVOICE") return "warning";
   if (status === "Draft") return "primary";
@@ -648,6 +687,7 @@ function statusColor(status: string) {
 function openDialogTambahPenawaran() {
   data.penawaranAddEdit = "add";
   data.editOriginalCustomerId = "";
+  data.editOriginalTermconditionId = "";
   newPenawaran.value = emptyPenawaran();
   data.dialogTambahPenawaran = true;
 }

@@ -187,6 +187,7 @@ async function save() {
     ...form.value,
     subtotal_invoice: subtotal.value,
     ppn: ppn.value,
+    status: "Draft",
     grandtotal_invoice: grandTotal.value,
     id_penawaran: props.penawaran.id,
     no_penawaran: props.penawaran.no_penawaran,

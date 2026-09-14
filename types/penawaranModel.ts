@@ -33,9 +33,6 @@ export interface penawaranM {
   spk_by?: string;
   tanggal_spk?: string;
 
-  invoice_at?: number;
-  invoice_by?: string;
-
   termCondition?: { id: string; nama_term: string }[];
 
   idBarang?: string,

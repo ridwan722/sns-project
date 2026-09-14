@@ -1,3 +1,5 @@
+import type { termconditionM } from "./termconditionModel";
+
 export interface invoiceItemM {
   nama: string;
   qty: number;
@@ -33,4 +35,5 @@ export interface invoiceM {
   dikirimBy?: string;
   selesaiAt?: number;
   selesaiBy?: string;
+  termCondition: termconditionM[];
 }

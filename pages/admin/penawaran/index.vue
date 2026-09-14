@@ -99,14 +99,12 @@
           rows="2"
         />
 
-
         <!-- Section: Rincian Item -->
         <div class="d-flex align-center justify-space-between mb-3">
           <span class="text-subtitle-2 font-weight-bold text-primary">
             Rincian Item & Penawaran
           </span>
         </div>
-
 
         <!-- Loop Item Penawaran -->
         <v-row
@@ -128,17 +126,17 @@
             />
 
             <!-- KODE BARU (SOLUSI) -->
-<v-chip 
-  v-for="(barang, idxBarang) in barangStore.getDataBarang" 
-  :key="barang.id ?? idxBarang"
-  size="x-small"
-  class="mr-1 mb-1"
->
-  {{ barang.nama_barang }} : Rp {{ rupiah(barang.harga_hpp) }}
-</v-chip>
+            <v-chip
+              v-for="(barang, idxBarang) in barangStore.getDataBarang"
+              :key="barang.id ?? idxBarang"
+              size="x-small"
+              class="mr-1 mb-1"
+            >
+              {{ barang.nama_barang }} : Rp {{ rupiah(barang.harga_hpp) }}
+            </v-chip>
 
             <v-row density="compact" no-gutters>
-              <v-col cols="6" sm="2" class="pa-1"> 
+              <v-col cols="6" sm="2" class="pa-1">
                 <a-field-number-new
                   v-model="item.qty"
                   label="Qty"
@@ -339,8 +337,6 @@
     >
       Create New Quotation
     </v-btn>
-
-    
   </div>
 
   <!-- Main Table Card -->
@@ -392,6 +388,13 @@
         </NuxtLink>
       </template>
 
+      <template v-slot:item.nama_perusahaan="{ item }">
+        <div style="display: flex; align-items: center">
+          <v-icon color="primary" class="mb-1 mr-2">mdi-domain</v-icon>
+          {{ item.nama_perusahaan }}
+        </div>
+      </template>
+
       <template v-slot:item.tanggal_penawaran="{ item }">
         {{ rubahtanggallengkap(item.tanggal_penawaran) }}
       </template>
@@ -441,7 +444,7 @@
           </v-btn>
 
           <v-btn
-          :disabled="item.status !== 'Draft'"
+            :disabled="item.status !== 'Draft'"
             size="28"
             variant="tonal"
             color="grey"
@@ -493,8 +496,10 @@ const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
 );
 
 onMounted(async () => {
-  await customerStore.tarikDataCustomerAct();
+  useloadingStore().setLoading(true);
   await penawaranStore.tarikDataPenawaranAct();
+  useloadingStore().setLoading(false);
+  await customerStore.tarikDataCustomerAct();
   await termconditionStore.tarikDataTermconditionAct();
   await barangStore.tarikDataBarangAct();
 });

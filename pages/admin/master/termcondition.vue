@@ -1,6 +1,6 @@
 <template>
   <ConfirmationDialog ref="confirmationDialog" />
-<v-btn
+  <v-btn
     variant="text"
     color="grey-darken-3"
     prepend-icon="mdi-arrow-left"
@@ -18,9 +18,7 @@
       <v-card-title
         class="px-4 text-subtitle-1 font-weight-bold bg-primary pa-3"
       >
-        {{
-          data.tncAddEdit === "add" ? "TAMBAH T&C" : "EDIT T&C"
-        }}
+        {{ data.tncAddEdit === "add" ? "TAMBAH T&C" : "EDIT T&C" }}
       </v-card-title>
 
       <v-card-text>
@@ -58,7 +56,9 @@
     <v-col cols="10">
       <v-breadcrumbs>
         <v-breadcrumbs-item>
-          <span class="font-weight-medium text-h5">Master Term & Condition</span>
+          <span class="font-weight-medium text-h5"
+            >Master Term & Condition</span
+          >
         </v-breadcrumbs-item>
       </v-breadcrumbs>
     </v-col>
@@ -84,12 +84,14 @@
       density="compact"
       :sort-by="[{ key: 'createdAt', order: 'desc' }]"
       :hover="true"
+      :items-per-page="-1"
+      hide-default-footer
     >
       <template v-slot:item.no="{ index }">
         <div>{{ index + 1 }}.</div>
       </template>
- <template v-slot:item.harga_hpp="{ item }">
-       Rp {{ rupiah(item.harga_hpp)}}
+      <template v-slot:item.harga_hpp="{ item }">
+        Rp {{ rupiah(item.harga_hpp) }}
       </template>
 
       <template v-slot:item.aksi="{ item }">
@@ -164,7 +166,7 @@ const data = reactive({
 
 function emptyTnc(): termconditionM {
   return {
-   nama_term: "",
+    nama_term: "",
     createdAt: 0,
     createdBy: "",
   };

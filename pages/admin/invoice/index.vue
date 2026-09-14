@@ -17,6 +17,7 @@
         <h4 class="font-weight-bold text-grey-darken-3">
           {{ data.invoiceAddEdit === "add" ? "Create" : "Edit" }} Invoice
         </h4>
+        <span class="text-body-2 text-grey"># tarik data invoice + 1</span>
       </v-card-item>
 
       <v-card-text class="pa-3">
@@ -68,11 +69,11 @@
               placeholder="*Auto"
             />
           </v-col>
-           <v-col>
+          <v-col>
             <a-text-field-new
               v-model="newInvoice.email"
               class="mt-2"
-               label="Email"
+              label="Email"
               disabled
               placeholder="@gmail.com"
             />
@@ -117,13 +118,11 @@
           :key="index"
           class="bg-grey-lighten-5 rounded-lg pa-4 mb-4 border border-dashed"
         >
-
-             <a-textarea-new
+          <a-textarea-new
             v-model="item.nama"
             label="Description"
             placeholder="Description"
           />
-
 
           <v-row align="center" density="compact" class="mb-2">
             <v-col cols="6" md="2">
@@ -167,6 +166,74 @@
               />
             </v-col>
           </v-row>
+        </div>
+
+        <div class="mt-4">
+          <span class="text-caption">
+            <strong>TERMS &amp; CONDITIONS:</strong>
+          </span>
+
+          <table
+            style="
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 11px;
+              border: 1px solid #9ca3af;
+            "
+          >
+            <tbody>
+              <tr
+                v-for="(item, index) in sortedTermConditions"
+                :key="item.id ?? index"
+              >
+                <td
+                  style="
+                    width: 25px;
+                    padding: 3px 5px;
+                    vertical-align: top;
+                    text-align: center;
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  {{ index + 1 }}.
+                </td>
+
+                <td
+                  style="
+                    width: 30px;
+
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  <v-checkbox
+                    v-model="newInvoice.termCondition"
+                    :value="{ id: item.id ?? '', nama_term: item.nama_term }"
+                    :value-comparator="sameTermCondition"
+                    density="compact"
+                    hide-details
+                    color="primary"
+                    style="
+                      margin: -6px 0 0 0;
+                      padding: 0;
+                      transform: scale(0.7);
+                      transform-origin: center;
+                    "
+                  />
+                </td>
+
+                <td
+                  style="
+                    padding: 4px 6px;
+                    vertical-align: top;
+                    line-height: 1.4;
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  {{ item.nama_term }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <v-card
@@ -327,7 +394,7 @@
       :sort-by="[{ key: 'createdAt', order: 'desc' }]"
       :hover="true"
     >
-      <template v-slot:item.no="{ index }"> {{ index + 1 }}</template>
+      <template v-slot:item.no="{ index }"> {{ index + 1 }}.</template>
 
       <template v-slot:item.tanggal="{ item }">{{
         rubahtanggallengkap(item.tanggal)
@@ -339,6 +406,22 @@
           class="penawaran-link font-weight-medium"
         >
           #INV/SNS/2026/{{ item.no_inv }}
+        </NuxtLink>
+      </template>
+
+      <template v-slot:item.nama_customer="{ item }">
+        <div style="display: flex; align-items: center">
+          <v-icon color="primary" class="mb-1 mr-2">mdi-domain</v-icon>
+          {{ item.nama_customer }}
+        </div>
+      </template>
+
+      <template v-slot:item.no_penawaran="{ item }">
+        <NuxtLink
+          :to="'/admin/penawaran/' + item.id_penawaran"
+          class="penawaran-link font-weight-medium"
+        >
+          {{ item.no_penawaran }}
         </NuxtLink>
       </template>
 
@@ -378,6 +461,7 @@
             <v-tooltip activator="parent" location="top"
               >Edit Invoice</v-tooltip
             >
+            <!-- :disabled="item.id_penawaran !== ''" -->
           </v-btn>
           <v-btn
             size="27"
@@ -429,6 +513,7 @@ const notificationStore = useNotificationStore();
 const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
   null,
 );
+const termconditionStore = usetermconditionStore();
 
 const filterStatusOptions = [
   { label: "Semua Status", value: "" },
@@ -457,26 +542,15 @@ const data = reactive({
   headInvoice: [
     { title: "No", value: "no", width: "10px" },
     { title: "Tanggal", value: "tanggal", sortable: true },
+    { title: "No. Quotation", value: "no_penawaran", sortable: true },
     { title: "No. Invoice", value: "no_inv", sortable: true },
-    { title: "Customer", value: "nama_customer", sortable: true },
+    { title: "Subject", value: "perihal", sortable: true },
+    { title: "Client", value: "nama_customer", sortable: true },
     { title: "Total", value: "grandtotal_invoice", sortable: true },
-    { title: "Status", value: "status", sortable: true },
+    { title: "Status Inv", value: "status", sortable: true },
     { title: "Aksi", align: "center" as const, value: "aksi", width: "100px" },
   ],
 });
-
-function emptyCustomer(): customerM {
-  return {
-    nama: "",
-    pic: "",
-    alamat: "",
-    no_telp: "",
-    email: "",
-    vessel: "",
-    createdAt: 0,
-    createdBy: "",
-  };
-}
 
 function emptyInvoice(): invoiceM {
   return {
@@ -500,8 +574,37 @@ function emptyInvoice(): invoiceM {
     status: "",
     createdAt: 0,
     createdBy: "",
+    termCondition: [],
   };
 }
+
+const sortedTermConditions = computed(() => {
+  const terms = [...termconditionStore.getDataTermcondition];
+  const selected = newInvoice.value.termCondition || [];
+
+  // Yang dipilih mengikuti urutan saat dipilih
+  const selectedTerms = selected
+    .map((selectedItem: any) => {
+      return terms.find((term: any) =>
+        term.id
+          ? term.id === selectedItem.id
+          : term.nama_term === selectedItem.nama_term,
+      );
+    })
+    .filter(Boolean);
+
+  // Yang belum dipilih tetap mengikuti urutan asli
+  const unselectedTerms = terms.filter(
+    (term: any) =>
+      !selected.some((selectedItem: any) =>
+        term.id
+          ? term.id === selectedItem.id
+          : term.nama_term === selectedItem.nama_term,
+      ),
+  );
+
+  return [...selectedTerms, ...unselectedTerms];
+});
 
 const newInvoice = ref<invoiceM>(emptyInvoice());
 
@@ -536,12 +639,17 @@ watch(
     newInvoice.value.alamat_customer = customer.alamat;
     newInvoice.value.pic = customer.pic;
     newInvoice.value.vessel = customer.vessel;
+    newInvoice.value.no_telp = customer.no_telp;
+    newInvoice.value.email = customer.email;
   },
 );
 
 onMounted(async () => {
   await customerStore.tarikDataCustomerAct();
+  useloadingStore().setLoading(true);
   await invoiceStore.tarikDataInvoiceAct();
+  useloadingStore().setLoading(false);
+  termconditionStore.tarikDataTermconditionAct();
 });
 
 const filteredInvoice = computed(() => {
@@ -610,7 +718,7 @@ function openDialogEditInvoice(item: invoiceM) {
 function tambahBarisInvoice() {
   newInvoice.value.item_pekerjaan.push({
     nama: "",
-    kode_barang: "",
+    // kode_barang: "",
     amount: 0,
     uom: "",
     qty: 0,

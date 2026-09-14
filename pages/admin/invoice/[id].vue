@@ -19,7 +19,9 @@ const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
 const dialogDikirim = ref(false);
 
 onMounted(async () => {
-  await invoiceStore.tarikDetailInvoiceAct(route.params.id as string);
+   useloadingStore().setLoading(true);
+   await invoiceStore.tarikDetailInvoiceAct(route.params.id as string);
+  useloadingStore().setLoading(false);
 });
 
 const formatTanggal = (tanggal: string) => {
@@ -419,20 +421,14 @@ function printInvoice() {
                     <strong class="text-body-2 font-weight-bold"
                       >TERMS & CONDITIONS :</strong
                     >
-                    <ul class="remark-list-style">
-                      <li>
-                        <strong>Lead time 10-15 Days</strong>
-                      </li>
-                      <li>
-                        <strong> Payment Cash </strong>
-                      </li>
-                      <li>
-                        <strong>
-                          Validation of this Quotation – 7 Days from Quotation
-                          Date
-                        </strong>
-                      </li>
+                    <ul class="remark-list-style" style="list-style: none;">
+                      <li
+              v-for="(item, index) in invoiceDetail.termCondition"
+              :key="index"
+            > {{ index + 1 }}. {{ item.nama_term }}
+            </li>
                     </ul>
+
                   </div>
                 </td>
               </tr>
@@ -669,7 +665,6 @@ function printInvoice() {
 }
 
 .remark-list-style li::before {
-  content: "* ";
   font-weight: bold;
 }
 

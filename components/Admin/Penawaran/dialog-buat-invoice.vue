@@ -7,7 +7,8 @@
           <svg class="icon-doc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
           </svg>
-          <span class="modal-title">Buat Invoice</span>
+          <span class="modal-title">Create Invoice</span>
+          <span class="text-body-2 text-grey"># tarik data invoice + 1</span>
         </div>
         <button class="btn-close" @click="emit('update:modelValue', false)">&times;</button>
       </div>
@@ -58,7 +59,7 @@
                   {{ item.uom }}
                 </td>
                 <td class="text-right">
-                  {{ item.amount }}
+                  Rp {{ rupiah(item.amount) }}
                 </td class="text-right">
                 <td class="text-right font-bold text-subtotal">
                   Rp {{ rupiah(itemSubtotal(item)) }}
@@ -92,6 +93,74 @@
             </div>
           </div>
         </div>
+
+        <div class="mt-4">
+          <span class="text-caption">
+            <strong>TERMS &amp; CONDITIONS:</strong>
+          </span>
+
+          <table
+            style="
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 11px;
+              border: 1px solid #9ca3af;
+            "
+          >
+            <tbody>
+              <tr
+                v-for="(item, index) in sortedTermConditions"
+                :key="item.id ?? index"
+              >
+                <td
+                  style="
+                    width: 25px;
+                    padding: 3px 5px;
+                    vertical-align: top;
+                    text-align: center;
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  {{ index + 1 }}.
+                </td>
+
+                <td
+                  style="
+                    width: 30px;
+
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  <v-checkbox
+                    v-model="form.termCondition"
+                    :value="{ id: item.id ?? '', nama_term: item.nama_term }"
+                    :value-comparator="sameTermCondition"
+                    density="compact"
+                    hide-details
+                    color="primary"
+                    style="
+                      margin: -6px 0 0 0;
+                      padding: 0;
+                      transform: scale(0.7);
+                      transform-origin: center;
+                    "
+                  />
+                </td>
+
+                <td
+                  style="
+                    padding: 4px 6px;
+                    vertical-align: top;
+                    line-height: 1.4;
+                    border: 1px solid #9ca3af;
+                  "
+                >
+                  {{ item.nama_term }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Footer Actions -->
@@ -114,6 +183,7 @@ import type { penawaranM } from "~/types/penawaranModel";
 const props = defineProps<{ modelValue: boolean; penawaran: penawaranM }>();
 const emit = defineEmits<{ "update:modelValue": [value: boolean]; saved: [] }>();
 
+const termconditionStore = usetermconditionStore();
 const invoiceStore = useinvoiceStore();
 const penawaranStore = usePenawaranStore();
 const userStore = useUserStore();
@@ -138,7 +208,12 @@ const emptyForm = (): invoiceM => ({
   grandtotal_invoice: 0,
   status: "",
   createdAt: 0,
-  createdBy: ""
+  createdBy: "",
+  termCondition: [],
+});
+
+onMounted(async () => {
+  await termconditionStore.tarikDataTermconditionAct();
 });
 
 const form = ref<invoiceM>(emptyForm());
@@ -151,8 +226,10 @@ watch(
   () => props.modelValue,
   (open) => {
     if (!open) return;
+
     form.value = {
       ...emptyForm(),
+
       id_customer: props.penawaran.id_perusahaan,
       nama_customer: props.penawaran.nama_perusahaan,
       alamat_customer: props.penawaran.alamat_perusahaan || "",
@@ -161,6 +238,7 @@ watch(
       vessel: props.penawaran.vessel || "",
       perihal: props.penawaran.perihal || "",
       pic: props.penawaran.pic,
+
       item_pekerjaan: (props.penawaran.penawaran_item || []).map((item) => ({
         nama: item.nama,
         qty: item.qty,
@@ -168,9 +246,42 @@ watch(
         amount: item.amount,
         subtotal_item: item.subtotal_item,
       })),
+
+      // TAMBAHKAN INI
+      termCondition: (props.penawaran.termCondition || []).map((item: any) => ({
+        nama_term: item.nama_term,
+      })),
     };
   },
 );
+
+const sortedTermConditions = computed(() => {
+  const terms = [...termconditionStore.getDataTermcondition];
+  const selected = form.value.termCondition || [];
+
+  // Yang dipilih mengikuti urutan saat dipilih
+  const selectedTerms = selected
+    .map((selectedItem: any) => {
+      return terms.find((term: any) =>
+        term.id
+          ? term.id === selectedItem.id
+          : term.nama_term === selectedItem.nama_term,
+      );
+    })
+    .filter(Boolean);
+
+  // Yang belum dipilih tetap mengikuti urutan asli
+  const unselectedTerms = terms.filter(
+    (term: any) =>
+      !selected.some((selectedItem: any) =>
+        term.id
+          ? term.id === selectedItem.id
+          : term.nama_term === selectedItem.nama_term,
+      ),
+  );
+
+  return [...selectedTerms, ...unselectedTerms];
+});
 
 async function save() {
   if (!form.value.tanggal || !form.value.id_customer || !form.value.nama_customer || !form.value.pic) {
@@ -196,6 +307,7 @@ async function save() {
   };
 
   saving.value = true;
+  
   const result = await createInvoicePenawaran(payload);
   if (!result) {
     saving.value = false;

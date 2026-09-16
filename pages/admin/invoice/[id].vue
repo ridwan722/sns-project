@@ -17,10 +17,11 @@ const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
   null,
 );
 const dialogDikirim = ref(false);
+const isSavingPdf = ref(false);
 
 onMounted(async () => {
-   useloadingStore().setLoading(true);
-   await invoiceStore.tarikDetailInvoiceAct(route.params.id as string);
+  useloadingStore().setLoading(true);
+  await invoiceStore.tarikDetailInvoiceAct(route.params.id as string);
   useloadingStore().setLoading(false);
 });
 
@@ -37,6 +38,7 @@ const formatTanggal = (tanggal: string) => {
     .format(date)
     .replace(/\//g, "-");
 };
+
 const invoiceDetail = computed(() => invoiceStore.getDetailInvoice);
 
 const printArea = ref<HTMLElement | null>(null);
@@ -107,7 +109,9 @@ function printInvoice() {
         <style>
           body { background: white !important; margin: 0; padding: 0; }
           .invoice-paper { border: none !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; }
+          .logo-header { max-width: 100px !important; height: auto !important; }
           @page { margin: 0.5cm; }
+          .page-break-section { page-break-inside: avoid; break-inside: avoid; }
         </style>
       </head>
       <body>
@@ -123,6 +127,142 @@ function printInvoice() {
   `);
   printWindow.document.close();
 }
+
+const handleSavePdf = async () => {
+  const targetElement = printArea.value;
+  if (!targetElement || isSavingPdf.value) return;
+
+  isSavingPdf.value = true;
+
+  try {
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+
+    const fullCanvas = await html2canvas(targetElement, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      onclone: (clonedDocument) => {
+        clonedDocument
+          .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
+          .forEach((element) => {
+            (element as HTMLElement).style.display = "none";
+          });
+        clonedDocument
+          .querySelectorAll(".print-only-cell")
+          .forEach((element) => {
+            (element as HTMLElement).style.display = "table-cell";
+          });
+      },
+    });
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    // Gap footer diperkecil agar pas & tidak terlalu jauh dari bawah
+    const footerGapMm = 5;              // Gap bawah tipis & pas (sebelumnya 15mm)
+    const marginTopSecondPageMm = 12;   // Margin atas halaman 2+
+    const marginBottomMm = 10;          // Margin bawah halaman 2+
+
+    // Deteksi elemen-elemen penting agar tidak terpotong di tengah baris
+    const containerRect = targetElement.getBoundingClientRect();
+    const scaleY = fullCanvas.height / containerRect.height;
+
+    const breakableElements = targetElement.querySelectorAll(
+      ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid"
+    );
+
+    const avoidPositionsPx: { top: number; bottom: number }[] = [];
+    breakableElements.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      const topPx = (rect.top - containerRect.top) * scaleY;
+      const bottomPx = (rect.bottom - containerRect.top) * scaleY;
+      avoidPositionsPx.push({ top: topPx, bottom: bottomPx });
+    });
+
+    let currentCanvasY = 0;
+    let pageCount = 0;
+
+    while (currentCanvasY < fullCanvas.height) {
+      if (pageCount > 0) {
+        pdf.addPage();
+      }
+
+      const currentTopMarginMm = pageCount > 0 ? marginTopSecondPageMm : 0;
+      const currentBottomMarginMm = pageCount > 0 ? marginBottomMm : footerGapMm;
+
+      const maxUsablePdfHeightMm = pdfHeight - currentTopMarginMm - currentBottomMarginMm;
+      let targetSliceHeightPx = (maxUsablePdfHeightMm * fullCanvas.width) / pdfWidth;
+
+      const remainingCanvasHeightPx = fullCanvas.height - currentCanvasY;
+
+      if (remainingCanvasHeightPx > targetSliceHeightPx) {
+        const theoreticalCutY = currentCanvasY + targetSliceHeightPx;
+
+        // Cek jika pemotongan jatuh di tengah-tengah elemen/baris
+        const conflictingElement = avoidPositionsPx.find(
+          (pos) => theoreticalCutY > pos.top && theoreticalCutY < pos.bottom
+        );
+
+        if (conflictingElement && conflictingElement.top > currentCanvasY) {
+          targetSliceHeightPx = conflictingElement.top - currentCanvasY;
+        }
+      } else {
+        targetSliceHeightPx = remainingCanvasHeightPx;
+      }
+
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = fullCanvas.width;
+      pageCanvas.height = targetSliceHeightPx;
+
+      const ctx = pageCanvas.getContext("2d");
+      if (ctx) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+
+        ctx.drawImage(
+          fullCanvas,
+          0,
+          currentCanvasY,
+          fullCanvas.width,
+          targetSliceHeightPx,
+          0,
+          0,
+          fullCanvas.width,
+          targetSliceHeightPx
+        );
+      }
+
+      const imgData = pageCanvas.toDataURL("image/png");
+      const slicePdfHeightMm = (targetSliceHeightPx * pdfWidth) / fullCanvas.width;
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        currentTopMarginMm,
+        pdfWidth,
+        slicePdfHeightMm
+      );
+
+      currentCanvasY += targetSliceHeightPx;
+      pageCount++;
+    }
+
+    const year = new Date().getFullYear();
+    const invoiceId = invoiceDetail.value?.id || route.params.id;
+
+    pdf.save(`INV-SNS-${year}-${invoiceId}.pdf`);
+  } catch (error) {
+    console.error("Gagal menyimpan PDF:", error);
+  } finally {
+    isSavingPdf.value = false;
+  }
+};
 </script>
 
 <template>
@@ -143,19 +283,6 @@ function printInvoice() {
         <v-card-title class="bg-primary text-white pa-4">
           Kirim Invoice
         </v-card-title>
-        <!-- <v-card-text class="pa-5">
-          <upload-image
-            typefolder="invoice/file_dikirim"
-            label="Upload Dokumen"
-          />
-          <v-img
-            v-if="uploadStoreInstance.getUrlRef"
-            :src="uploadStoreInstance.getUrlRef"
-            max-height="260"
-            class="mt-3 rounded-lg border"
-            contain
-          />
-        </v-card-text> -->
         <v-card-actions class="pa-4 bg-grey-lighten-4">
           <v-spacer />
           <v-btn
@@ -244,7 +371,11 @@ function printInvoice() {
           <!-- Header -->
           <div class="d-flex justify-space-between align-start mb-4">
             <div>
-              <img src="/public/Logo-SNS.png" height="130" />
+              <img
+                src="/public/Logo-SNS.png"
+                class="logo-header"
+                alt="Logo SNS"
+              />
               <div class="company-address">
                 <strong>CV. SOLUSI NUSA SEGARA</strong><br />
                 Ruko Dream Land Blok A No.05, Dreamland Square, Marina City,
@@ -335,7 +466,7 @@ function printInvoice() {
 
                 <td class="desc-cell">
                   <div class="font-weight-bold">
-                    <span style="white-space: pre-line">
+                    <span style="white-space: pre-line; font-size: 11px;">
                       {{ item.nama }}
                     </span>
                   </div>
@@ -408,12 +539,11 @@ function printInvoice() {
           <div class="terbilang-strip">
             <strong
               >Terbilang :
-              <!-- {{ jadirupiah(invoiceDetail.grandtotal_invoice) }}Rupiah -->
-              #Sixteen Million Two Hundred Thousand Rupiah.
+              #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }} Rupiah.
             </strong>
           </div>
 
-          <table>
+          <table class="w-100">
             <tbody>
               <tr>
                 <td class="remark-cell">
@@ -423,12 +553,12 @@ function printInvoice() {
                     >
                     <ul class="remark-list-style" style="list-style: none;">
                       <li
-              v-for="(item, index) in invoiceDetail.termCondition"
-              :key="index"
-            > {{ index + 1 }}. {{ item.nama_term }}
-            </li>
+                        v-for="(item, index) in invoiceDetail.termCondition"
+                        :key="index"
+                      >
+                        {{ index + 1 }}. {{ item.nama_term }}
+                      </li>
                     </ul>
-
                   </div>
                 </td>
               </tr>
@@ -436,11 +566,10 @@ function printInvoice() {
           </table>
 
           <!-- Bank & Signature -->
-          <div class="d-flex justify-space-between mt-6">
+          <div class="d-flex justify-space-between mt-6 page-break-section">
             <div class="d-flex justify-space-between">
               <div class="bank-details">
                 <div>
-                  <!-- <strong class="d-block mb-1">BCA BANK ( RUPIAH/IDR )</strong> -->
                   <table class="bank-table">
                     <tbody>
                       <tr>
@@ -479,13 +608,26 @@ function printInvoice() {
       </div>
     </div>
 
-    <div class="text-center mt-4">
+    <!-- Actions -->
+    <div class="d-flex justify-center gap-3 mt-4">
+      <v-btn
+        prepend-icon="mdi-file-pdf-box"
+        color="red-darken-1"
+        variant="elevated"
+        :loading="isSavingPdf"
+        @click="handleSavePdf"
+        width="22%"
+        class="mr-2"
+      >
+        Save PDF
+      </v-btn>
+
       <v-btn
         prepend-icon="mdi-printer"
         color="indigo"
         variant="elevated"
         @click="printInvoice"
-        width="45%"
+        width="22%"
       >
         Print Invoice
       </v-btn>
@@ -494,6 +636,13 @@ function printInvoice() {
 </template>
 
 <style scoped>
+.logo-header {
+  max-width: 100px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .invoice-paper {
   font-family: "Arial", sans-serif;
   color: #000;
@@ -524,9 +673,6 @@ function printInvoice() {
   padding: 10px;
   font-size: 14px;
   width: 45%;
-}
-
-.info-box-right {
   border-left: 1px solid #000;
 }
 
@@ -535,14 +681,17 @@ function printInvoice() {
   border-collapse: collapse;
   margin-bottom: 15px;
 }
+
 .main-table th {
   background-color: #b8cce4 !important;
-  border: 2px solid #000;
+  border: 1px solid #000;
   padding: 8px;
   font-weight: bold;
+  font-size: 13px;
 }
+
 .main-table td {
-  border: 2px solid #000;
+  border: 1px solid #000;
   padding: 6px;
   font-size: 14px;
 }
@@ -550,19 +699,10 @@ function printInvoice() {
 .bg-light-blue {
   background-color: #b8cce4 !important;
 }
-.remark-box {
-  vertical-align: top;
-  font-size: 12px;
-}
+
 .amount-cell {
   padding-left: 5px !important;
   padding-right: 5px !important;
-}
-
-@media print {
-  .no-print {
-    display: none !important;
-  }
 }
 
 .terbilang-strip {
@@ -584,48 +724,15 @@ function printInvoice() {
 }
 
 .bank-table td {
-  border: none !important; /* Menghilangkan border dari style main-table jika terbawa */
+  border: none !important;
   padding: 0px 4px 0px 0px !important;
   vertical-align: top;
   line-height: 1.4;
 }
 
-/* Mengatur lebar kolom label agar titik dua sejajar sempurna */
 .bank-table td:first-child {
   width: 130px;
   font-weight: bold;
-}
-
-/* Memastikan teks "BCA BANK" ada jarak sedikit dengan tabel di bawahnya */
-.d-block {
-  display: block;
-}
-@media print {
-  .bg-light-blue,
-  th {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
-
-.main-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
-}
-
-.main-table th,
-.main-table td {
-  border: 1px solid #000;
-  padding: 6px;
-  font-size: 14px;
-}
-
-.main-table th {
-  background-color: #fa0000 !important;
-  font-weight: bold;
-  color: white;
-  border: 2px solid #000;
 }
 
 .desc-cell {
@@ -654,7 +761,7 @@ function printInvoice() {
   border: 1px solid #000;
   padding: 8px;
   min-height: 80px;
-  height: 100px;
+  height: auto;
 }
 
 .remark-list-style {
@@ -664,13 +771,8 @@ function printInvoice() {
   font-size: 12px;
 }
 
-.remark-list-style li::before {
-  font-weight: bold;
-}
-
 .footer-label {
   width: 15%;
-
   padding-right: 10px !important;
   white-space: nowrap;
 }
@@ -679,144 +781,38 @@ function printInvoice() {
   width: 20%;
 }
 
-.d-flex {
-  display: flex;
-}
-.justify-space-between {
-  justify-content: space-between;
-}
-.text-center {
-  text-align: center;
-}
-.font-weight-bold {
-  font-weight: bold;
-}
-.italic-text {
-  font-style: italic;
-}
-.v-align-top {
-  vertical-align: top;
-}
-
-@media print {
-  .bg-blue-total,
-  .main-table th {
-    background-color: #fa0000 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    border: 1px solid black;
-  }
-}
-
-.align-center {
-  align-items: center;
-}
-
 .v-align-middle {
   vertical-align: middle !important;
 }
 
-.invoice-status-row .v-col {
-  padding-top: 6px;
-  padding-bottom: 6px;
+.page-break-section {
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
-.info-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #fff;
-  border: 1px solid #e8e8e8;
-}
-
-.icon-box {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background: #f4f6f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-box i {
-  color: #555;
-}
-
-.info-label {
-  font-size: 11px;
-  color: #8a8a8a;
-}
-
-.info-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #2c2c2c;
-}
-
-.custom-toggle {
-  background-color: white !important;
-  border-radius: 12px !important;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-}
-
-.custom-toggle .v-btn {
-  text-transform: none !important; /* Menghilangkan Uppercase otomatis */
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  padding: 0 20px !important;
-  transition: all 0.3s ease;
-}
-
-/* Memberikan efek hover */
-.custom-toggle .v-btn:hover {
-  background-color: #f5f5f5;
-}
-
-/* Styling khusus untuk button yang aktif */
-.v-btn--active {
-  background-color: #265ffc !important; /* Indigo Darken 4 */
-  color: white !important;
-}
-
-.info-card {
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
+@media print {
+  .no-print {
+    display: none !important;
   }
-
-  .v-btn {
-    opacity: 0.6;
-    transition: 0.2s;
-
-    &:hover {
-      opacity: 1;
-    }
+  .bg-light-blue,
+  .bg-blue-total,
+  .main-table th {
+    background-color: #b8cce4 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border: 1px solid #000;
+  }
+  .page-break-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 }
 
-.btn-selesai {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
-  letter-spacing: 0.5px;
-  height: 52px;
-  transition: all 0.25s ease;
-
-  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.25);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 22px rgba(34, 197, 94, 0.35);
-    filter: brightness(1.05);
-  }
-
-  &:active {
-    transform: scale(0.98);
-    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);
-  }
+/* Tambahkan aturan ini di <style scoped> */
+.remark-border-box,
+.main-table tr,
+.terbilang-strip {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
 }
 </style>

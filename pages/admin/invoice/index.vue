@@ -17,7 +17,9 @@
         <h4 class="font-weight-bold text-grey-darken-3">
           {{ data.invoiceAddEdit === "add" ? "Create" : "Edit" }} Invoice
         </h4>
-        <span class="text-body-2 text-grey"># tarik data invoice + 1</span>
+        <span class="text-body-2 text-grey"
+          ># tarik data penomoran invoice + 1</span
+        >
       </v-card-item>
 
       <v-card-text class="pa-3">
@@ -168,6 +170,7 @@
           </v-row>
         </div>
 
+        <!-- Bagian Template: Update tabel Terms & Conditions -->
         <div class="mt-4">
           <span class="text-caption">
             <strong>TERMS &amp; CONDITIONS:</strong>
@@ -184,7 +187,7 @@
             <tbody>
               <tr
                 v-for="(item, index) in sortedTermConditions"
-                :key="item.id ?? index"
+                :key="item?.id ?? index"
               >
                 <td
                   style="
@@ -198,16 +201,15 @@
                   {{ index + 1 }}.
                 </td>
 
-                <td
-                  style="
-                    width: 30px;
-
-                    border: 1px solid #9ca3af;
-                  "
-                >
+                <td style="width: 30px; border: 1px solid #9ca3af">
                   <v-checkbox
                     v-model="newInvoice.termCondition"
-                    :value="{ id: item.id ?? '', nama_term: item.nama_term }"
+                    :value="{
+                      id: item?.id ?? '',
+                      nama_term: item?.nama_term ?? '',
+                      createdAt: item?.createdAt ?? 0,
+                      createdBy: item?.createdBy ?? '',
+                    }"
                     :value-comparator="sameTermCondition"
                     density="compact"
                     hide-details
@@ -229,7 +231,7 @@
                     border: 1px solid #9ca3af;
                   "
                 >
-                  {{ item.nama_term }}
+                  {{ item?.nama_term }}
                 </td>
               </tr>
             </tbody>
@@ -562,7 +564,7 @@ function emptyInvoice(): invoiceM {
     no_telp: "",
     email: "",
     pic: "",
-    tanggal: "",
+    tanggal: moment().format("YYYY-MM-DD"),
     perihal: "",
     item_pekerjaan: [
       { nama: "", qty: 1, uom: "Unit", amount: 0, subtotal_item: 0 },
@@ -633,6 +635,7 @@ watch(
     const customer = customerStore.getDataCustomer.find(
       (item) => item.id === idCustomer,
     );
+
     if (!customer) return;
     newInvoice.value.id_customer = customer.id ?? "";
     newInvoice.value.nama_customer = customer.nama;

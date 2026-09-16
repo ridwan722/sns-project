@@ -8,7 +8,7 @@
             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
           </svg>
           <span class="modal-title">Create Invoice</span>
-          <span class="text-body-2 text-grey"># tarik data invoice + 1</span>
+          <span class="text-body-2 text-grey"># tarik data penomoran invoice + 1</span>
         </div>
         <button class="btn-close" @click="emit('update:modelValue', false)">&times;</button>
       </div>
@@ -28,7 +28,7 @@
          <v-divider class="my-3" />
 
           <a-date-picker-new v-model="form.tanggal" label="Invoice Date"></a-date-picker-new>
-            <a-text-field-new class="mt-2" label="Subject" v-model="form.perihal"></a-text-field-new>
+          <a-text-field-new class="mt-2" label="Subject" v-model="form.perihal"></a-text-field-new>
 
         <!-- Items Table Section -->
         <div class="section-title mt-3">Description</div>
@@ -60,7 +60,7 @@
                 </td>
                 <td class="text-right">
                   Rp {{ rupiah(item.amount) }}
-                </td class="text-right">
+                </td>
                 <td class="text-right font-bold text-subtotal">
                   Rp {{ rupiah(itemSubtotal(item)) }}
                 </td>
@@ -110,7 +110,7 @@
             <tbody>
               <tr
                 v-for="(item, index) in sortedTermConditions"
-                :key="item.id ?? index"
+                :key="item?.id ?? index"
               >
                 <td
                   style="
@@ -127,13 +127,17 @@
                 <td
                   style="
                     width: 30px;
-
                     border: 1px solid #9ca3af;
                   "
                 >
                   <v-checkbox
                     v-model="form.termCondition"
-                    :value="{ id: item.id ?? '', nama_term: item.nama_term }"
+                    :value="{
+                      id: item?.id ?? '',
+                      nama_term: item?.nama_term ?? '',
+                      createdAt: item?.createdAt ?? 0,
+                      createdBy: item?.createdBy ?? '',
+                    }"
                     :value-comparator="sameTermCondition"
                     density="compact"
                     hide-details
@@ -155,7 +159,7 @@
                     border: 1px solid #9ca3af;
                   "
                 >
-                  {{ item.nama_term }}
+                  {{ item?.nama_term }}
                 </td>
               </tr>
             </tbody>
@@ -189,6 +193,11 @@ const penawaranStore = usePenawaranStore();
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();
 const saving = ref(false);
+
+const sameTermCondition = (a: any, b: any) => {
+  if (!a || !b) return false;
+  return a.id && b.id ? a.id === b.id : a.nama_term === b.nama_term;
+};
 
 const emptyForm = (): invoiceM => ({
   no_inv: "",
@@ -238,7 +247,7 @@ watch(
       vessel: props.penawaran.vessel || "",
       perihal: props.penawaran.perihal || "",
       pic: props.penawaran.pic,
-
+      tanggal: moment().format("YYYY-MM-DD"),
       item_pekerjaan: (props.penawaran.penawaran_item || []).map((item) => ({
         nama: item.nama,
         qty: item.qty,
@@ -247,9 +256,11 @@ watch(
         subtotal_item: item.subtotal_item,
       })),
 
-      // TAMBAHKAN INI
       termCondition: (props.penawaran.termCondition || []).map((item: any) => ({
+        id: item.id ?? "",
         nama_term: item.nama_term,
+        createdAt: item.createdAt ?? 0,
+        createdBy: item.createdBy ?? "",
       })),
     };
   },
@@ -259,7 +270,6 @@ const sortedTermConditions = computed(() => {
   const terms = [...termconditionStore.getDataTermcondition];
   const selected = form.value.termCondition || [];
 
-  // Yang dipilih mengikuti urutan saat dipilih
   const selectedTerms = selected
     .map((selectedItem: any) => {
       return terms.find((term: any) =>
@@ -270,7 +280,6 @@ const sortedTermConditions = computed(() => {
     })
     .filter(Boolean);
 
-  // Yang belum dipilih tetap mengikuti urutan asli
   const unselectedTerms = terms.filter(
     (term: any) =>
       !selected.some((selectedItem: any) =>
@@ -317,9 +326,7 @@ async function save() {
   const penawaran = JSON.parse(JSON.stringify(props.penawaran)) as penawaranM;
   const penawaranUpdated = await penawaranStore.updatePenawaranAct({
     ...penawaran,
-    status: "Draft",
-    invoice_at: moment().unix(),
-    invoice_by: userStore.getEmail,
+    status: "INVOICE",
   });
   saving.value = false;
   if (!penawaranUpdated) return;

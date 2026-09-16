@@ -17,12 +17,11 @@ const penawaranstore = usePenawaranStore();
 
 onMounted(async () => {
   useloadingStore().setLoading(true);
-  try {
+
     await penawaranstore.tarikDetailPenawaranAct(String(route.params.id));
-    await penawaranstore.tarikDataPenawaranrevisAct(String(route.params.id));
-  } finally {
+
     useloadingStore().setLoading(false);
-  }
+
 });
 
 const detailpenawaran = computed(() => penawaranstore.getDetailPenawaran);
@@ -61,140 +60,6 @@ const data = reactive({
 async function opendialogaddinv() {
   data.dialogAdd = true;
 }
-
-import {
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
-
-const uploadFile = async (file: File): Promise<string> => {
-  const storage = getStorage();
-  const fileName = `${Date.now()}-${file.name}`;
-  const fileRef = storageRef(storage, `penawaran/${fileName}`);
-
-  await uploadBytes(fileRef, file);
-  const downloadURL = await getDownloadURL(fileRef);
-
-  return downloadURL;
-};
-
-// Fungsi Cetak dengan Iframe
-const handlePrint = () => {
-  const printContents = document.getElementById("offer-to-print")?.innerHTML;
-  if (!printContents) return;
-
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "0";
-  document.body.appendChild(iframe);
-
-  const doc = iframe.contentWindow?.document;
-  if (!doc) return;
-
-  let styles = "";
-  document.querySelectorAll("link[rel='stylesheet'], style").forEach((node) => {
-    if (node.tagName === "LINK") {
-      styles += `@import url('${(node as HTMLLinkElement).href}');`;
-    } else {
-      styles += node.innerHTML;
-    }
-  });
-
-  doc.write(`
-    <html>
-      <head>
-        <title>Surat Penawaran - ${detailpenawaran.value?.nomor}</title>
-        <style>
-          ${styles}
-
-          @media print {
-            @page {
-              size: A4;
-              margin: 0;
-            }
-
-            body {
-              margin: 0;
-              padding: 0;
-              background: white !important;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-
-            .offer-card {
-              box-shadow: none !important;
-              width: 210mm !important;
-              min-height: 297mm !important;
-              margin: 0 !important;
-              padding: 15mm 15mm !important;
-              box-sizing: border-box !important;
-            }
-
-            .total-section, .terbilang-box, .signature-wrapper {
-              position: relative !important;
-              display: block !important;
-              page-break-inside: avoid;
-              margin-top: 10px !important;
-              top: auto !important;
-              left: auto !important;
-            }
-
-            .no-print, button, .eye-icon, .reset-item,
-            [class*="Tampilkan"], [class*="Reset"] {
-              display: none !important;
-            }
-
-            .modern-table {
-              width: 100% !important;
-              border-collapse: collapse !important;
-            }
-
-            .modern-table th {
-              background-color: #f8f9fa !important;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="offer-card">
-          ${printContents}
-        </div>
-      </body>
-    </html>
-  `);
-
-  doc.close();
-
-  const images = doc.getElementsByTagName("img");
-  const printAction = () => {
-    setTimeout(() => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }, 600);
-  };
-
-  if (images.length > 0) {
-    let loaded = 0;
-    for (let i = 0; i < images.length; i++) {
-      images[i].onload = () => {
-        loaded++;
-        if (loaded === images.length) printAction();
-      };
-    }
-  } else {
-    iframe.onload = printAction;
-    printAction();
-  }
-};
 </script>
 
 <template>

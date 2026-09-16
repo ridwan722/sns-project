@@ -466,7 +466,7 @@ const handleSavePdf = async () => {
 
                 <td class="desc-cell">
                   <div class="font-weight-bold">
-                    <span style="white-space: pre-line; font-size: 11px;">
+                    <span style="white-space: pre-line;">
                       {{ item.nama }}
                     </span>
                   </div>
@@ -632,7 +632,14 @@ const handleSavePdf = async () => {
         Print Invoice
       </v-btn>
     </div>
+
+    <div class="preview-container d-flex justify-center">
+  <div ref="printArea" class="invoice-paper-wrapper">
+    <DeliveryOrder :invoice-detail="invoiceDetail" />
   </div>
+</div>
+  </div>
+  
 </template>
 
 <style scoped>

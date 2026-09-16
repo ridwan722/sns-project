@@ -92,6 +92,13 @@
         </v-row>
         <v-divider class="my-2 border-opacity-50" />
 
+         <a-text-field-new
+          v-model="newInvoice.no_preorder"
+          class="mt-2"
+          label="No. Pre Order (PO)"
+          placeholder="opsional"
+        />
+
         <a-textarea-new
           v-model="newInvoice.perihal"
           class="mt-2"
@@ -560,6 +567,7 @@ function emptyInvoice(): invoiceM {
     id_customer: "",
     nama_customer: "",
     alamat_customer: "",
+    no_preorder: "",
     vessel: "",
     no_telp: "",
     email: "",

@@ -28,6 +28,7 @@
          <v-divider class="my-3" />
 
           <a-date-picker-new v-model="form.tanggal" label="Invoice Date"></a-date-picker-new>
+            <a-text-field-new class="mt-2" label="No. Pre Order (PO)" v-model="form.no_preorder" placeholder="No PO"></a-text-field-new>
           <a-text-field-new class="mt-2" label="Subject" v-model="form.perihal"></a-text-field-new>
 
         <!-- Items Table Section -->
@@ -219,6 +220,7 @@ const emptyForm = (): invoiceM => ({
   createdAt: 0,
   createdBy: "",
   termCondition: [],
+  no_preorder: "",
 });
 
 onMounted(async () => {
@@ -256,12 +258,12 @@ watch(
         subtotal_item: item.subtotal_item,
       })),
 
-      termCondition: (props.penawaran.termCondition || []).map((item: any) => ({
-        id: item.id ?? "",
-        nama_term: item.nama_term,
-        createdAt: item.createdAt ?? 0,
-        createdBy: item.createdBy ?? "",
-      })),
+      // termCondition: (props.penawaran.termCondition || []).map((item: any) => ({
+      //   id: item.id ?? "",
+      //   nama_term: item.nama_term,
+      //   createdAt: item.createdAt ?? 0,
+      //   createdBy: item.createdBy ?? "",
+      // })),
     };
   },
 );

@@ -12,6 +12,7 @@ export interface invoiceM {
   id?: string;
   id_invoice?: string;
   no_inv: string;
+  no_preorder?:string;
   id_customer: string;
   nama_customer: string;
   alamat_customer: string;

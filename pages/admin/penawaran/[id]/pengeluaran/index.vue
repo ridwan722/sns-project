@@ -10,7 +10,9 @@ const db = useFirestore();
 const idPenawaran = computed(() => String(route.params.id));
 const penawaranRef = computed(() => doc(db, "penawaran", idPenawaran.value));
 const { data: penawaran, pending, error } = useDocument(penawaranRef);
-const detailPenawaran = computed(() => penawaran.value as penawaranM | undefined);
+const detailPenawaran = computed(
+  () => penawaran.value as penawaranM | undefined,
+);
 const pengeluaran = computed(() => detailPenawaran.value?.pengeluaran ?? []);
 
 const headers = [
@@ -26,6 +28,10 @@ const headers = [
 const rupiah = new Intl.NumberFormat("id-ID", {
   style: "currency",
   currency: "IDR",
+});
+
+const totalPengeluaran = computed(() => {
+  return pengeluaran.value.reduce((total, item) => total + item.nominal, 0);
 });
 </script>
 
@@ -46,7 +52,11 @@ const rupiah = new Intl.NumberFormat("id-ID", {
     <v-alert v-if="error" type="error" class="mb-4">
       Gagal mengambil data pengeluaran penawaran.
     </v-alert>
-    <v-alert v-else-if="!pending && !detailPenawaran" type="warning" class="mb-4">
+    <v-alert
+      v-else-if="!pending && !detailPenawaran"
+      type="warning"
+      class="mb-4"
+    >
       Penawaran tidak ditemukan.
     </v-alert>
     <v-data-table
@@ -63,5 +73,9 @@ const rupiah = new Intl.NumberFormat("id-ID", {
         {{ rupiah.format(item.nominal) }}
       </template>
     </v-data-table>
+
+    <span class="mt-4">
+      {{ totalPengeluaran }}
+    </span>
   </v-container>
 </template>

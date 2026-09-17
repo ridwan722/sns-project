@@ -481,6 +481,19 @@
             <v-icon size="16" icon="mdi-trash-can-outline" />
             <v-tooltip activator="parent" location="top">Hapus</v-tooltip>
           </v-btn>
+
+          <v-btn
+            size="28"
+            variant="tonal"
+            color="error"
+            class="rounded-lg mr-1"
+            :disabled="item.status !== 'Draft' "
+          >
+            <v-icon size="16" icon="mdi-alpha-x-circle-outline" />
+            <v-tooltip activator="parent" location="top"
+              >Cancel</v-tooltip
+            >
+          </v-btn>
         </div>
       </template>
 

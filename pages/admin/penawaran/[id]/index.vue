@@ -182,26 +182,16 @@ async function opendialogaddpengeluaran() {
 
             <div class="info-card-footer text-center">
               <v-btn
-                :to="`/admin/penawaran/${encodeURIComponent(String(route.params.id))}/pengeluaran`"
-                block
-                color="primary"
-                variant="outlined"
-                size="small"
-                class="mb-3"
-              >
-                Lihat Pengeluaran
-              </v-btn>
-              <v-btn
                 :disabled="detailpenawaran.status == 'INVOICE'"
                 block
-                color="primary"
+                color="orange"
                 variant="flat"
                 size="small"
                 prepend-icon="mdi-file-document-plus-outline"
-                class="invoice-button mb-3"
-                @click="opendialogaddpengeluaran"
+                class="invoice-button mb-6"
+                @click="opendialogaddinv"
               >
-                Tambah Pengeluaran
+                Buat Invoice
               </v-btn>
 
               <v-btn
@@ -210,11 +200,23 @@ async function opendialogaddpengeluaran() {
                 color="primary"
                 variant="flat"
                 size="small"
-                prepend-icon="mdi-file-document-plus-outline"
-                class="invoice-button"
-                @click="opendialogaddinv"
+                prepend-icon="mdi-export"
+                class="invoice-button mb-3"
+                @click="opendialogaddpengeluaran"
               >
-                Buat Invoice
+                Tambah Pengeluaran
+              </v-btn>
+
+              <v-btn
+                :to="`/admin/penawaran/${encodeURIComponent(String(route.params.id))}/pengeluaran`"
+                block
+                color="primary"
+                variant="outlined"
+                size="small"
+                class="mb-3"
+                append-icon="mdi-open-in-new"
+              >
+                Lihat Pengeluaran
               </v-btn>
 
               <div

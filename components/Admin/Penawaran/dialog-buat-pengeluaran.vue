@@ -19,9 +19,12 @@
             />
           </svg>
           <span class="modal-title">Tambah Pengeluaran</span>
-          
         </div>
-        <button class="btn-close" :disabled="saving" @click="emit('update:modelValue', false)">
+        <button
+          class="btn-close"
+          :disabled="saving"
+          @click="emit('update:modelValue', false)"
+        >
           &times;
         </button>
       </div>
@@ -29,26 +32,57 @@
       <!-- Content Body -->
       <div class="modal-body">
         <!-- Customer Info Section -->
-        <div class="section-title">Informasi Pengeluaran</div>
-        <div class="form-grid">
-          <a-text-field-new v-model="form.keterangan" label="Keterangan" :disabled="saving" />
-          <a-text-field-new v-model="form.nominal" label="Nominal" :disabled="saving" />
-          <a-text-field-new v-model="form.qty" label="Qty" :disabled="saving" />
-          <a-text-field-new v-model="form.satuan" label="Satuan" :disabled="saving" />
-        </div>
-
         <a-date-picker-new
           v-model="form.tanggal_pengeluaran"
           label="Tanggal Pengeluaran"
           :disabled="saving"
+          class="mb-2"
         ></a-date-picker-new>
+        <a-text-field-new
+            v-model="form.dikeluarkan_oleh"
+            label="Dikeluarkan Oleh"
+            :disabled="saving"
+            placeholder="nama"
+            class="my-2"
+          />
+        <a-textarea-new
+          v-model="form.keterangan"
+          label="Keterangan"
+          :disabled="saving"
+        />
+        <div class="form-grid">
+          <a-text-field-new v-model="form.qty" label="Qty" :disabled="saving" />
+          <a-select-new
+            v-model="form.satuan"
+            label="Satuan"
+            :disabled="saving"
+            :items="['Unit', 'Pcs', 'Kg']"
+          />
+          <a-text-field-new
+            v-model="form.nominal"
+            label="Nominal"
+            :disabled="saving"
+          />
+        </div>
 
         <!-- Items Table Section -->
         <div class="section-title mt-3">Informasi Vendor</div>
         <div class="form-grid">
-          <a-text-field-new v-model="form.nama_vendor" label="Nama Vendor" :disabled="saving" />
-          <a-text-field-new v-model="form.no_telp_vendor" label="No. Telepon Vendor" :disabled="saving" />
-          <a-text-field-new v-model="form.lokasi_vendor" label="Lokasi Vendor" :disabled="saving" />
+          <a-text-field-new
+            v-model="form.nama_vendor"
+            label="Nama Vendor"
+            :disabled="saving"
+          />
+          <a-text-field-new
+            v-model="form.no_telp_vendor"
+            label="No. Telepon Vendor"
+            :disabled="saving"
+          />
+          <a-text-field-new
+            v-model="form.lokasi_vendor"
+            label="Lokasi Vendor"
+            :disabled="saving"
+          />
         </div>
       </div>
 
@@ -74,7 +108,11 @@
 import moment from "moment";
 import type { penawaranM, pengeluaranM } from "~/types/penawaranModel";
 
-const props = defineProps<{ modelValue: boolean; penawaran: penawaranM; idPenawaran: string }>();
+const props = defineProps<{
+  modelValue: boolean;
+  penawaran: penawaranM;
+  idPenawaran: string;
+}>();
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
   saved: [];
@@ -87,7 +125,8 @@ const emptyForm = (): pengeluaranM => ({
   id_pengeluaran: "",
   keterangan: "",
   nominal: 0,
-  satuan: "",
+  satuan: "Pcs",
+  dikeluarkan_oleh: "",
   qty: 1,
   nama_vendor: "",
   no_telp_vendor: "",
@@ -96,9 +135,12 @@ const emptyForm = (): pengeluaranM => ({
 });
 const form = ref<pengeluaranM>(emptyForm());
 
-watch(() => props.modelValue, (open) => {
-  if (open) form.value = emptyForm();
-});
+watch(
+  () => props.modelValue,
+  (open) => {
+    if (open) form.value = emptyForm();
+  },
+);
 
 async function save() {
   if (saving.value) return;
@@ -106,22 +148,31 @@ async function save() {
     notificationStore.showError("ID penawaran tidak ditemukan");
     return;
   }
-  if (!form.value.keterangan.trim() || !form.value.tanggal_pengeluaran) {
-    notificationStore.showError("Keterangan dan tanggal pengeluaran wajib diisi");
+  if (!form.value.keterangan.trim() || !form.value.tanggal_pengeluaran || !form.value.dikeluarkan_oleh ) {
+    notificationStore.showError(
+      "Keterangan / tanggal / dikeluarkan oleh, wajib diisi",
+    );
     return;
   }
-  if (!Number.isFinite(form.value.nominal) || form.value.nominal <= 0 ||
-      !Number.isFinite(form.value.qty) || form.value.qty <= 0) {
+  if (
+    !Number.isFinite(form.value.nominal) ||
+    form.value.nominal <= 0 ||
+    !Number.isFinite(form.value.qty) ||
+    form.value.qty <= 0
+  ) {
     notificationStore.showError("Nominal dan qty harus lebih dari 0");
     return;
   }
 
   saving.value = true;
   try {
-    await createPengeluaran({
-      ...form.value,
-      keterangan: form.value.keterangan.trim(),
-    }, props.idPenawaran);
+    await createPengeluaran(
+      {
+        ...form.value,
+        keterangan: form.value.keterangan.trim(),
+      },
+      props.idPenawaran,
+    );
     notificationStore.showSuccess("Pengeluaran berhasil ditambahkan");
     emit("update:modelValue", false);
     emit("saved");
@@ -159,7 +210,7 @@ async function save() {
 .modal-card {
   background: #ffffff;
   width: 100%;
-  max-width: 860px;
+  max-width: 600px;
   max-height: 90vh;
   border-radius: 8px;
   display: flex;
@@ -231,7 +282,7 @@ async function save() {
 /* Grid Layout */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 

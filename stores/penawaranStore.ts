@@ -25,6 +25,10 @@ export const usePenawaranStore = defineStore("PenawaranStore", {
       return state.dataPenawaran;
     },
 
+    getDataPenawaranTampil(state) {
+      return state.dataPenawaranTampil;
+    },
+
     getDataRevisiPenawaran(state) {
       return state.dataRevisiPenawaran;
     },

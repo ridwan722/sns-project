@@ -50,6 +50,7 @@ export interface penawaranItemM {
 export interface pengeluaranM {
   id_pengeluaran: string;
   tanggal_pengeluaran: string;
+  dikeluarkan_oleh: string;
   keterangan: string;
   nominal: number;
   satuan: string;

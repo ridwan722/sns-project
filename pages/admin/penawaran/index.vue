@@ -373,6 +373,15 @@
             Refresh Data
           </v-tooltip>
         </v-btn>
+
+        <v-btn
+          size="x-small"
+          variant="outlined"
+          class="border flex-shrink-0"
+          @click="tariksemua"
+        >
+          Tarik Semua Status
+        </v-btn>
       </div>
     </v-card-title>
 
@@ -381,7 +390,7 @@
     <!-- Responsive Table -->
     <v-data-table
       :headers="data.headPenawaran"
-      :items="penawaranStore.getDataPenawaran"
+      :items="penawaranStore.getDataPenawaranTampil"
       :search="data.searchPenawaran"
       density="compact"
       :sort-by="[{ key: 'created_at', order: 'desc' }]"
@@ -508,12 +517,16 @@ const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
 
 onMounted(async () => {
   useloadingStore().setLoading(true);
-  await penawaranStore.tarikDataPenawaranAct();
+  await penawaranStore.tarikdatapenawaranbystatusarray(["Draft", "INVOICE"]);
   useloadingStore().setLoading(false);
   await customerStore.tarikDataCustomerAct();
   await termconditionStore.tarikDataTermconditionAct();
   await barangStore.tarikDataBarangAct();
 });
+
+const tariksemua = async () => {
+  await penawaranStore.tarikDataPenawaranAct();
+};
 
 const data = reactive({
   searchPenawaran: "",

@@ -478,7 +478,7 @@
             color="grey"
             class="rounded-lg"
             v-if="item.status == 'Draft'"
-            @click="hapusInvoice(item.id!)"
+            @click="hapusInvoice(item.id_penawaran!, item.id!)"
           >
             <v-icon icon="mdi-trash-can-outline" />
             <v-tooltip activator="parent" location="top">Hapus</v-tooltip>
@@ -787,14 +787,14 @@ async function simpanInvoiceDialog() {
   newInvoice.value = emptyInvoice();
 }
 
-async function hapusInvoice(id: string) {
+async function hapusInvoice(id_penawaran: string, id: string) {
   const confirmed = await confirmationDialog.value?.show(
     "Konfirmasi Hapus",
     "Anda yakin ingin menghapus invoice ini?",
     { variant: "danger" },
   );
   if (!confirmed) return notificationStore.showError("Penghapusan dibatalkan");
-  await invoiceStore.deleteInvoiceAct(id);
+  await invoiceStore.deleteInvoiceAct(id_penawaran, id);
 }
 
 async function refreshData() {

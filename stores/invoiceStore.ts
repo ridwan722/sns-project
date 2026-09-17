@@ -73,11 +73,13 @@ export const useinvoiceStore = defineStore("invoiceStore", {
       }
     },
 
-    async deleteInvoiceAct(id: string) {
+    async deleteInvoiceAct(id_penawaran: string, id: string) {
       const notificationStore = useNotificationStore();
       try {
         useloadingStore().setLoading(true);
         await hapusdatabase(COLLECTION, id);
+        await hapusdatabase("penawaran/" + id_penawaran + "/invoice", id);
+        await updatedatabase("penawaran", id_penawaran, { status: "Draft" });
         // sessionStorage.removeItem(COLLECTION);
         await this.tarikDataInvoiceAct();
         notificationStore.showSuccess("Invoice berhasil dihapus");

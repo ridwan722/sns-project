@@ -119,18 +119,22 @@
               >
             </div>
 
-           <v-row no-gutters>
-            <v-col class="pa-2">
-               <a-textarea-new
-              v-model="item.nama"
-              label="Description"
-              placeholder="Description"
-            />
-            </v-col>
-            <v-col cols="3" class="pa-2">
-              <a-select-new v-model="item.kategori_item" label="Kategori" :items="['Barang', 'Jasa', 'Barang & jasa']"></a-select-new>
-            </v-col>
-           </v-row>
+            <v-row no-gutters>
+              <v-col class="pa-2">
+                <a-textarea-new
+                  v-model="item.nama"
+                  label="Description"
+                  placeholder="Description"
+                />
+              </v-col>
+              <v-col cols="3" class="pa-2">
+                <a-select-new
+                  v-model="item.kategori_item"
+                  label="Kategori"
+                  :items="['Barang', 'Jasa', 'Barang & jasa']"
+                ></a-select-new>
+              </v-col>
+            </v-row>
 
             <!-- KODE BARU (SOLUSI) -->
             <v-chip
@@ -561,12 +565,7 @@ function emptyPenawaran(): penawaranM {
     subtotal_penawaran: 0,
     grand_total_penawaran: 0,
     terbilang: "",
-    id_termcondition: "",
-    nama_term: "",
     termCondition: [],
-    id_barang: "",
-    nama_barang: "",
-    harga_hpp: "",
   };
 }
 
@@ -654,42 +653,6 @@ watch(
   },
 );
 
-watch(
-  () => newPenawaran.value.id_termcondition,
-  (idTermcondition) => {
-    if (
-      data.penawaranAddEdit === "edit" &&
-      idTermcondition === data.editOriginalTermconditionId
-    ) {
-      return;
-    }
-    const termcondition = termconditionStore.getDataTermcondition.find(
-      (item: any) => item.id === idTermcondition,
-    );
-    if (!termcondition) return;
-    newPenawaran.value.id_termcondition = termcondition.id ?? "";
-    newPenawaran.value.nama_term = termcondition.nama_term;
-  },
-);
-
-watch(
-  () => newPenawaran.value.id_barang,
-  (idBarang) => {
-    if (
-      data.penawaranAddEdit === "edit" &&
-      idBarang === data.editOriginalBarangId
-    ) {
-      return;
-    }
-    const barang = barangStore.getDataBarang.find(
-      (item: any) => item.id === idBarang,
-    );
-    if (!barang) return;
-    newPenawaran.value.id_barang = barang.id ?? "";
-    newPenawaran.value.nama_barang = barang.nama_barang;
-  },
-);
-
 function statusColor(status: string) {
   if (status === "INVOICE") return "warning";
   if (status === "Draft") return "primary";
@@ -715,12 +678,6 @@ function openDialogEditPenawaran(item: penawaranM) {
       dataCustomer.vessel === item.vessel ||
       dataCustomer.email === item.email ||
       dataCustomer.no_telp === item.no_telp,
-  );
-
-  const termcondition = termconditionStore.getDataTermcondition.find(
-    (dataTermcondition: any) =>
-      dataTermcondition.id === item.id_termcondition ||
-      dataTermcondition.nama_term === item.id_termcondition,
   );
 
   const penawaran = JSON.parse(JSON.stringify(item)) as penawaranM;

@@ -483,6 +483,7 @@
           </v-btn>
 
           <v-btn
+          v-if="item.status !== 'Cancel'"
             size="28"
             variant="tonal"
             color="error"
@@ -494,6 +495,19 @@
               >Cancel</v-tooltip
             >
           </v-btn>
+
+           <!-- KEMBALIKAN -->
+           <v-btn
+           v-if="item.status === 'Cancel'"
+             size="28"
+            variant="tonal"
+            color="error"
+            class="rounded-lg mr-1"
+          >
+            <v-icon size="16" icon="mdi-keyboard-return" />
+            <v-tooltip activator="parent" location="top">Kembalikan</v-tooltip>
+          </v-btn>
+
         </div>
       </template>
 

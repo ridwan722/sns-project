@@ -240,6 +240,13 @@
                 >
                   {{ t.thDescription }}
                 </th>
+                 <th
+                  width="60"
+                  class="text-center no-print"
+
+                >
+                  Kategori
+                </th>
                 <th
                   width="60"
                   class="text-center"
@@ -291,6 +298,7 @@
                 >
                   {{ item.nama }}
                 </td>
+                 <td class="text-center no-print">{{ item.kategori_item }}</td>
                 <td class="text-center">{{ item.qty }}</td>
                 <td class="text-center text-slate-500">{{ item.uom }}</td>
                 <td class="text-right text-slate-600">

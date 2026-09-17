@@ -78,7 +78,7 @@ const logout = async () => {
           variant="outlined"
           class="version-chip"
         >
-          Update Version. 1.3
+          Update Version. 1.4
         </v-chip>
 
         <v-btn

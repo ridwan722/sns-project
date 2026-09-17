@@ -119,11 +119,18 @@
               >
             </div>
 
-            <a-textarea-new
+           <v-row no-gutters>
+            <v-col class="pa-2">
+               <a-textarea-new
               v-model="item.nama"
               label="Description"
               placeholder="Description"
             />
+            </v-col>
+            <v-col cols="3" class="pa-2">
+              <a-select-new v-model="item.kategori_item" label="Kategori" :items="['Barang', 'Jasa', 'Barang & jasa']"></a-select-new>
+            </v-col>
+           </v-row>
 
             <!-- KODE BARU (SOLUSI) -->
             <v-chip
@@ -545,6 +552,7 @@ function emptyPenawaran(): penawaranM {
         nama: "",
         qty: 1,
         uom: "Unit",
+        kategori_item: "Barang",
         amount: 0,
         subtotal_item: 0,
         harga_hpp: 0,
@@ -733,6 +741,7 @@ function tambahBarisPenawaran() {
     nama: "",
     amount: 0,
     uom: "",
+    kategori_item: "Barang",
     qty: 1,
     subtotal_item: 0,
     harga_hpp: 0,

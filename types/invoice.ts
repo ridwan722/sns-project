@@ -3,6 +3,7 @@ import type { termconditionM } from "./termconditionModel";
 export interface invoiceItemM {
   nama: string;
   qty: number;
+  kategori_item: string;
   uom: string;
   amount: number;
   subtotal_item: number;

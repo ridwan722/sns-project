@@ -170,6 +170,19 @@ async function opendialogaddinv() {
             </div>
 
             <div class="info-card-footer text-center">
+                <v-btn
+                :disabled="detailpenawaran.status == 'INVOICE'"
+                block
+                color="primary"
+                variant="flat"
+                size="small"
+                prepend-icon="mdi-file-document-plus-outline"
+                class="invoice-button mb-3"
+                @click="opendialogaddinv"
+              >
+                Lihat Pengeluaran
+              </v-btn>
+
               <v-btn
                 :disabled="detailpenawaran.status == 'INVOICE'"
                 block
@@ -182,6 +195,7 @@ async function opendialogaddinv() {
               >
                 Buat Invoice
               </v-btn>
+              
               <div
                 v-if="detailpenawaran.status == 'INVOICE'"
                 class="d-flex align-center justify-center mt-2"

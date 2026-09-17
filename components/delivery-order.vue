@@ -22,6 +22,20 @@ const formatTanggal = (tanggal: string) => {
     .replace(/\//g, "-");
 };
 
+const formatTanggalPanjang = (tanggal: string | undefined | null) => {
+  if (!tanggal) return "-";
+
+  const date = new Date(tanggal);
+
+  if (isNaN(date.getTime())) return "-";
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+};
+
 function printDeliveryOrder() {
   const content = printArea.value;
 
@@ -487,15 +501,15 @@ const handleSavePdf = async () => {
               v-for="(item, index) in invoiceDetail.item_pekerjaan"
               :key="'do-item-' + index"
             >
-              <td class="text-center v-align-top">{{ index + 1 }}.</td>
+              <td class="text-center v-align-top" v-if="item.kategori_item == 'Barang' || item.kategori_item == 'Barang & Jasa'">{{ index + 1 }}.</td>
 
-              <td class="v-align-top">
+              <td class="v-align-top" v-if="item.kategori_item == 'Barang' || item.kategori_item == 'Barang & Jasa'">
                 <div style="white-space: pre-line">
                   {{ item.nama }}
                 </div>
               </td>
 
-              <td class="text-center v-align-top">
+              <td class="text-center v-align-top" v-if="item.kategori_item == 'Barang' || item.kategori_item == 'Barang & Jasa'">
                 {{ item.qty }}
 
                 {{ item.uom || "Unit" }}
@@ -510,7 +524,11 @@ const handleSavePdf = async () => {
 
         <div class="signature-section mt-6 page-break-section">
           <div class="mb-4 text-caption">
-            Received by : ___ / __________ / 20___
+            Received by :
+            {{
+              formatTanggalPanjang(invoiceDetail.tanggal)
+            }}
+            <!-- ___ / __________ / 20___ -->
           </div>
 
           <div class="stamp-box mb-3"></div>

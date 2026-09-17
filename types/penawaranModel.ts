@@ -43,8 +43,22 @@ export interface penawaranItemM {
   nama: string;
   harga_hpp?: number;
   qty: number;
+  kategori_item: string;
   uom: string;
   amount: number;
   subtotal_item: number;
+}
+
+export interface pengeluaranM {
+  id_pengeluaran: string;
+
+  keterangan: string;
+  nominal: number;
+  satuan: string;
+  qty: number;
+
+  nama_vendor: string;
+  no_telp_vendor: string;
+  lokasi_vendor: string;
 }
 

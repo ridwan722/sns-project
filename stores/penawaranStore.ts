@@ -105,7 +105,7 @@ export const usePenawaranStore = defineStore("PenawaranStore", {
           "penawaran",
           lemparinvoice.id || lemparinvoice.id_penawaran || lemparinvoice.no_penawaran!
         );
-        await this.tarikDataPenawaranAct();
+        await this.tarikdatapenawaranbystatusarray(["Draft", "INVOICE"]);
 
         notificationStore.showSuccess("Penawaran berhasil dihapus");
         useloadingStore().setLoading(false);

@@ -6,6 +6,7 @@ import type { ConfirmationDialog } from "#components";
 
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import dialogBuatInvoice from "~/components/Admin/Penawaran/dialog-buat-invoice.vue";
+import dialogBuatPengeluaran from "~/components/Admin/Penawaran/dialog-buat-pengeluaran.vue";
 import { ref } from "vue";
 
 const activeTab = ref(0);
@@ -18,10 +19,9 @@ const penawaranstore = usePenawaranStore();
 onMounted(async () => {
   useloadingStore().setLoading(true);
 
-    await penawaranstore.tarikDetailPenawaranAct(String(route.params.id));
+  await penawaranstore.tarikDetailPenawaranAct(String(route.params.id));
 
-    useloadingStore().setLoading(false);
-
+  useloadingStore().setLoading(false);
 });
 
 const detailpenawaran = computed(() => penawaranstore.getDetailPenawaran);
@@ -34,6 +34,7 @@ const data = reactive({
   itemsPerPage: 10,
   pageKategori: 1,
   dialogPenawaran: false,
+  dialogAddPengeluaran: false,
 
   new_pemberkasan: {
     id_dokumen: "",
@@ -60,6 +61,10 @@ const data = reactive({
 async function opendialogaddinv() {
   data.dialogAdd = true;
 }
+
+async function opendialogaddpengeluaran() {
+  data.dialogAddPengeluaran = true;
+}
 </script>
 
 <template>
@@ -70,6 +75,12 @@ async function opendialogaddinv() {
     v-model="data.dialogAdd"
     :penawaran="detailpenawaran"
     @saved="navigateTo('/admin/invoice')"
+  />
+
+  <dialog-buat-pengeluaran
+    v-model="data.dialogAddPengeluaran"
+    :id-penawaran="String(route.params.id)"
+    :penawaran="detailpenawaran"
   />
 
   <div v-if="detailpenawaran" class="quotation-page">
@@ -170,7 +181,17 @@ async function opendialogaddinv() {
             </div>
 
             <div class="info-card-footer text-center">
-                <v-btn
+              <v-btn
+                :to="`/admin/penawaran/${encodeURIComponent(String(route.params.id))}/pengeluaran`"
+                block
+                color="primary"
+                variant="outlined"
+                size="small"
+                class="mb-3"
+              >
+                Lihat Pengeluaran
+              </v-btn>
+              <v-btn
                 :disabled="detailpenawaran.status == 'INVOICE'"
                 block
                 color="primary"
@@ -178,9 +199,9 @@ async function opendialogaddinv() {
                 size="small"
                 prepend-icon="mdi-file-document-plus-outline"
                 class="invoice-button mb-3"
-                @click="opendialogaddinv"
+                @click="opendialogaddpengeluaran"
               >
-                Lihat Pengeluaran
+                Tambah Pengeluaran
               </v-btn>
 
               <v-btn
@@ -195,7 +216,7 @@ async function opendialogaddinv() {
               >
                 Buat Invoice
               </v-btn>
-              
+
               <div
                 v-if="detailpenawaran.status == 'INVOICE'"
                 class="d-flex align-center justify-center mt-2"
@@ -486,9 +507,6 @@ async function opendialogaddinv() {
 }
 
 .invoice-button {
-
-
-
   font-weight: 650 !important;
   text-transform: none !important;
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);

@@ -24,6 +24,7 @@ export interface penawaranM {
   terkirim_by?: string;
 
   perihal: string; 
+  pengeluaran?: pengeluaranM[];
   penawaran_item: penawaranItemM[]; 
   subtotal_penawaran: number;
   grand_total_penawaran: number;
@@ -51,7 +52,7 @@ export interface penawaranItemM {
 
 export interface pengeluaranM {
   id_pengeluaran: string;
-
+  tanggal_pengeluaran: string;
   keterangan: string;
   nominal: number;
   satuan: string;

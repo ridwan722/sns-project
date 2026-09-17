@@ -1,9 +1,10 @@
 import { useFirestore } from "vuefire";
-import { doc, runTransaction } from "firebase/firestore";
+import { arrayUnion, collection, doc, runTransaction, updateDoc } from "firebase/firestore";
 import type { invoiceM } from "~/types/invoice";
 import moment from "moment";
 import { getAuth } from "firebase/auth";
 import _ from "lodash";
+import type { pengeluaranM } from "~/types/penawaranModel";
 
 
 export const createInvoicePenawaran = async (data: invoiceM) => {
@@ -44,6 +45,24 @@ export const createInvoicePenawaran = async (data: invoiceM) => {
 
     return { ...setdata, id: id_invoice };
   });
+};
+
+
+export const createPengeluaran = async (data: pengeluaranM, id_penawaran: string) => {
+  if (!id_penawaran) throw new Error("ID penawaran tidak ditemukan");
+
+  const db = useFirestore();
+  const setdata: pengeluaranM = {
+    ...data,
+    id_pengeluaran: data.id_pengeluaran || doc(collection(db, "penawaran")).id,
+  };
+
+  await updateDoc(doc(db, "penawaran", id_penawaran), {
+    pengeluaran: arrayUnion(setdata),
+  });
+  sessionStorage.removeItem("penawaran");
+
+  return setdata;
 };
 
 export const createInvoice = async (data: invoiceM) => {

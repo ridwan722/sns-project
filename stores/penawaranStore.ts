@@ -83,7 +83,7 @@ export const usePenawaranStore = defineStore("PenawaranStore", {
           lemparPenawaran
         );
 
-        await this.tarikDataPenawaranAct();
+        // await this.tarikDataPenawaranAct();
 
         notificationStore.showSuccess("Penawaran berhasil diperbarui");
         return true;

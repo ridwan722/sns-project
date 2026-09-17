@@ -156,14 +156,16 @@
               </v-col>
               <v-col cols="6" sm="2" class="pa-1">
                 <a-select-new
-                  :items="[ 'Unit',
-                  'Pcs',
-                  'Kg',
-                  'Lot',
-                  'Set',
-                  'Meter',
-                  'Box',
-                  'Liter',]"
+                  :items="[
+                    'Unit',
+                    'Pcs',
+                    'Kg',
+                    'Lot',
+                    'Set',
+                    'Meter',
+                    'Box',
+                    'Liter',
+                  ]"
                   v-model="item.uom"
                   label="UOM"
                   placeholder="Select"
@@ -483,31 +485,30 @@
           </v-btn>
 
           <v-btn
-          v-if="item.status !== 'Cancel'"
+            v-if="item.status !== 'Cancel'"
             size="28"
             variant="tonal"
             color="error"
             class="rounded-lg mr-1"
-            :disabled="item.status !== 'Draft' "
+            :disabled="item.status !== 'Draft'"
+            @click="ubahstatuscancel(item)"
           >
             <v-icon size="16" icon="mdi-alpha-x-circle-outline" />
-            <v-tooltip activator="parent" location="top"
-              >Cancel</v-tooltip
-            >
+            <v-tooltip activator="parent" location="top">Cancel</v-tooltip>
           </v-btn>
 
-           <!-- KEMBALIKAN -->
-           <v-btn
-           v-if="item.status === 'Cancel'"
-             size="28"
+          <!-- KEMBALIKAN -->
+          <v-btn
+            v-if="item.status === 'Cancel'"
+            size="28"
             variant="tonal"
             color="error"
             class="rounded-lg mr-1"
+            @click="backtodraft(item)"
           >
             <v-icon size="16" icon="mdi-keyboard-return" />
             <v-tooltip activator="parent" location="top">Kembalikan</v-tooltip>
           </v-btn>
-
         </div>
       </template>
 
@@ -820,9 +821,43 @@ async function hapusPenawaran(item: penawaranM) {
     "Anda yakin ingin menghapus penawaran ini?",
     { variant: "danger" },
   );
+  item.status = "Cancel";
   if (!confirmed) return notificationStore.showError("Penghapusan dibatalkan");
-  await penawaranStore.deletePenawaranAct(item);
+  await penawaranStore.updatePenawaranAct(item);
 }
+
+function ubahstatuscancel(item: penawaranM) {
+  confirmationDialog.value
+    ?.show("Konfirmasi Cancel", "Anda yakin ingin membatalkan penawaran ini?", {
+      variant: "danger",
+    })
+
+    .then(async (confirmed) => {
+      if (!confirmed) return notificationStore.showError("Cancel dibatalkan");
+      item.status = "Cancel";
+      console.log("item.status", item.status);
+      console.log("item", item);
+      await penawaranStore.updatePenawaranAct(item);
+      await penawaranStore.tarikdatapenawaranbystatusarray(["Draft", "INVOICE"]);
+    });
+}
+
+function backtodraft(item: penawaranM) {
+  confirmationDialog.value
+    ?.show("Konfirmasi Cancel", "Anda yakin ingin membatalkan penawaran ini?", {
+      variant: "danger",
+    })
+
+    .then(async (confirmed) => {
+      if (!confirmed) return notificationStore.showError("Cancel dibatalkan");
+      item.status = "Draft";
+      console.log("item.status", item.status);
+      console.log("item", item);
+      await penawaranStore.updatePenawaranAct(item);
+      await penawaranStore.tarikdatapenawaranbystatusarray(["Draft", "INVOICE"]);
+    });
+}
+
 
 async function refreshData() {
   useloadingStore().setLoading(true);

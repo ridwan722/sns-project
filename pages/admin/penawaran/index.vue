@@ -821,9 +821,8 @@ async function hapusPenawaran(item: penawaranM) {
     "Anda yakin ingin menghapus penawaran ini?",
     { variant: "danger" },
   );
-  item.status = "Cancel";
   if (!confirmed) return notificationStore.showError("Penghapusan dibatalkan");
-  await penawaranStore.updatePenawaranAct(item);
+  await penawaranStore.deletePenawaranAct(item);
 }
 
 function ubahstatuscancel(item: penawaranM) {

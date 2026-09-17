@@ -22,7 +22,7 @@ export interface penawaranM {
 
   terkirim_at?: number;
   terkirim_by?: string;
-
+  grandtotal_pengeluaran?: number;
   perihal: string; 
   pengeluaran?: pengeluaranM[];
   penawaran_item: penawaranItemM[]; 
@@ -62,4 +62,3 @@ export interface pengeluaranM {
   no_telp_vendor: string;
   lokasi_vendor: string;
 }
-

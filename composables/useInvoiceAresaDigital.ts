@@ -1,5 +1,5 @@
 import { useFirestore } from "vuefire";
-import { arrayUnion, collection, doc, runTransaction, updateDoc } from "firebase/firestore";
+import { collection, doc, runTransaction } from "firebase/firestore";
 import type { invoiceM } from "~/types/invoice";
 import moment from "moment";
 import { getAuth } from "firebase/auth";
@@ -57,8 +57,22 @@ export const createPengeluaran = async (data: pengeluaranM, id_penawaran: string
     id_pengeluaran: data.id_pengeluaran || doc(collection(db, "penawaran")).id,
   };
 
-  await updateDoc(doc(db, "penawaran", id_penawaran), {
-    pengeluaran: arrayUnion(setdata),
+  const penawaranRef = doc(db, "penawaran", id_penawaran);
+  await runTransaction(db, async (transaction) => {
+    const snapshot = await transaction.get(penawaranRef);
+    if (!snapshot.exists()) throw new Error("Penawaran tidak ditemukan");
+
+    const pengeluaran: pengeluaranM[] = snapshot.data().pengeluaran ?? [];
+    if (!pengeluaran.some((item) => item.id_pengeluaran === setdata.id_pengeluaran)) {
+      pengeluaran.push(setdata);
+    }
+
+    const total_pengeluaran = pengeluaran.reduce(
+      (total, item) => total + Number(item.nominal || 0),
+      0,
+    );
+
+    transaction.update(penawaranRef, { pengeluaran, grandtotal_pengeluaran: total_pengeluaran });
   });
   sessionStorage.removeItem("penawaran");
 

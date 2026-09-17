@@ -409,12 +409,16 @@
       <template v-slot:item.no="{ index }"> {{ index + 1 }}</template>
 
       <template v-slot:item.no_penawaran="{ item }">
-        <NuxtLink
-          :to="'/admin/penawaran/' + item.id"
-          class="penawaran-link font-weight-medium"
-        >
-          {{ item.no_penawaran }}
-        </NuxtLink>
+       <div class="text-center">
+  <NuxtLink
+    :to="'/admin/penawaran/' + item.id"
+    class="quotation-link"
+  >
+    <span class="quotation-badge">
+      {{ item.no_penawaran }}
+    </span>
+  </NuxtLink>
+</div>
       </template>
 
       <template v-slot:item.nama_perusahaan="{ item }">
@@ -484,17 +488,19 @@
             <v-tooltip activator="parent" location="top">Hapus</v-tooltip>
           </v-btn>
 
+          <v-divider vertical class="ml-2"></v-divider>
+
           <v-btn
             v-if="item.status !== 'Cancel'"
             size="28"
             variant="tonal"
             color="error"
-            class="rounded-lg mr-1"
+            class="rounded-lg ml-2"
             :disabled="item.status !== 'Draft'"
             @click="ubahstatuscancel(item)"
           >
             <v-icon size="16" icon="mdi-alpha-x-circle-outline" />
-            <v-tooltip activator="parent" location="top">Cancel</v-tooltip>
+            <v-tooltip activator="parent" location="top">Cancel Penawaran</v-tooltip>
           </v-btn>
 
           <!-- KEMBALIKAN -->
@@ -503,11 +509,11 @@
             size="28"
             variant="tonal"
             color="error"
-            class="rounded-lg mr-1"
+            class="rounded-lg ml-2"
             @click="backtodraft(item)"
           >
             <v-icon size="16" icon="mdi-keyboard-return" />
-            <v-tooltip activator="parent" location="top">Kembalikan</v-tooltip>
+            <v-tooltip activator="parent" location="top">Kembalikan menjadi Draft</v-tooltip>
           </v-btn>
         </div>
       </template>
@@ -827,12 +833,12 @@ async function hapusPenawaran(item: penawaranM) {
 
 function ubahstatuscancel(item: penawaranM) {
   confirmationDialog.value
-    ?.show("Konfirmasi Cancel", "Anda yakin ingin membatalkan penawaran ini?", {
+    ?.show("Konfirmasi Cancel", "Anda yakin ingin Cancel penawaran ini?", {
       variant: "danger",
     })
 
     .then(async (confirmed) => {
-      if (!confirmed) return notificationStore.showError("Cancel dibatalkan");
+      if (!confirmed) return notificationStore.showInfo("Cancel dibatalkan");
       item.status = "Cancel";
       console.log("item.status", item.status);
       console.log("item", item);
@@ -843,7 +849,7 @@ function ubahstatuscancel(item: penawaranM) {
 
 function backtodraft(item: penawaranM) {
   confirmationDialog.value
-    ?.show("Konfirmasi Cancel", "Anda yakin ingin membatalkan penawaran ini?", {
+    ?.show("Konfirmasi Pengembalian", "Anda yakin ingin mengembalikan penawaran ini menjadi Draft?", {
       variant: "danger",
     })
 
@@ -868,11 +874,30 @@ async function refreshData() {
 </script>
 
 <style scoped>
-.penawaran-link {
-  color: rgb(11, 66, 194);
-  transition: color 0.2s ease;
+.quotation-link {
+  text-decoration: none;
 }
 
+.quotation-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  border: 1px solid #dbeafe;
+  transition: all 0.1s ease;
+}
+
+.quotation-badge:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
+}
 .gap-2 {
   gap: 8px;
 }

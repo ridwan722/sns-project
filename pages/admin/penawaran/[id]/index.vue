@@ -153,7 +153,7 @@ async function opendialogaddpengeluaran() {
               </div>
 
               <div class="info-field">
-                <div class="field-label">KLIEN / PERUSAHAAN</div>
+                <div class="field-label">CLIENT / PERUSAHAAN</div>
                 <div class="field-value strong">
                   {{ detailpenawaran.nama_perusahaan || "-" }}
                 </div>
@@ -166,12 +166,7 @@ async function opendialogaddpengeluaran() {
                     <v-icon size="16"> mdi-account-outline </v-icon>
                   </div>
                   <span>{{ detailpenawaran.pic || "-" }}</span>
-                </div>
-              </div>
 
-              <div class="info-field">
-                <div class="field-label">TELEPON</div>
-                <div class="contact-row">
                   <div class="contact-icon">
                     <v-icon size="16"> mdi-phone-outline </v-icon>
                   </div>
@@ -188,23 +183,32 @@ async function opendialogaddpengeluaran() {
                 variant="flat"
                 size="small"
                 prepend-icon="mdi-file-document-plus-outline"
-                class="invoice-button mb-6"
+                class="invoice-button"
                 @click="opendialogaddinv"
               >
                 Buat Invoice
               </v-btn>
 
+               <div
+                v-if="detailpenawaran.status == 'INVOICE'"
+                class="d-flex align-center justify-center mt-2"
+              >
+                <v-icon size="15" color="red">mdi-information-outline</v-icon>
+                <span class="text-red text-caption ml-1"
+                  >Invoice telah dibuat</span
+                >
+              </div>
+
               <v-btn
-                :disabled="detailpenawaran.status == 'INVOICE'"
                 block
                 color="primary"
                 variant="flat"
                 size="small"
                 prepend-icon="mdi-export"
-                class="invoice-button mb-3"
+                class="invoice-button mb-3 mt-3"
                 @click="opendialogaddpengeluaran"
               >
-                Tambah Pengeluaran
+                Buat Catatan Pengeluaran
               </v-btn>
 
               <v-btn
@@ -216,24 +220,8 @@ async function opendialogaddpengeluaran() {
                 class="mb-3"
                 append-icon="mdi-open-in-new"
               >
-                Lihat Pengeluaran
+                Lihat Catatan Pengeluaran
               </v-btn>
-
-              <div
-                v-if="detailpenawaran.status == 'INVOICE'"
-                class="d-flex align-center justify-center mt-2"
-              >
-                <v-icon size="15" color="red">mdi-information-outline</v-icon>
-                <span class="text-red text-caption ml-1"
-                  >Invoice telah dibuat</span
-                >
-              </div>
-              <nuxtLink
-                class="text-blue text-caption ml-1"
-                style="text-decoration: underline"
-                v-if="detailpenawaran.status == 'INVOICE'"
-                >lihat invoice</nuxtLink
-              >
             </div>
           </section>
         </aside>
@@ -432,7 +420,7 @@ async function opendialogaddpengeluaran() {
 }
 
 .quotation-number-box {
-  margin: 16px;
+  margin: 9px;
   padding: 15px 16px;
   border-radius: 11px;
   background: #f8fafc;

@@ -51,7 +51,7 @@ onErrorCaptured((err: unknown) => {
                 size="18"
                 class="header-icon"
               />
-              <h2>Penjualan & Modul Transaksi</h2>
+              <h2>ERP</h2>
             </div>
             <span class="badge-count">6 Direct Links</span>
           </div>
@@ -69,14 +69,45 @@ onErrorCaptured((err: unknown) => {
                   </div>
                   <div class="action-text">
                     <span class="title">Quotation</span>
-                    <span class="sub">Kelola draft & estimasi harga</span>
+                    <span class="sub">Kelola Penawaran Harga</span>
                   </div>
                   <v-icon icon="mdi-chevron-right" size="16" class="arrow" />
                 </NuxtLink>
               </div>
             </div>
 
-            <!-- Sub Group: Berita Acara -->
+
+            <div>
+              <div class="group-header">
+                <span class="group-title">INVOICE</span>
+              </div>
+              <div class="action-grid-2">
+                <NuxtLink to="/admin/invoice" class="compact-action-card">
+                  <div class="action-icon">
+                    <v-icon icon="mdi-receipt-text-outline" size="18" />
+                  </div>
+                  <div class="action-text">
+                    <span class="title">Invoice</span>
+                    <span class="sub">Catatan Invoice</span>
+                  </div>
+                </NuxtLink>
+
+                <NuxtLink
+                  to="/admin/invoice/selesai"
+                  class="compact-action-card"
+                >
+                  <div class="action-icon">
+                    <v-icon icon="mdi-check-decagram-outline" size="18" />
+                  </div>
+                  <div class="action-text">
+                    <span class="title">Invoice Success</span>
+                    <span class="sub">Lunas & selesai</span>
+                  </div>
+                </NuxtLink>
+              </div>
+            </div>
+            <v-divider class="my-1"></v-divider>
+             <!-- Sub Group: Berita Acara -->
             <div class="action-grid-2">
               <NuxtLink to="/admin/delivery-order" class="compact-action-card">
                 <div class="action-icon">
@@ -98,36 +129,6 @@ onErrorCaptured((err: unknown) => {
                 </div>
                 <v-icon icon="mdi-chevron-right" size="16" class="arrow" />
               </NuxtLink>
-            </div>
-
-            <div>
-              <div class="group-header">
-                <span class="group-title">INVOICE</span>
-              </div>
-              <div class="action-grid-2">
-                <NuxtLink to="/admin/invoice" class="compact-action-card">
-                  <div class="action-icon">
-                    <v-icon icon="mdi-receipt-text-outline" size="18" />
-                  </div>
-                  <div class="action-text">
-                    <span class="title">Semua Invoice</span>
-                    <span class="sub">Database utama</span>
-                  </div>
-                </NuxtLink>
-
-                <NuxtLink
-                  to="/admin/invoice/selesai"
-                  class="compact-action-card"
-                >
-                  <div class="action-icon">
-                    <v-icon icon="mdi-check-decagram-outline" size="18" />
-                  </div>
-                  <div class="action-text">
-                    <span class="title">Invoice Success</span>
-                    <span class="sub">Lunas & selesai</span>
-                  </div>
-                </NuxtLink>
-              </div>
             </div>
           </div>
         </section>

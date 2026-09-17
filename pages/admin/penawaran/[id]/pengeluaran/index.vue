@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { doc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useDocument, useFirestore } from "vuefire";
 import type { penawaranM } from "~/types/penawaranModel";
 
@@ -12,23 +12,36 @@ const db = useFirestore();
 
 const idPenawaran = computed(() => String(route.params.id));
 
-const penawaranRef = computed(() =>
-  doc(db, "penawaran", idPenawaran.value),
-);
+const penawaranRef = computed(() => doc(db, "penawaran", idPenawaran.value));
 
-const {
-  data: penawaran,
-  pending,
-  error,
-} = useDocument(penawaranRef);
+const { data: penawaran, pending, error } = useDocument(penawaranRef);
 
 const detailPenawaran = computed(
   () => penawaran.value as penawaranM | undefined,
 );
 
-const pengeluaran = computed(
-  () => detailPenawaran.value?.pengeluaran ?? [],
-);
+const pengeluaran = computed(() => detailPenawaran.value?.pengeluaran ?? []);
+
+/* =====================================================
+   EDIT
+===================================================== */
+
+const editDialog = ref(false);
+const savingEdit = ref(false);
+const editIndex = ref<number | null>(null);
+
+const editForm = reactive({
+  id_pengeluaran: "",
+  tanggal_pengeluaran: "",
+  keterangan: "",
+  nominal: 0,
+  qty: 1,
+  satuan: "",
+  nama_vendor: "",
+  no_telp_vendor: "",
+  lokasi_vendor: "",
+  dikeluarkan_oleh: "",
+});
 
 /* =====================================================
    TABLE HEADER
@@ -77,12 +90,17 @@ const headers = [
     key: "lokasi_vendor",
     minWidth: "170px",
   },
-
   {
     title: "Dikeluarkan oleh",
     key: "dikeluarkan_oleh",
-    align: "end",
-    width: "150px",
+    minWidth: "150px",
+  },
+  {
+    title: "AKSI",
+    key: "actions",
+    width: "80px",
+    sortable: false,
+    align: "center",
   },
 ];
 
@@ -118,6 +136,93 @@ const formatTanggal = (tanggal: string) => {
     year: "numeric",
   }).format(date);
 };
+
+/* =====================================================
+   OPEN EDIT
+===================================================== */
+
+const openEdit = (item: any, index: number) => {
+  editIndex.value = index;
+
+  editForm.id_pengeluaran = item.id_pengeluaran || "";
+  editForm.tanggal_pengeluaran = item.tanggal_pengeluaran || "";
+  editForm.keterangan = item.keterangan || "";
+  editForm.nominal = Number(item.nominal || 0);
+  editForm.qty = Number(item.qty || 1);
+  editForm.satuan = item.satuan || "";
+  editForm.nama_vendor = item.nama_vendor || "";
+  editForm.no_telp_vendor = item.no_telp_vendor || "";
+  editForm.lokasi_vendor = item.lokasi_vendor || "";
+  editForm.dikeluarkan_oleh = item.dikeluarkan_oleh || "";
+
+  editDialog.value = true;
+};
+
+/* =====================================================
+   CLOSE EDIT
+===================================================== */
+
+const closeEdit = () => {
+  if (savingEdit.value) return;
+
+  editDialog.value = false;
+  editIndex.value = null;
+};
+
+/* =====================================================
+   SAVE EDIT
+===================================================== */
+
+const saveEdit = async () => {
+  if (
+    editIndex.value === null ||
+    !detailPenawaran.value ||
+    !Array.isArray(detailPenawaran.value.pengeluaran)
+  ) {
+    return;
+  }
+
+  try {
+    savingEdit.value = true;
+
+    const index = editIndex.value;
+
+    const pengeluaranBaru = [...detailPenawaran.value.pengeluaran];
+
+    const dataLama = pengeluaranBaru[index];
+
+    if (!dataLama) {
+      return;
+    }
+
+    pengeluaranBaru[index] = {
+      ...dataLama,
+
+      id_pengeluaran: editForm.id_pengeluaran || dataLama.id_pengeluaran,
+
+      tanggal_pengeluaran: editForm.tanggal_pengeluaran,
+      keterangan: editForm.keterangan,
+      nominal: Number(editForm.nominal || 0),
+      qty: Number(editForm.qty || 0),
+      satuan: editForm.satuan,
+      nama_vendor: editForm.nama_vendor,
+      no_telp_vendor: editForm.no_telp_vendor,
+      lokasi_vendor: editForm.lokasi_vendor,
+      dikeluarkan_oleh: editForm.dikeluarkan_oleh,
+    };
+
+    await updateDoc(doc(db, "penawaran", idPenawaran.value), {
+      pengeluaran: pengeluaranBaru,
+    });
+
+    editDialog.value = false;
+    editIndex.value = null;
+  } catch (err) {
+    console.error("Gagal mengedit pengeluaran:", err);
+  } finally {
+    savingEdit.value = false;
+  }
+};
 </script>
 
 <template>
@@ -138,49 +243,32 @@ const formatTanggal = (tanggal: string) => {
         />
 
         <div>
-          <div class="page-eyebrow">
-            PROJECT EXPENSE
-          </div>
+          <div class="page-eyebrow">PROJECT EXPENSE</div>
 
-          <h1 class="page-title">
-            Pengeluaran Project
-          </h1>
+          <h1 class="page-title">Pengeluaran Project</h1>
         </div>
       </div>
 
-      <!-- =================================================
-           PROJECT INFORMATION
-      ================================================== -->
+      <!-- PROJECT INFORMATION -->
 
-      <v-card
-        class="project-card"
-        elevation="0"
-      >
+      <v-card class="project-card" elevation="0">
         <div class="project-content">
           <div class="project-main">
-            <div class="project-label">
-              PROJECT
-            </div>
+            <div class="project-label">PROJECT</div>
 
             <div class="project-title">
               {{ detailPenawaran?.perihal || "Memuat data..." }}
             </div>
 
             <div class="company-name">
-              <v-icon
-                icon="mdi-domain"
-                size="15"
-                class="mr-1"
-              />
+              <v-icon icon="mdi-domain" size="15" class="mr-1" />
 
               {{ detailPenawaran?.nama_perusahaan || "-" }}
             </div>
           </div>
 
           <div class="project-reference">
-            <div class="reference-label">
-              NO. REFERENSI
-            </div>
+            <div class="reference-label">NO. REFERENSI</div>
 
             <div class="reference-number">
               {{ detailPenawaran?.no_penawaran || idPenawaran }}
@@ -195,23 +283,13 @@ const formatTanggal = (tanggal: string) => {
     ================================================== -->
 
     <div class="summary-grid mb-4">
-      <!-- TOTAL PENGELUARAN -->
-
-      <v-card
-        class="summary-card summary-primary"
-        elevation="0"
-      >
+      <v-card class="summary-card summary-primary" elevation="0">
         <div class="summary-icon">
-          <v-icon
-            icon="mdi-cash-minus"
-            size="19"
-          />
+          <v-icon icon="mdi-cash-minus" size="19" />
         </div>
 
         <div class="summary-info">
-          <div class="summary-label">
-            TOTAL PENGELUARAN
-          </div>
+          <div class="summary-label">TOTAL PENGELUARAN</div>
 
           <div class="summary-value">
             {{ rupiah.format(totalPengeluaran) }}
@@ -219,30 +297,18 @@ const formatTanggal = (tanggal: string) => {
         </div>
       </v-card>
 
-      <!-- JUMLAH TRANSAKSI -->
-
-      <v-card
-        class="summary-card"
-        elevation="0"
-      >
+      <v-card class="summary-card" elevation="0">
         <div class="summary-icon neutral">
-          <v-icon
-            icon="mdi-receipt-text-outline"
-            size="19"
-          />
+          <v-icon icon="mdi-receipt-text-outline" size="19" />
         </div>
 
         <div class="summary-info">
-          <div class="summary-label">
-            JUMLAH TRANSAKSI
-          </div>
+          <div class="summary-label">JUMLAH TRANSAKSI</div>
 
           <div class="summary-value">
             {{ pengeluaran.length }}
 
-            <span class="summary-unit">
-              transaksi
-            </span>
+            <span class="summary-unit"> transaksi </span>
           </div>
         </div>
       </v-card>
@@ -259,9 +325,7 @@ const formatTanggal = (tanggal: string) => {
       class="mb-4 corporate-alert"
       icon="mdi-alert-circle-outline"
     >
-      <div class="font-weight-medium">
-        Gagal mengambil data pengeluaran.
-      </div>
+      <div class="font-weight-medium">Gagal mengambil data pengeluaran.</div>
 
       <div class="text-caption mt-1">
         Silakan refresh halaman atau coba kembali beberapa saat lagi.
@@ -269,7 +333,7 @@ const formatTanggal = (tanggal: string) => {
     </v-alert>
 
     <!-- =================================================
-         ALERT DATA TIDAK DITEMUKAN
+         DATA TIDAK DITEMUKAN
     ================================================== -->
 
     <v-alert
@@ -279,27 +343,17 @@ const formatTanggal = (tanggal: string) => {
       class="mb-4 corporate-alert"
       icon="mdi-alert-outline"
     >
-      <div class="font-weight-medium">
-        Data penawaran tidak ditemukan.
-      </div>
+      <div class="font-weight-medium">Data penawaran tidak ditemukan.</div>
     </v-alert>
 
     <!-- =================================================
          TABLE
     ================================================== -->
 
-    <v-card
-      v-else
-      class="table-card"
-      elevation="0"
-    >
-      <!-- TABLE HEADER -->
-
+    <v-card v-else class="table-card" elevation="0">
       <div class="table-header">
         <div>
-          <div class="table-title">
-            Daftar Pengeluaran
-          </div>
+          <div class="table-title">Daftar Pengeluaran</div>
 
           <div class="table-subtitle">
             Rincian biaya yang tercatat pada project ini
@@ -318,15 +372,12 @@ const formatTanggal = (tanggal: string) => {
 
       <v-divider />
 
-      <!-- TABLE WRAPPER -->
-
       <div class="table-wrapper">
         <v-data-table
           :headers="headers"
           :items="pengeluaran"
           :loading="pending"
           item-value="id_pengeluaran"
-          density="comfortable"
           hover
           class="corporate-table"
           hide-default-footer
@@ -334,10 +385,7 @@ const formatTanggal = (tanggal: string) => {
           <!-- LOADING -->
 
           <template #loading>
-            <v-skeleton-loader
-              type="table-row@6"
-              class="pa-4"
-            />
+            <v-skeleton-loader type="table-row@6" class="pa-4" />
           </template>
 
           <!-- EMPTY -->
@@ -345,15 +393,10 @@ const formatTanggal = (tanggal: string) => {
           <template #no-data>
             <div class="empty-state">
               <div class="empty-icon">
-                <v-icon
-                  icon="mdi-receipt-text-outline"
-                  size="30"
-                />
+                <v-icon icon="mdi-receipt-text-outline" size="30" />
               </div>
 
-              <div class="empty-title">
-                Belum ada pengeluaran
-              </div>
+              <div class="empty-title">Belum ada pengeluaran</div>
 
               <div class="empty-description">
                 Belum terdapat data pengeluaran untuk project ini.
@@ -412,10 +455,7 @@ const formatTanggal = (tanggal: string) => {
           <template #item.nama_vendor="{ item }">
             <div class="vendor-cell">
               <div class="vendor-icon">
-                <v-icon
-                  icon="mdi-store-outline"
-                  size="15"
-                />
+                <v-icon icon="mdi-store-outline" size="15" />
               </div>
 
               <span>
@@ -432,57 +472,230 @@ const formatTanggal = (tanggal: string) => {
               :href="`tel:${item.no_telp_vendor}`"
               class="phone-link"
             >
-              <v-icon
-                icon="mdi-phone-outline"
-                size="14"
-                class="mr-1"
-              />
+              <v-icon icon="mdi-phone-outline" size="14" class="mr-1" />
 
               {{ item.no_telp_vendor }}
             </a>
 
-            <span
-              v-else
-              class="text-disabled"
-            >
-              -
-            </span>
+            <span v-else class="text-disabled"> - </span>
           </template>
 
           <!-- LOKASI -->
 
           <template #item.lokasi_vendor="{ item }">
             <div class="location-cell">
-              <v-icon
-                icon="mdi-map-marker-outline"
-                size="15"
-                class="mr-1"
-              />
+              <v-icon icon="mdi-map-marker-outline" size="15" class="mr-1" />
 
               <span>
                 {{ item.lokasi_vendor || "-" }}
               </span>
             </div>
           </template>
+
+          <!-- DIKELUARKAN OLEH -->
+
+          <template #item.dikeluarkan_oleh="{ item }">
+            <div class="issued-by-cell">
+              {{ item.dikeluarkan_oleh || "-" }}
+            </div>
+          </template>
+
+          <!-- AKSI -->
+
+          <template #item.actions="{ item, index }">
+            <v-btn
+              icon="mdi-pencil-outline"
+              variant="text"
+              size="small"
+              color="grey-darken-1"
+              @click="openEdit(item, index)"
+            >
+              <v-icon size="18"> mdi-pencil-outline </v-icon>
+
+              <v-tooltip activator="parent" location="top">
+                Edit Pengeluaran
+              </v-tooltip>
+            </v-btn>
+          </template>
         </v-data-table>
       </div>
 
-      <!-- =================================================
-           TABLE FOOTER
-      ================================================== -->
+      <!-- TABLE FOOTER -->
 
       <v-divider />
 
       <div class="table-footer">
-        <span class="footer-label">
-          Total Pengeluaran
-        </span>
+        <span class="footer-label"> Total Pengeluaran </span>
 
         <span class="footer-total">
           {{ rupiah.format(totalPengeluaran) }}
         </span>
       </div>
     </v-card>
+
+    <!-- =================================================
+         EDIT DIALOG
+    ================================================== -->
+
+    <v-dialog v-model="editDialog" max-width="700" persistent>
+      <v-card class="edit-dialog-card">
+        <!-- DIALOG HEADER -->
+
+        <div class="edit-dialog-header">
+          <div>
+            <div class="edit-dialog-title">Edit Pengeluaran</div>
+
+            <div class="edit-dialog-subtitle">
+              Ubah informasi transaksi pengeluaran
+            </div>
+          </div>
+
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            size="small"
+            :disabled="savingEdit"
+            @click="closeEdit"
+          />
+        </div>
+
+        <v-divider />
+
+        <!-- FORM -->
+
+        <v-card-text class="pa-5">
+          <v-row dense>
+            <!-- TANGGAL -->
+
+            <v-col cols="12" sm="6">
+              <a-text-field-new
+                v-model="editForm.tanggal_pengeluaran"
+                label="Tanggal Pengeluaran"
+                type="date"
+              />
+            </v-col>
+
+            <!-- NOMINAL -->
+
+            <v-col cols="12" sm="6">
+              <a-text-field-new
+                v-model.number="editForm.nominal"
+                label="Nominal"
+                type="number"
+                prefix="Rp"
+              />
+            </v-col>
+
+            <!-- KETERANGAN -->
+
+            <v-col cols="12">
+              <v-textarea
+                v-model="editForm.keterangan"
+                label="Keterangan"
+                rows="2"
+                auto-grow
+              />
+            </v-col>
+
+            <!-- QTY -->
+
+            <v-col cols="12" sm="6">
+              <a-text-field-new
+                v-model.number="editForm.qty"
+                label="Qty"
+                type="number"
+                min="0"
+              />
+            </v-col>
+
+            <!-- SATUAN -->
+
+            <v-col cols="12" sm="6">
+              <a-select-new
+                v-model="editForm.satuan"
+                label="Satuan"
+                :items="[
+                  'Unit',
+                  'Pcs',
+                  'Kg',
+                  'Lot',
+                  'Set',
+                  'Meter',
+                  'Box',
+                  'Liter',
+                ]"
+                clearable
+              />
+            </v-col>
+
+            <!-- VENDOR -->
+
+            <v-col cols="12" sm="6">
+              <a-text-field-new
+                v-model="editForm.nama_vendor"
+                label="Nama Vendor"
+                prepend-inner-icon="mdi-store-outline"
+              />
+            </v-col>
+
+            <!-- TELEPON -->
+
+            <v-col cols="12" sm="6">
+              <a-text-field-new
+                v-model="editForm.no_telp_vendor"
+                label="No. Telepon Vendor"
+                prepend-inner-icon="mdi-phone-outline"
+              />
+            </v-col>
+
+            <!-- LOKASI -->
+
+            <v-col cols="12">
+              <a-text-field-new
+                v-model="editForm.lokasi_vendor"
+                label="Lokasi Vendor"
+                prepend-inner-icon="mdi-map-marker-outline"
+              />
+            </v-col>
+
+            <!-- DIKELUARKAN OLEH -->
+
+            <v-col cols="12">
+              <a-text-field-new
+                v-model="editForm.dikeluarkan_oleh"
+                label="Dikeluarkan oleh"
+                prepend-inner-icon="mdi-account-outline"
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+
+        <v-divider />
+
+        <!-- DIALOG ACTION -->
+
+        <div class="edit-dialog-actions">
+          <v-btn
+            variant="text"
+            color="grey-darken-1"
+            :disabled="savingEdit"
+            @click="closeEdit"
+          >
+            Batal
+          </v-btn>
+
+          <v-btn
+            color="primary"
+            variant="flat"
+            :loading="savingEdit"
+            prepend-icon="mdi-content-save-outline"
+            @click="saveEdit"
+          >
+            Simpan Perubahan
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -710,7 +923,7 @@ const formatTanggal = (tanggal: string) => {
 ===================================================== */
 
 .corporate-table {
-  min-width: 1050px;
+  min-width: 1130px;
 }
 
 .corporate-table :deep(th) {
@@ -832,6 +1045,13 @@ const formatTanggal = (tanggal: string) => {
   line-height: 1.4;
 }
 
+.issued-by-cell {
+  font-size: 11px;
+  font-weight: 500;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
 /* =====================================================
    EMPTY STATE
 ===================================================== */
@@ -889,6 +1109,44 @@ const formatTanggal = (tanggal: string) => {
   font-size: 14px;
   font-weight: 700;
   color: #111827;
+}
+
+/* =====================================================
+   EDIT DIALOG
+===================================================== */
+
+.edit-dialog-card {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+.edit-dialog-header {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px 12px 20px;
+}
+
+.edit-dialog-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.edit-dialog-subtitle {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.edit-dialog-actions {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 20px;
 }
 
 /* =====================================================
@@ -987,6 +1245,10 @@ const formatTanggal = (tanggal: string) => {
 
   .footer-total {
     font-size: 13px;
+  }
+
+  .edit-dialog-actions {
+    padding: 10px 14px;
   }
 }
 </style>

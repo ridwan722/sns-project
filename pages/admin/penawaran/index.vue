@@ -156,7 +156,14 @@
               </v-col>
               <v-col cols="6" sm="2" class="pa-1">
                 <a-select-new
-                  :items="['Unit', 'Pcs', 'Kg', 'Lot', 'Lumpsum']"
+                  :items="[ 'Unit',
+                  'Pcs',
+                  'Kg',
+                  'Lot',
+                  'Set',
+                  'Meter',
+                  'Box',
+                  'Liter',]"
                   v-model="item.uom"
                   label="UOM"
                   placeholder="Select"

@@ -409,16 +409,13 @@
       <template v-slot:item.no="{ index }"> {{ index + 1 }}</template>
 
       <template v-slot:item.no_penawaran="{ item }">
-       <div class="text-center">
-  <NuxtLink
-    :to="'/admin/penawaran/' + item.id"
-    class="quotation-link"
-  >
-    <span class="quotation-badge">
-      {{ item.no_penawaran }}
-    </span>
-  </NuxtLink>
-</div>
+        <div class="text-center">
+          <NuxtLink :to="'/admin/penawaran/' + item.id" class="quotation-link">
+            <span class="quotation-badge">
+              {{ item.no_penawaran }}
+            </span>
+          </NuxtLink>
+        </div>
       </template>
 
       <template v-slot:item.nama_perusahaan="{ item }">
@@ -450,6 +447,7 @@
       <template v-slot:item.aksi="{ item }">
         <div class="d-flex justify-center align-center">
           <v-btn
+            :disabled="item.status == 'Cancel'"
             size="28"
             variant="tonal"
             color="info"
@@ -500,7 +498,9 @@
             @click="ubahstatuscancel(item)"
           >
             <v-icon size="16" icon="mdi-alpha-x-circle-outline" />
-            <v-tooltip activator="parent" location="top">Cancel Penawaran</v-tooltip>
+            <v-tooltip activator="parent" location="top"
+              >Cancel Penawaran</v-tooltip
+            >
           </v-btn>
 
           <!-- KEMBALIKAN -->
@@ -513,7 +513,9 @@
             @click="backtodraft(item)"
           >
             <v-icon size="16" icon="mdi-keyboard-return" />
-            <v-tooltip activator="parent" location="top">Kembalikan menjadi Draft</v-tooltip>
+            <v-tooltip activator="parent" location="top"
+              >Kembalikan menjadi Draft</v-tooltip
+            >
           </v-btn>
         </div>
       </template>
@@ -843,15 +845,22 @@ function ubahstatuscancel(item: penawaranM) {
       console.log("item.status", item.status);
       console.log("item", item);
       await penawaranStore.updatePenawaranAct(item);
-      await penawaranStore.tarikdatapenawaranbystatusarray(["Draft", "INVOICE"]);
+      await penawaranStore.tarikdatapenawaranbystatusarray([
+        "Draft",
+        "INVOICE",
+      ]);
     });
 }
 
 function backtodraft(item: penawaranM) {
   confirmationDialog.value
-    ?.show("Konfirmasi Pengembalian", "Anda yakin ingin mengembalikan penawaran ini menjadi Draft?", {
-      variant: "danger",
-    })
+    ?.show(
+      "Konfirmasi Pengembalian",
+      "Anda yakin ingin mengembalikan penawaran ini menjadi Draft?",
+      {
+        variant: "danger",
+      },
+    )
 
     .then(async (confirmed) => {
       if (!confirmed) return notificationStore.showError("Cancel dibatalkan");
@@ -859,10 +868,12 @@ function backtodraft(item: penawaranM) {
       console.log("item.status", item.status);
       console.log("item", item);
       await penawaranStore.updatePenawaranAct(item);
-      await penawaranStore.tarikdatapenawaranbystatusarray(["Draft", "INVOICE"]);
+      await penawaranStore.tarikdatapenawaranbystatusarray([
+        "Draft",
+        "INVOICE",
+      ]);
     });
 }
-
 
 async function refreshData() {
   useloadingStore().setLoading(true);

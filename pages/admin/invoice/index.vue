@@ -100,14 +100,72 @@
         />
 
         <div class="mt-3">
-          <label for="invoice-po-files">Dokumen PO</label>
-          <div class="text-caption text-grey">Bisa lebih dari satu file. Total file disarankan maksimal 650 KB.</div>
-          <input id="invoice-po-files" type="file" multiple :disabled="readingPo || savingInvoice" @change="tambahDokumenPo" />
-          <div v-if="readingPo" class="text-caption">Membaca file PO...</div>
-          <div v-for="(document, index) in newInvoice.doc_preorder" :key="index" class="d-flex align-center ga-2 mt-2">
-            <a :href="document.dataUrl" :download="document.name">{{ document.name }}</a>
-            <v-btn size="x-small" variant="text" color="error" :disabled="readingPo || savingInvoice" :aria-label="`Hapus ${document.name}`" @click="newInvoice.doc_preorder?.splice(index, 1)">Hapus</v-btn>
-          </div>
+         <div class="po-upload-row">
+  <!-- Upload -->
+  <div class="po-upload-wrapper">
+    <label for="invoice-po-files" class="po-upload-label">
+      Dokumen PO
+    </label>
+
+    <div class="po-upload-box">
+      <input
+        id="invoice-po-files"
+        type="file"
+        multiple
+        :disabled="readingPo || savingInvoice"
+        @change="tambahDokumenPo"
+        class="po-file-input"
+      />
+
+      <div class="po-upload-icon">↑</div>
+
+      <div class="po-upload-text">
+        <div class="po-upload-title">Pilih File</div>
+        <div class="po-upload-info">Maks. 650 KB</div>
+      </div>
+    </div>
+
+    <div v-if="readingPo" class="po-reading">
+      Membaca file PO...
+    </div>
+  </div>
+
+  <!-- Hasil Upload -->
+  <div
+    v-if="newInvoice.doc_preorder?.length"
+    class="po-files-wrapper"
+  >
+    <div class="po-upload-label">
+      File Terpilih
+    </div>
+
+    <div class="po-file-list">
+      <div
+        v-for="(document, index) in newInvoice.doc_preorder"
+        :key="index"
+        class="po-file-item"
+      >
+        <a
+          :href="document.dataUrl"
+          :download="document.name"
+          class="po-file-name"
+        >
+          📄 {{ document.name }}
+        </a>
+
+        <button
+          type="button"
+          class="po-file-remove"
+          :disabled="readingPo || savingInvoice"
+          :aria-label="`Hapus ${document.name}`"
+          @click="newInvoice.doc_preorder?.splice(index, 1)"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
 
         <a-textarea-new
@@ -880,5 +938,126 @@ async function refreshData() {
 .penawaran-link {
   color: rgb(11, 66, 194);
   transition: color 0.2s ease;
+}
+
+.po-upload-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.po-upload-wrapper {
+  flex-shrink: 0;
+}
+
+.po-files-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.po-upload-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Upload Box */
+.po-upload-box {
+  position: relative;
+  width: 150px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.po-upload-box:hover {
+  border-color: #64748b;
+  background: #f1f5f9;
+}
+
+.po-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.po-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 17px;
+}
+
+.po-upload-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.po-upload-info {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* Files */
+.po-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.po-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.po-file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #475569;
+}
+
+.po-file-remove {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.po-file-remove:hover:not(:disabled) {
+  color: #dc2626;
 }
 </style>

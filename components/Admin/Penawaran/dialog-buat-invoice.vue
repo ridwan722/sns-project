@@ -1,16 +1,31 @@
 <template>
-  <div v-if="modelValue" class="modal-overlay" @click.self="emit('update:modelValue', false)">
+  <div
+    v-if="modelValue"
+    class="modal-overlay"
+    @click.self="emit('update:modelValue', false)"
+  >
     <div class="modal-card">
       <!-- Header -->
       <div class="modal-header">
         <div class="title-group">
-          <svg class="icon-doc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+          <svg
+            class="icon-doc"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+            />
           </svg>
           <span class="modal-title">Create Invoice</span>
-          <span class="text-body-2 text-grey"># tarik data penomoran invoice + 1</span>
+          <span class="text-body-2 text-grey"
+            ># tarik data penomoran invoice + 1</span
+          >
         </div>
-        <button class="btn-close" @click="emit('update:modelValue', false)">&times;</button>
+        <button class="btn-close" @click="emit('update:modelValue', false)">
+          &times;
+        </button>
       </div>
 
       <!-- Content Body -->
@@ -18,25 +33,83 @@
         <!-- Customer Info Section -->
         <div class="section-title">Informasi Pelanggan</div>
         <div class="form-grid">
-            <a-text-field-new type="text" v-model="form.nama_customer" disabled  />
-            <a-text-field-new type="text" v-model="form.pic" disabled  />
-            <a-text-field-new type="text" v-model="form.no_telp" disabled  />
-            <a-text-field-new type="text" v-model="form.email" disabled  />
+          <a-text-field-new type="text" v-model="form.nama_customer" disabled />
+          <a-text-field-new type="text" v-model="form.pic" disabled />
+          <a-text-field-new type="text" v-model="form.no_telp" disabled />
+          <a-text-field-new type="text" v-model="form.email" disabled />
         </div>
-         <a-textarea-new v-model="form.alamat_customer" disabled></a-textarea-new>
+        <a-textarea-new
+          v-model="form.alamat_customer"
+          disabled
+        ></a-textarea-new>
 
-         <v-divider class="my-3" />
+        <v-divider class="my-3" />
 
-          <a-date-picker-new v-model="form.tanggal" label="Invoice Date"></a-date-picker-new>
-            <a-text-field-new class="mt-2" label="No. Pre Order (PO)" v-model="form.no_preorder" placeholder="No PO"></a-text-field-new>
-            <label for="upload-po">Upload PO (bisa lebih dari satu file)</label>
-            <div class="text-caption text-grey">Total file PO disarankan maksimal 650 KB.</div>
-            <input id="upload-po" type="file" multiple :disabled="saving" @change="addfile" />
-            <div v-for="(file, index) in poFiles" :key="index" class="mt-2">
-              <span>{{ file.name }}</span>
-              <button type="button" class="btn btn-secondary ml-2" :aria-label="`Hapus ${file.name}`" :disabled="saving" @click="poFiles.splice(index, 1)">Hapus</button>
+        <a-date-picker-new
+          v-model="form.tanggal"
+          label="Invoice Date"
+        ></a-date-picker-new>
+        <a-text-field-new
+          class="mt-2"
+          label="No. Pre Order (PO)"
+          v-model="form.no_preorder"
+          placeholder="No PO"
+        ></a-text-field-new>
+        <v-divider class="my-2" />
+        <div class="po-upload-row">
+          <!-- Upload -->
+          <div class="po-upload-wrapper">
+            <label for="upload-po" class="po-upload-label"> Upload PO </label>
+
+            <div class="po-upload-box">
+              <input
+                id="upload-po"
+                type="file"
+                multiple
+                :disabled="saving"
+                @change="addfile"
+                class="po-file-input"
+              />
+
+              <div class="po-upload-icon">↑</div>
+
+              <div class="po-upload-text">
+                <div class="po-upload-title">Pilih File</div>
+                <div class="po-upload-info">Maks. 650 KB</div>
+              </div>
             </div>
-          <a-text-field-new class="mt-2" label="Subject" v-model="form.perihal"></a-text-field-new>
+          </div>
+
+          <!-- Hasil Upload -->
+          <div v-if="poFiles.length" class="po-files-wrapper">
+            <div class="po-upload-label">File Terpilih</div>
+
+            <div class="po-file-list">
+              <div
+                v-for="(file, index) in poFiles"
+                :key="index"
+                class="po-file-item"
+              >
+                <div class="po-file-name">📄 {{ file.name }}</div>
+
+                <button
+                  type="button"
+                  class="po-file-remove"
+                  :disabled="saving"
+                  @click="poFiles.splice(index, 1)"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <v-divider class="my-2" />
+        <a-text-field-new
+          class="mt-2"
+          label="Subject"
+          v-model="form.perihal"
+        ></a-text-field-new>
 
         <!-- Items Table Section -->
         <div class="section-title mt-3">Description</div>
@@ -44,19 +117,17 @@
           <table class="compact-table">
             <thead>
               <tr>
-                <th style="width: 5%;">No.</th>
-                <th style="width: 45%;" class="text-left">Description</th>
-                <th style="width: 8%; text-align: center;">Qty</th>
-                <th style="width: 10%; text-align: center;">UOM</th>
-                <th style="width: 15%; text-align: right;">Amount/pcs</th>
-                <th style="width: 15%; text-align: right;">Subtotal</th>
+                <th style="width: 5%">No.</th>
+                <th style="width: 45%" class="text-left">Description</th>
+                <th style="width: 8%; text-align: center">Qty</th>
+                <th style="width: 10%; text-align: center">UOM</th>
+                <th style="width: 15%; text-align: right">Amount/pcs</th>
+                <th style="width: 15%; text-align: right">Subtotal</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in form.item_pekerjaan" :key="index">
-                <td class="text-center">
-                  {{ index + 1}}.
-                </td>
+                <td class="text-center">{{ index + 1 }}.</td>
                 <td class="text-left">
                   {{ item.nama }}
                 </td>
@@ -66,9 +137,7 @@
                 <td class="text-center">
                   {{ item.uom }}
                 </td>
-                <td class="text-right">
-                  Rp {{ rupiah(item.amount) }}
-                </td>
+                <td class="text-right">Rp {{ rupiah(item.amount) }}</td>
                 <td class="text-right font-bold text-subtotal">
                   Rp {{ rupiah(itemSubtotal(item)) }}
                 </td>
@@ -132,12 +201,7 @@
                   {{ index + 1 }}.
                 </td>
 
-                <td
-                  style="
-                    width: 30px;
-                    border: 1px solid #9ca3af;
-                  "
-                >
+                <td style="width: 30px; border: 1px solid #9ca3af">
                   <v-checkbox
                     v-model="form.termCondition"
                     :value="{
@@ -177,7 +241,12 @@
 
       <!-- Footer Actions -->
       <div class="modal-footer">
-        <button class="btn btn-secondary" @click="emit('update:modelValue', false)">Batal</button>
+        <button
+          class="btn btn-secondary"
+          @click="emit('update:modelValue', false)"
+        >
+          Batal
+        </button>
         <button class="btn btn-primary" :disabled="saving" @click="save">
           <span v-if="saving">Memproses...</span>
           <span v-else>Simpan Invoice</span>
@@ -189,11 +258,18 @@
 
 <script setup lang="ts">
 import moment from "moment";
-import type { invoiceItemM, invoiceM, invoicePoDocumentM } from "~/types/invoice";
+import type {
+  invoiceItemM,
+  invoiceM,
+  invoicePoDocumentM,
+} from "~/types/invoice";
 import type { penawaranM } from "~/types/penawaranModel";
 
 const props = defineProps<{ modelValue: boolean; penawaran: penawaranM }>();
-const emit = defineEmits<{ "update:modelValue": [value: boolean]; saved: [] }>();
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  saved: [];
+}>();
 
 const termconditionStore = usetermconditionStore();
 const poFiles = ref<File[]>([]);
@@ -238,9 +314,14 @@ onMounted(async () => {
 });
 
 const form = ref<invoiceM>(emptyForm());
-const itemSubtotal = (item: invoiceItemM) => Number(item.qty || 0) * Number(item.amount || 0);
-const subtotal = computed(() => form.value.item_pekerjaan.reduce((sum, item) => sum + itemSubtotal(item), 0));
-const ppn = computed(() => (form.value.pakai_ppn ? Math.round(subtotal.value * 0.11) : 0));
+const itemSubtotal = (item: invoiceItemM) =>
+  Number(item.qty || 0) * Number(item.amount || 0);
+const subtotal = computed(() =>
+  form.value.item_pekerjaan.reduce((sum, item) => sum + itemSubtotal(item), 0),
+);
+const ppn = computed(() =>
+  form.value.pakai_ppn ? Math.round(subtotal.value * 0.11) : 0,
+);
 const grandTotal = computed(() => subtotal.value + ppn.value);
 
 watch(
@@ -308,11 +389,25 @@ const sortedTermConditions = computed(() => {
 
 async function save() {
   if (saving.value) return;
-  if (!form.value.tanggal || !form.value.id_customer || !form.value.nama_customer || !form.value.pic) {
-    return notificationStore.showError("Data customer, PIC, dan tanggal wajib diisi");
+  if (
+    !form.value.tanggal ||
+    !form.value.id_customer ||
+    !form.value.nama_customer ||
+    !form.value.pic
+  ) {
+    return notificationStore.showError(
+      "Data customer, PIC, dan tanggal wajib diisi",
+    );
   }
-  if (!form.value.item_pekerjaan.length || form.value.item_pekerjaan.some((item) => !item.nama || item.qty <= 0 || item.amount <= 0)) {
-    return notificationStore.showError("Setiap item wajib memiliki nama, qty, dan harga");
+  if (
+    !form.value.item_pekerjaan.length ||
+    form.value.item_pekerjaan.some(
+      (item) => !item.nama || item.qty <= 0 || item.amount <= 0,
+    )
+  ) {
+    return notificationStore.showError(
+      "Setiap item wajib memiliki nama, qty, dan harga",
+    );
   }
 
   form.value.item_pekerjaan.forEach((item) => {
@@ -333,10 +428,13 @@ async function save() {
   saving.value = true;
   try {
     const estimatedFileBytes = poFiles.value.reduce(
-      (total, file) => total + 4 * Math.ceil(file.size / 3), 0,
+      (total, file) => total + 4 * Math.ceil(file.size / 3),
+      0,
     );
     if (estimatedFileBytes > MAX_INVOICE_BYTES) {
-      return notificationStore.showError("Total file PO terlalu besar. Kurangi ukuran atau jumlah file (maksimal sekitar 650 KB total).");
+      return notificationStore.showError(
+        "Total file PO terlalu besar. Kurangi ukuran atau jumlah file (maksimal sekitar 650 KB total).",
+      );
     }
 
     const documents: invoicePoDocumentM[] = [];
@@ -350,8 +448,13 @@ async function save() {
     }
     payload.doc_preorder = documents;
 
-    if (new TextEncoder().encode(JSON.stringify(payload)).byteLength > MAX_INVOICE_BYTES) {
-      return notificationStore.showError("Ukuran invoice beserta file PO terlalu besar. Kurangi ukuran atau jumlah file PO.");
+    if (
+      new TextEncoder().encode(JSON.stringify(payload)).byteLength >
+      MAX_INVOICE_BYTES
+    ) {
+      return notificationStore.showError(
+        "Ukuran invoice beserta file PO terlalu besar. Kurangi ukuran atau jumlah file PO.",
+      );
     }
 
     const result = await createInvoicePenawaran(payload);
@@ -368,7 +471,9 @@ async function save() {
     emit("saved");
   } catch (error) {
     console.error("Gagal menyimpan invoice atau membaca file PO:", error);
-    notificationStore.showError("Gagal menyimpan invoice atau membaca file PO. Silakan coba lagi.");
+    notificationStore.showError(
+      "Gagal menyimpan invoice atau membaca file PO. Silakan coba lagi.",
+    );
   } finally {
     saving.value = false;
   }
@@ -381,7 +486,8 @@ function readPoFile(file: File): Promise<string> {
       if (typeof reader.result === "string") resolve(reader.result);
       else reject(new Error("File PO tidak dapat dibaca"));
     };
-    reader.onerror = () => reject(reader.error || new Error("File PO tidak dapat dibaca"));
+    reader.onerror = () =>
+      reject(reader.error || new Error("File PO tidak dapat dibaca"));
     reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
     reader.readAsDataURL(file);
   });
@@ -390,10 +496,7 @@ function readPoFile(file: File): Promise<string> {
 function addfile(event: Event) {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
-    poFiles.value = [
-      ...poFiles.value,
-      ...Array.from(target.files),
-    ];
+    poFiles.value = [...poFiles.value, ...Array.from(target.files)];
   }
   target.value = "";
 }
@@ -403,7 +506,9 @@ function addfile(event: Event) {
 /* Reset & Base Fonts */
 * {
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
 }
 
 /* Modal Structure */
@@ -580,12 +685,25 @@ function addfile(event: Event) {
 }
 
 /* Text Align Helpers */
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.font-bold { font-weight: 700; }
-.font-medium { font-weight: 500; }
-.text-muted { color: #6c757d; }
-.text-subtotal { padding-right: 8px; font-size: 12px; }
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-medium {
+  font-weight: 500;
+}
+.text-muted {
+  color: #6c757d;
+}
+.text-subtotal {
+  padding-right: 8px;
+  font-size: 12px;
+}
 
 /* Summary Area */
 .summary-wrapper {
@@ -677,5 +795,126 @@ function addfile(event: Event) {
 .btn-primary:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.po-upload-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.po-upload-wrapper {
+  flex-shrink: 0;
+}
+
+.po-files-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.po-upload-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Upload Box */
+.po-upload-box {
+  position: relative;
+  width: 150px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.po-upload-box:hover {
+  border-color: #64748b;
+  background: #f1f5f9;
+}
+
+.po-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.po-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 17px;
+}
+
+.po-upload-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.po-upload-info {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* Files */
+.po-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.po-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.po-file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #475569;
+}
+
+.po-file-remove {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.po-file-remove:hover:not(:disabled) {
+  color: #dc2626;
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import moment from "moment";
 import type { ConfirmationDialog } from "#components";
-import type { invoiceM } from "~/types/invoice";
+import type { invoiceM, invoicePoDocumentM } from "~/types/invoice";
 import { uploadStore } from "~/stores/uploadStore";
 
 definePageMeta({
@@ -40,6 +40,48 @@ const formatTanggal = (tanggal: string) => {
 };
 
 const invoiceDetail = computed(() => invoiceStore.getDetailInvoice);
+
+const poObjectUrls = new Map<string, string>();
+
+function bukaDokumenPo(document: invoicePoDocumentM) {
+  try {
+    let url = document.dataUrl;
+    if (url.startsWith("data:")) {
+      const cachedUrl = poObjectUrls.get(url);
+      if (cachedUrl) {
+        url = cachedUrl;
+      } else {
+        const separator = url.indexOf(",");
+        const header = url.slice(0, separator);
+        if (separator < 0 || !header.endsWith(";base64")) {
+          throw new Error("Format dokumen PO tidak valid");
+        }
+        const bytes = Uint8Array.from(atob(url.slice(separator + 1)), (char) =>
+          char.charCodeAt(0),
+        );
+        const contentType =
+          header.slice(5).split(";")[0] ||
+          document.contentType ||
+          "application/octet-stream";
+        const objectUrl = URL.createObjectURL(
+          new Blob([bytes], { type: contentType }),
+        );
+        poObjectUrls.set(url, objectUrl);
+        url = objectUrl;
+      }
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  } catch {
+    notificationStore.showError(
+      "Dokumen PO tidak dapat dibuka. Silakan coba unggah ulang file.",
+    );
+  }
+}
+
+onBeforeUnmount(() => {
+  poObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+  poObjectUrls.clear();
+});
 
 const printArea = ref<HTMLElement | null>(null);
 
@@ -397,6 +439,7 @@ const handleSavePdf = async () => {
                 class="po-chip font-weight-medium"
                 label
                 :href="item.dataUrl"
+                @click.prevent="bukaDokumenPo(item)"
                 target="_blank"
                 rel="noopener noreferrer"
               >

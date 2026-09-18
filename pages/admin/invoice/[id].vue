@@ -164,16 +164,16 @@ const handleSavePdf = async () => {
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
     // Gap footer diperkecil agar pas & tidak terlalu jauh dari bawah
-    const footerGapMm = 5;              // Gap bawah tipis & pas (sebelumnya 15mm)
-    const marginTopSecondPageMm = 12;   // Margin atas halaman 2+
-    const marginBottomMm = 10;          // Margin bawah halaman 2+
+    const footerGapMm = 5; // Gap bawah tipis & pas (sebelumnya 15mm)
+    const marginTopSecondPageMm = 12; // Margin atas halaman 2+
+    const marginBottomMm = 10; // Margin bawah halaman 2+
 
     // Deteksi elemen-elemen penting agar tidak terpotong di tengah baris
     const containerRect = targetElement.getBoundingClientRect();
     const scaleY = fullCanvas.height / containerRect.height;
 
     const breakableElements = targetElement.querySelectorAll(
-      ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid"
+      ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid",
     );
 
     const avoidPositionsPx: { top: number; bottom: number }[] = [];
@@ -193,10 +193,13 @@ const handleSavePdf = async () => {
       }
 
       const currentTopMarginMm = pageCount > 0 ? marginTopSecondPageMm : 0;
-      const currentBottomMarginMm = pageCount > 0 ? marginBottomMm : footerGapMm;
+      const currentBottomMarginMm =
+        pageCount > 0 ? marginBottomMm : footerGapMm;
 
-      const maxUsablePdfHeightMm = pdfHeight - currentTopMarginMm - currentBottomMarginMm;
-      let targetSliceHeightPx = (maxUsablePdfHeightMm * fullCanvas.width) / pdfWidth;
+      const maxUsablePdfHeightMm =
+        pdfHeight - currentTopMarginMm - currentBottomMarginMm;
+      let targetSliceHeightPx =
+        (maxUsablePdfHeightMm * fullCanvas.width) / pdfWidth;
 
       const remainingCanvasHeightPx = fullCanvas.height - currentCanvasY;
 
@@ -205,7 +208,7 @@ const handleSavePdf = async () => {
 
         // Cek jika pemotongan jatuh di tengah-tengah elemen/baris
         const conflictingElement = avoidPositionsPx.find(
-          (pos) => theoreticalCutY > pos.top && theoreticalCutY < pos.bottom
+          (pos) => theoreticalCutY > pos.top && theoreticalCutY < pos.bottom,
         );
 
         if (conflictingElement && conflictingElement.top > currentCanvasY) {
@@ -233,12 +236,13 @@ const handleSavePdf = async () => {
           0,
           0,
           fullCanvas.width,
-          targetSliceHeightPx
+          targetSliceHeightPx,
         );
       }
 
       const imgData = pageCanvas.toDataURL("image/png");
-      const slicePdfHeightMm = (targetSliceHeightPx * pdfWidth) / fullCanvas.width;
+      const slicePdfHeightMm =
+        (targetSliceHeightPx * pdfWidth) / fullCanvas.width;
 
       pdf.addImage(
         imgData,
@@ -246,7 +250,7 @@ const handleSavePdf = async () => {
         0,
         currentTopMarginMm,
         pdfWidth,
-        slicePdfHeightMm
+        slicePdfHeightMm,
       );
 
       currentCanvasY += targetSliceHeightPx;
@@ -366,6 +370,51 @@ const handleSavePdf = async () => {
     </div>
 
     <div class="preview-container d-flex justify-center">
+      <v-card
+        flat
+        class="invoice-reference-card border rounded-lg pa-4 mb-4 elevation-1"
+        width="850"
+      >
+        <v-row align="center" class="ma-0">
+          <!-- INVOICE BASED ON -->
+          <v-col cols="12" sm="6" class="pa-0 pr-sm-4">
+            <div class="reference-label">INVOICE BASED ON</div>
+            <div class="reference-value">
+              {{ invoiceDetail.no_preorder || "-" }}
+            </div>
+          </v-col>
+          <!-- DOCUMENT PO -->
+          <v-col cols="12" sm="6" class="pa-0 pl-sm-4 mt-4 mt-sm-0">
+            <div class="reference-label text-sm-right">
+              PURCHASE ORDER DOCUMENT
+            </div>
+            <div v-if="invoiceDetail.doc_preorder?.length" class="po-list">
+              <v-chip
+                v-for="(item, index) in invoiceDetail.doc_preorder"
+                :key="index"
+                size="small"
+                variant="outlined"
+                class="po-chip font-weight-medium"
+                label
+                :href="item.dataUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <v-icon size="15" class="mr-1">
+                  mdi-file-document-outline
+                </v-icon>
+                {{ item.name }}
+              </v-chip>
+            </div>
+            <div v-else class="reference-empty text-sm-right">
+              No document attached
+            </div>
+          </v-col>
+        </v-row>
+      </v-card>
+    </div>
+
+    <div class="preview-container d-flex justify-center">
       <div ref="printArea" class="invoice-paper-wrapper">
         <v-card width="850" class="pa-10 invoice-paper elevation-2">
           <!-- Header -->
@@ -466,7 +515,7 @@ const handleSavePdf = async () => {
 
                 <td class="desc-cell">
                   <div class="font-weight-bold">
-                    <span style="white-space: pre-line;">
+                    <span style="white-space: pre-line">
                       {{ item.nama }}
                     </span>
                   </div>
@@ -538,8 +587,8 @@ const handleSavePdf = async () => {
           <!-- Terbilang -->
           <div class="terbilang-strip">
             <strong
-              >Terbilang :
-              #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }} Rupiah.
+              >Terbilang : #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }}
+              Rupiah.
             </strong>
           </div>
 
@@ -551,7 +600,7 @@ const handleSavePdf = async () => {
                     <strong class="text-body-2 font-weight-bold"
                       >TERMS & CONDITIONS :</strong
                     >
-                    <ul class="remark-list-style" style="list-style: none;">
+                    <ul class="remark-list-style" style="list-style: none">
                       <li
                         v-for="(item, index) in invoiceDetail.termCondition"
                         :key="index"
@@ -634,12 +683,11 @@ const handleSavePdf = async () => {
     </div>
 
     <div class="preview-container d-flex justify-center">
-  <div ref="printArea" class="invoice-paper-wrapper">
-    <DeliveryOrder :invoice-detail="invoiceDetail" />
+      <div ref="printArea" class="invoice-paper-wrapper">
+        <DeliveryOrder :invoice-detail="invoiceDetail" />
+      </div>
+    </div>
   </div>
-</div>
-  </div>
-  
 </template>
 
 <style scoped>
@@ -821,5 +869,90 @@ const handleSavePdf = async () => {
 .terbilang-strip {
   page-break-inside: avoid !important;
   break-inside: avoid !important;
+}
+
+.invoice-reference-card {
+  background: #ffffff;
+  border-color: #e2e8f0 !important;
+}
+
+.reference-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 5px;
+}
+
+.reference-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.02em;
+}
+
+.po-chip {
+  color: #334155;
+  border-color: #cbd5e1 !important;
+  background: #f8fafc;
+}
+
+.reference-empty {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.invoice-reference-card {
+  background: #ffffff;
+  border-color: #e2e8f0 !important;
+}
+.reference-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.reference-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+.po-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+.po-chip {
+  color: #334155;
+  border-color: #cbd5e1 !important;
+  background: #f8fafc;
+  max-width: 100%;
+}
+.po-chip :deep(.v-chip__content) {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+}
+.reference-empty {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+@media (max-width: 599px) {
+  .po-list {
+    justify-content: flex-start;
+  }
+  .reference-label.text-sm-right {
+    text-align: left !important;
+  }
+  .reference-empty.text-sm-right {
+    text-align: left !important;
+  }
 }
 </style>

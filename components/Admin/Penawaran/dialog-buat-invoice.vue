@@ -29,6 +29,7 @@
 
           <a-date-picker-new v-model="form.tanggal" label="Invoice Date"></a-date-picker-new>
             <a-text-field-new class="mt-2" label="No. Pre Order (PO)" v-model="form.no_preorder" placeholder="No PO"></a-text-field-new>
+            disini val
           <a-text-field-new class="mt-2" label="Subject" v-model="form.perihal"></a-text-field-new>
 
         <!-- Items Table Section -->

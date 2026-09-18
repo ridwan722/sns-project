@@ -11,7 +11,12 @@
   </v-btn>
 
   <!-- /// DIALOG BUAT INVOICE \\\ -->
-  <v-dialog v-model="data.dialogTambahInvoice" max-width="700" scrollable :persistent="readingPo || savingInvoice">
+  <v-dialog
+    v-model="data.dialogTambahInvoice"
+    max-width="700"
+    scrollable
+    :persistent="readingPo || savingInvoice"
+  >
     <v-card class="overflow-hidden elevation-3 border-0">
       <v-card-item class="bg-grey-lighten-4 pa-3 text-center">
         <h4 class="font-weight-bold text-grey-darken-3">
@@ -92,7 +97,7 @@
         </v-row>
         <v-divider class="my-2 border-opacity-50" />
 
-         <a-text-field-new
+        <a-text-field-new
           v-model="newInvoice.no_preorder"
           class="mt-2"
           label="No. Pre Order (PO)"
@@ -100,72 +105,68 @@
         />
 
         <div class="mt-3">
-         <div class="po-upload-row">
-  <!-- Upload -->
-  <div class="po-upload-wrapper">
-    <label for="invoice-po-files" class="po-upload-label">
-      Dokumen PO
-    </label>
+          <div class="po-upload-row">
+            <!-- Upload -->
+            <div class="po-upload-wrapper">
+              <label for="invoice-po-files" class="po-upload-label">
+                Dokumen PO
+              </label>
 
-    <div class="po-upload-box">
-      <input
-        id="invoice-po-files"
-        type="file"
-        multiple
-        :disabled="readingPo || savingInvoice"
-        @change="tambahDokumenPo"
-        class="po-file-input"
-      />
+              <div class="po-upload-box">
+                <input
+                  id="invoice-po-files"
+                  type="file"
+                  multiple
+                  :disabled="readingPo || savingInvoice"
+                  @change="tambahDokumenPo"
+                  class="po-file-input"
+                />
 
-      <div class="po-upload-icon">↑</div>
+                <div class="po-upload-icon">↑</div>
 
-      <div class="po-upload-text">
-        <div class="po-upload-title">Pilih File</div>
-        <div class="po-upload-info">Maks. 650 KB</div>
-      </div>
-    </div>
+                <div class="po-upload-text">
+                  <div class="po-upload-title">Pilih File</div>
+                  <div class="po-upload-info">Maks. 650 KB</div>
+                </div>
+              </div>
 
-    <div v-if="readingPo" class="po-reading">
-      Membaca file PO...
-    </div>
-  </div>
+              <div v-if="readingPo" class="po-reading">Membaca file PO...</div>
+            </div>
 
-  <!-- Hasil Upload -->
-  <div
-    v-if="newInvoice.doc_preorder?.length"
-    class="po-files-wrapper"
-  >
-    <div class="po-upload-label">
-      File Terpilih
-    </div>
+            <!-- Hasil Upload -->
+            <div
+              v-if="newInvoice.doc_preorder?.length"
+              class="po-files-wrapper"
+            >
+              <div class="po-upload-label">File Terpilih</div>
 
-    <div class="po-file-list">
-      <div
-        v-for="(document, index) in newInvoice.doc_preorder"
-        :key="index"
-        class="po-file-item"
-      >
-        <a
-          :href="document.dataUrl"
-          :download="document.name"
-          class="po-file-name"
-        >
-          📄 {{ document.name }}
-        </a>
+              <div class="po-file-list">
+                <div
+                  v-for="(document, index) in newInvoice.doc_preorder"
+                  :key="index"
+                  class="po-file-item"
+                >
+                  <a
+                    :href="document.dataUrl"
+                    :download="document.name"
+                    class="po-file-name"
+                  >
+                    📄 {{ document.name }}
+                  </a>
 
-        <button
-          type="button"
-          class="po-file-remove"
-          :disabled="readingPo || savingInvoice"
-          :aria-label="`Hapus ${document.name}`"
-          @click="newInvoice.doc_preorder?.splice(index, 1)"
-        >
-          ×
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+                  <button
+                    type="button"
+                    class="po-file-remove"
+                    :disabled="readingPo || savingInvoice"
+                    :aria-label="`Hapus ${document.name}`"
+                    @click="newInvoice.doc_preorder?.splice(index, 1)"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <a-textarea-new
@@ -196,11 +197,31 @@
           :key="index"
           class="bg-grey-lighten-5 rounded-lg pa-4 mb-4 border border-dashed"
         >
-          <a-textarea-new
-            v-model="item.nama"
-            label="Description"
-            placeholder="Description"
-          />
+          <v-row>
+            <v-col>
+              <a-textarea-new
+                v-model="item.nama"
+                label="Description"
+                placeholder="Description"
+              />
+            </v-col>
+            <v-col cols="3">
+              <a-select-new
+                v-model="item.nama"
+                label="Kategori"
+                :items="[
+                  'Unit',
+                  'Pcs',
+                  'Kg',
+                  'Lot',
+                  'Set',
+                  'Meter',
+                  'Box',
+                  'Liter',
+                ]"
+              />
+            </v-col>
+          </v-row>
 
           <v-row align="center" density="compact" class="mb-2">
             <v-col cols="6" md="2">
@@ -212,7 +233,16 @@
             </v-col>
             <v-col cols="6" md="3">
               <a-select-new
-                :items="['Unit', 'Pcs', 'Kg']"
+                :items="[
+                  'Unit',
+                  'Pcs',
+                  'Kg',
+                  'Lot',
+                  'Set',
+                  'Meter',
+                  'Box',
+                  'Liter',
+                ]"
                 v-model="item.uom"
                 label="UOM"
                 placeholder="Select"
@@ -648,7 +678,14 @@ function emptyInvoice(): invoiceM {
     tanggal: moment().format("YYYY-MM-DD"),
     perihal: "",
     item_pekerjaan: [
-      { nama: "", qty: 1, uom: "Unit", amount: 0, subtotal_item: 0 },
+      {
+        nama: "",
+        qty: 1,
+        uom: "Unit",
+        kategori_item: "",
+        amount: 0,
+        subtotal_item: 0,
+      },
     ],
     pakai_ppn: false,
     subtotal_invoice: 0,
@@ -701,10 +738,17 @@ async function tambahDokumenPo(event: Event) {
   if (!files.length || readingPo.value || savingInvoice.value) return;
 
   const draft = newInvoice.value;
-  const existingBytes = new TextEncoder().encode(JSON.stringify(draft)).byteLength;
-  const fileBytes = files.reduce((total, file) => total + 4 * Math.ceil(file.size / 3), 0);
+  const existingBytes = new TextEncoder().encode(
+    JSON.stringify(draft),
+  ).byteLength;
+  const fileBytes = files.reduce(
+    (total, file) => total + 4 * Math.ceil(file.size / 3),
+    0,
+  );
   if (existingBytes + fileBytes > MAX_INVOICE_BYTES) {
-    return notificationStore.showError("Total dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.");
+    return notificationStore.showError(
+      "Total dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
+    );
   }
 
   readingPo.value = true;
@@ -713,22 +757,38 @@ async function tambahDokumenPo(event: Event) {
     for (const file of files) {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => typeof reader.result === "string"
-          ? resolve(reader.result)
-          : reject(new Error("File PO tidak dapat dibaca"));
-        reader.onerror = () => reject(reader.error || new Error("File PO tidak dapat dibaca"));
-        reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
+        reader.onload = () =>
+          typeof reader.result === "string"
+            ? resolve(reader.result)
+            : reject(new Error("File PO tidak dapat dibaca"));
+        reader.onerror = () =>
+          reject(reader.error || new Error("File PO tidak dapat dibaca"));
+        reader.onabort = () =>
+          reject(new Error("Pembacaan file PO dibatalkan"));
         reader.readAsDataURL(file);
       });
-      documents.push({ name: file.name, dataUrl, size: file.size, contentType: file.type || "application/octet-stream" });
+      documents.push({
+        name: file.name,
+        dataUrl,
+        size: file.size,
+        contentType: file.type || "application/octet-stream",
+      });
     }
     const doc_preorder = [...(draft.doc_preorder || []), ...documents];
-    if (new TextEncoder().encode(JSON.stringify({ ...draft, doc_preorder })).byteLength > MAX_INVOICE_BYTES) {
-      return notificationStore.showError("Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.");
+    if (
+      new TextEncoder().encode(JSON.stringify({ ...draft, doc_preorder }))
+        .byteLength > MAX_INVOICE_BYTES
+    ) {
+      return notificationStore.showError(
+        "Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
+      );
     }
-    if (newInvoice.value === draft && data.dialogTambahInvoice) draft.doc_preorder = doc_preorder;
+    if (newInvoice.value === draft && data.dialogTambahInvoice)
+      draft.doc_preorder = doc_preorder;
   } catch (error) {
-    notificationStore.showError("File PO tidak dapat dibaca. Silakan coba lagi.");
+    notificationStore.showError(
+      "File PO tidak dapat dibaca. Silakan coba lagi.",
+    );
   } finally {
     readingPo.value = false;
   }
@@ -847,6 +907,7 @@ function tambahBarisInvoice() {
     nama: "",
     // kode_barang: "",
     amount: 0,
+    kategori_item: "",
     uom: "",
     qty: 0,
     subtotal_item: 0,
@@ -876,8 +937,13 @@ async function simpanInvoiceDialog() {
   newInvoice.value.subtotal_invoice = subtotal_invoice.value;
   newInvoice.value.ppn = ppnInvoice.value;
   newInvoice.value.grandtotal_invoice = grandtotal_invoice.value;
-  if (new TextEncoder().encode(JSON.stringify(newInvoice.value)).byteLength > MAX_INVOICE_BYTES) {
-    return notificationStore.showError("Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.");
+  if (
+    new TextEncoder().encode(JSON.stringify(newInvoice.value)).byteLength >
+    MAX_INVOICE_BYTES
+  ) {
+    return notificationStore.showError(
+      "Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
+    );
   }
 
   savingInvoice.value = true;
@@ -909,7 +975,9 @@ async function simpanInvoiceDialog() {
     data.dialogTambahInvoice = false;
     newInvoice.value = emptyInvoice();
   } catch (error) {
-    notificationStore.showError("Gagal menyimpan perubahan invoice. Silakan coba lagi.");
+    notificationStore.showError(
+      "Gagal menyimpan perubahan invoice. Silakan coba lagi.",
+    );
   } finally {
     savingInvoice.value = false;
   }

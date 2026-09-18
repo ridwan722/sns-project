@@ -914,6 +914,18 @@ function tambahBarisInvoice() {
   });
 }
 
+function sameTermCondition(a: any, b: any) {
+  if (!a || !b) return a === b;
+
+  // Prioritas berdasarkan ID
+  if (a.id && b.id) {
+    return a.id === b.id;
+  }
+
+  // Fallback berdasarkan nama term
+  return a.nama_term === b.nama_term;
+}
+
 function hapusBarisInvoice(index: number) {
   if (newInvoice.value.item_pekerjaan.length === 1) {
     return notificationStore.showError("Minimal harus ada 1 baris item");

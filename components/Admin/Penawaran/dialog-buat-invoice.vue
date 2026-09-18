@@ -29,7 +29,13 @@
 
           <a-date-picker-new v-model="form.tanggal" label="Invoice Date"></a-date-picker-new>
             <a-text-field-new class="mt-2" label="No. Pre Order (PO)" v-model="form.no_preorder" placeholder="No PO"></a-text-field-new>
-            disini val
+            <label for="upload-po">Upload PO (bisa lebih dari satu file)</label>
+            <div class="text-caption text-grey">Total file PO disarankan maksimal 650 KB.</div>
+            <input id="upload-po" type="file" multiple :disabled="saving" @change="addfile" />
+            <div v-for="(file, index) in poFiles" :key="index" class="mt-2">
+              <span>{{ file.name }}</span>
+              <button type="button" class="btn btn-secondary ml-2" :aria-label="`Hapus ${file.name}`" :disabled="saving" @click="poFiles.splice(index, 1)">Hapus</button>
+            </div>
           <a-text-field-new class="mt-2" label="Subject" v-model="form.perihal"></a-text-field-new>
 
         <!-- Items Table Section -->
@@ -183,14 +189,16 @@
 
 <script setup lang="ts">
 import moment from "moment";
-import type { invoiceItemM, invoiceM } from "~/types/invoice";
+import type { invoiceItemM, invoiceM, invoicePoDocumentM } from "~/types/invoice";
 import type { penawaranM } from "~/types/penawaranModel";
 
 const props = defineProps<{ modelValue: boolean; penawaran: penawaranM }>();
 const emit = defineEmits<{ "update:modelValue": [value: boolean]; saved: [] }>();
 
 const termconditionStore = usetermconditionStore();
-const invoiceStore = useinvoiceStore();
+const poFiles = ref<File[]>([]);
+// Leave room for Firestore field overhead and invoice numbering.
+const MAX_INVOICE_BYTES = 900_000;
 const penawaranStore = usePenawaranStore();
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();
@@ -222,6 +230,7 @@ const emptyForm = (): invoiceM => ({
   createdBy: "",
   termCondition: [],
   no_preorder: "",
+  doc_preorder: [],
 });
 
 onMounted(async () => {
@@ -238,6 +247,8 @@ watch(
   () => props.modelValue,
   (open) => {
     if (!open) return;
+
+    poFiles.value = [];
 
     form.value = {
       ...emptyForm(),
@@ -296,6 +307,7 @@ const sortedTermConditions = computed(() => {
 });
 
 async function save() {
+  if (saving.value) return;
   if (!form.value.tanggal || !form.value.id_customer || !form.value.nama_customer || !form.value.pic) {
     return notificationStore.showError("Data customer, PIC, dan tanggal wajib diisi");
   }
@@ -319,23 +331,71 @@ async function save() {
   };
 
   saving.value = true;
-  
-  const result = await createInvoicePenawaran(payload);
-  if (!result) {
+  try {
+    const estimatedFileBytes = poFiles.value.reduce(
+      (total, file) => total + 4 * Math.ceil(file.size / 3), 0,
+    );
+    if (estimatedFileBytes > MAX_INVOICE_BYTES) {
+      return notificationStore.showError("Total file PO terlalu besar. Kurangi ukuran atau jumlah file (maksimal sekitar 650 KB total).");
+    }
+
+    const documents: invoicePoDocumentM[] = [];
+    for (const file of poFiles.value) {
+      documents.push({
+        name: file.name,
+        dataUrl: await readPoFile(file),
+        size: file.size,
+        contentType: file.type || "application/octet-stream",
+      });
+    }
+    payload.doc_preorder = documents;
+
+    if (new TextEncoder().encode(JSON.stringify(payload)).byteLength > MAX_INVOICE_BYTES) {
+      return notificationStore.showError("Ukuran invoice beserta file PO terlalu besar. Kurangi ukuran atau jumlah file PO.");
+    }
+
+    const result = await createInvoicePenawaran(payload);
+    if (!result) return;
+
+    const penawaran = JSON.parse(JSON.stringify(props.penawaran)) as penawaranM;
+    const penawaranUpdated = await penawaranStore.updatePenawaranAct({
+      ...penawaran,
+      status: "INVOICE",
+    });
+    if (!penawaranUpdated) return;
+
+    emit("update:modelValue", false);
+    emit("saved");
+  } catch (error) {
+    console.error("Gagal menyimpan invoice atau membaca file PO:", error);
+    notificationStore.showError("Gagal menyimpan invoice atau membaca file PO. Silakan coba lagi.");
+  } finally {
     saving.value = false;
-    return;
   }
+}
 
-  const penawaran = JSON.parse(JSON.stringify(props.penawaran)) as penawaranM;
-  const penawaranUpdated = await penawaranStore.updatePenawaranAct({
-    ...penawaran,
-    status: "INVOICE",
+function readPoFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") resolve(reader.result);
+      else reject(new Error("File PO tidak dapat dibaca"));
+    };
+    reader.onerror = () => reject(reader.error || new Error("File PO tidak dapat dibaca"));
+    reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
+    reader.readAsDataURL(file);
   });
-  saving.value = false;
-  if (!penawaranUpdated) return;
+}
 
-  emit("update:modelValue", false);
-  emit("saved");
+function addfile(event: Event) {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    poFiles.value = [
+      ...poFiles.value,
+      ...Array.from(target.files),
+    ];
+  }
+  target.value = "";
 }
 </script>
 

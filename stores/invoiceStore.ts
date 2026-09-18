@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import { doc, writeBatch } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 import type { invoiceM } from "~/types/invoice";
 
 const COLLECTION = "invoice";
@@ -59,8 +61,24 @@ export const useinvoiceStore = defineStore("invoiceStore", {
         const plainData = JSON.parse(JSON.stringify(data)) as invoiceM;
         const { id: _documentId, ...updateData } = plainData;
 
-        await updatedatabase(COLLECTION, id, updateData);
-        // sessionStorage.removeItem(COLLECTION);
+        const db = useFirestore();
+        const batch = writeBatch(db);
+        batch.update(doc(db, COLLECTION, id), updateData);
+
+        const idPenawaran = updateData.id_penawaran;
+        if (idPenawaran && idPenawaran !== "-") {
+          batch.set(
+            doc(db, "penawaran", idPenawaran, COLLECTION, id),
+            updateData,
+            { merge: true },
+          );
+        }
+
+        await batch.commit();
+        sessionStorage.removeItem(COLLECTION);
+        if (idPenawaran && idPenawaran !== "-") {
+          sessionStorage.removeItem(`penawaran/${idPenawaran}/${COLLECTION}`);
+        }
         this.detailInvoice = { ...plainData, id };
         notificationStore.showSuccess("Perubahan berhasil disimpan");
         return true;

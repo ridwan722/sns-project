@@ -9,11 +9,19 @@ export interface invoiceItemM {
   subtotal_item: number;
 }
 
+export interface invoicePoDocumentM {
+  name: string;
+  dataUrl: string;
+  size: number;
+  contentType: string;
+}
+
 export interface invoiceM {
   id?: string;
   id_invoice?: string;
   no_inv: string;
   no_preorder?:string;
+  doc_preorder?: invoicePoDocumentM[];
   id_customer: string;
   nama_customer: string;
   alamat_customer: string;

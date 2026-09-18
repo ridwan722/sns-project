@@ -11,7 +11,7 @@
   </v-btn>
 
   <!-- /// DIALOG BUAT INVOICE \\\ -->
-  <v-dialog v-model="data.dialogTambahInvoice" max-width="700" scrollable>
+  <v-dialog v-model="data.dialogTambahInvoice" max-width="700" scrollable :persistent="readingPo || savingInvoice">
     <v-card class="overflow-hidden elevation-3 border-0">
       <v-card-item class="bg-grey-lighten-4 pa-3 text-center">
         <h4 class="font-weight-bold text-grey-darken-3">
@@ -98,6 +98,17 @@
           label="No. Pre Order (PO)"
           placeholder="opsional"
         />
+
+        <div class="mt-3">
+          <label for="invoice-po-files">Dokumen PO</label>
+          <div class="text-caption text-grey">Bisa lebih dari satu file. Total file disarankan maksimal 650 KB.</div>
+          <input id="invoice-po-files" type="file" multiple :disabled="readingPo || savingInvoice" @change="tambahDokumenPo" />
+          <div v-if="readingPo" class="text-caption">Membaca file PO...</div>
+          <div v-for="(document, index) in newInvoice.doc_preorder" :key="index" class="d-flex align-center ga-2 mt-2">
+            <a :href="document.dataUrl" :download="document.name">{{ document.name }}</a>
+            <v-btn size="x-small" variant="text" color="error" :disabled="readingPo || savingInvoice" :aria-label="`Hapus ${document.name}`" @click="newInvoice.doc_preorder?.splice(index, 1)">Hapus</v-btn>
+          </div>
+        </div>
 
         <a-textarea-new
           v-model="newInvoice.perihal"
@@ -306,6 +317,7 @@
           variant="outlined"
           color="grey-darken-1"
           class="px-5 text-none"
+          :disabled="readingPo || savingInvoice"
           @click="data.dialogTambahInvoice = false"
         >
           Batal
@@ -315,6 +327,8 @@
           variant="flat"
           size="x-small"
           class="px-6 text-none font-weight-bold"
+          :disabled="readingPo || savingInvoice"
+          :loading="savingInvoice"
           @click="simpanInvoiceDialog"
         >
           {{
@@ -507,7 +521,7 @@ import { useRouter } from "vue-router";
 import moment from "moment";
 import type { ConfirmationDialog } from "#components";
 import type { customerM } from "~/types/customerModel";
-import type { invoiceM } from "~/types/invoice";
+import type { invoiceM, invoicePoDocumentM } from "~/types/invoice";
 import { useinvoiceStore } from "~/stores/invoiceStore";
 
 definePageMeta({
@@ -568,6 +582,7 @@ function emptyInvoice(): invoiceM {
     nama_customer: "",
     alamat_customer: "",
     no_preorder: "",
+    doc_preorder: [],
     vessel: "",
     no_telp: "",
     email: "",
@@ -617,6 +632,49 @@ const sortedTermConditions = computed(() => {
 });
 
 const newInvoice = ref<invoiceM>(emptyInvoice());
+const readingPo = ref(false);
+const savingInvoice = ref(false);
+const MAX_INVOICE_BYTES = 900_000;
+
+async function tambahDokumenPo(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const files = Array.from(input.files || []);
+  input.value = "";
+  if (!files.length || readingPo.value || savingInvoice.value) return;
+
+  const draft = newInvoice.value;
+  const existingBytes = new TextEncoder().encode(JSON.stringify(draft)).byteLength;
+  const fileBytes = files.reduce((total, file) => total + 4 * Math.ceil(file.size / 3), 0);
+  if (existingBytes + fileBytes > MAX_INVOICE_BYTES) {
+    return notificationStore.showError("Total dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.");
+  }
+
+  readingPo.value = true;
+  try {
+    const documents: invoicePoDocumentM[] = [];
+    for (const file of files) {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => typeof reader.result === "string"
+          ? resolve(reader.result)
+          : reject(new Error("File PO tidak dapat dibaca"));
+        reader.onerror = () => reject(reader.error || new Error("File PO tidak dapat dibaca"));
+        reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
+        reader.readAsDataURL(file);
+      });
+      documents.push({ name: file.name, dataUrl, size: file.size, contentType: file.type || "application/octet-stream" });
+    }
+    const doc_preorder = [...(draft.doc_preorder || []), ...documents];
+    if (new TextEncoder().encode(JSON.stringify({ ...draft, doc_preorder })).byteLength > MAX_INVOICE_BYTES) {
+      return notificationStore.showError("Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.");
+    }
+    if (newInvoice.value === draft && data.dialogTambahInvoice) draft.doc_preorder = doc_preorder;
+  } catch (error) {
+    notificationStore.showError("File PO tidak dapat dibaca. Silakan coba lagi.");
+  } finally {
+    readingPo.value = false;
+  }
+}
 
 const subtotal_invoice = computed(() =>
   newInvoice.value.item_pekerjaan.reduce(
@@ -745,6 +803,7 @@ function hapusBarisInvoice(index: number) {
 }
 
 async function simpanInvoiceDialog() {
+  if (readingPo.value || savingInvoice.value) return;
   if (!newInvoice.value.id_customer) {
     return notificationStore.showError("Customer belum dipilih");
   }
@@ -759,32 +818,43 @@ async function simpanInvoiceDialog() {
   newInvoice.value.subtotal_invoice = subtotal_invoice.value;
   newInvoice.value.ppn = ppnInvoice.value;
   newInvoice.value.grandtotal_invoice = grandtotal_invoice.value;
-  if (data.invoiceAddEdit === "add") {
-    newInvoice.value.createdAt = moment().unix();
-    newInvoice.value.createdBy = userStore.getEmail;
+  if (new TextEncoder().encode(JSON.stringify(newInvoice.value)).byteLength > MAX_INVOICE_BYTES) {
+    return notificationStore.showError("Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.");
+  }
 
-    const result = await invoiceStore.createInvoiceAct(newInvoice.value);
-    if (!result) return;
+  savingInvoice.value = true;
+  try {
+    if (data.invoiceAddEdit === "add") {
+      newInvoice.value.createdAt = moment().unix();
+      newInvoice.value.createdBy = userStore.getEmail;
 
+      const result = await invoiceStore.createInvoiceAct(newInvoice.value);
+      if (!result) return;
+
+      data.dialogTambahInvoice = false;
+      newInvoice.value = emptyInvoice();
+      await router.push(`/admin/invoice/${result.id}`);
+      return;
+    }
+
+    if (!newInvoice.value.id) {
+      return notificationStore.showError("ID invoice tidak ditemukan");
+    }
+
+    const updated = await invoiceStore.updateInvoiceAct(
+      newInvoice.value.id,
+      newInvoice.value,
+    );
+    if (!updated) return;
+
+    await invoiceStore.tarikDataInvoiceAct();
     data.dialogTambahInvoice = false;
     newInvoice.value = emptyInvoice();
-    await router.push(`/admin/invoice/${result.id}`);
-    return;
+  } catch (error) {
+    notificationStore.showError("Gagal menyimpan perubahan invoice. Silakan coba lagi.");
+  } finally {
+    savingInvoice.value = false;
   }
-
-  if (!newInvoice.value.id) {
-    return notificationStore.showError("ID invoice tidak ditemukan");
-  }
-
-  const updated = await invoiceStore.updateInvoiceAct(
-    newInvoice.value.id,
-    newInvoice.value,
-  );
-  if (!updated) return;
-
-  await invoiceStore.tarikDataInvoiceAct();
-  data.dialogTambahInvoice = false;
-  newInvoice.value = emptyInvoice();
 }
 
 async function hapusInvoice(id_penawaran: string, id: string) {

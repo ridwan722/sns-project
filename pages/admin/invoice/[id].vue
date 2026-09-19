@@ -1,6 +1,9 @@
+```vue
 <template>
   <div>
     <ConfirmationDialog ref="confirmationDialog" />
+
+    <!-- KEMBALI -->
     <v-btn
       variant="text"
       color="grey-darken-3"
@@ -11,13 +14,16 @@
       Kembali
     </v-btn>
 
+
     <v-dialog v-model="dialogDikirim" max-width="500" persistent>
       <v-card class="rounded-lg">
         <v-card-title class="bg-primary text-white pa-4">
           Kirim Invoice
         </v-card-title>
+
         <v-card-actions class="pa-4 bg-grey-lighten-4">
           <v-spacer />
+
           <v-btn
             variant="outlined"
             color="grey-darken-1"
@@ -25,6 +31,7 @@
           >
             Batal
           </v-btn>
+
           <v-btn
             color="primary"
             variant="flat"
@@ -37,188 +44,312 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="data.dialogSelesai"
-      max-width="700"
-      scrollable
-      :persistent="readingBuktiBayar"
-    >
-      <v-card>
-        <v-card-title>Selesaikan Invoice</v-card-title>
+   <v-dialog
+  v-model="data.dialogSelesai"
+  max-width="700"
+  scrollable
+  :persistent="readingBuktiBayar"
+>
+  <v-card class="finish-invoice-dialog" rounded="xl">
+    <!-- HEADER -->
+    <div class="finish-dialog-header">
+      <div class="finish-header-icon">
+        <v-icon icon="mdi-check-circle-outline" size="28" />
+      </div>
 
-        <v-card-text>
-          <!-- Date Picker -->
-          <a-date-picker-new
-            label="Tanggal di Bayar"
-            v-model="invoiceDetail.tanggal_bayar"
+      <div>
+        <div class="finish-header-title">Selesaikan Invoice</div>
+        <div class="finish-header-subtitle">
+          Lengkapi tanggal pembayaran dan bukti pembayaran
+        </div>
+      </div>
+    </div>
+
+    <v-divider />
+
+    <v-card-text class="pa-6">
+      <!-- TANGGAL PEMBAYARAN -->
+      <div class="form-section">
+        <div class="section-title">
+          <v-icon
+            icon="mdi-calendar-check-outline"
+            size="19"
+            class="mr-2"
           />
+          Informasi Pembayaran
+        </div>
 
-          <!-- Section Upload Bukti Bayar -->
-          <div class="mt-3">
-            <div class="po-upload-row">
-              <!-- Upload Box -->
-              <div class="po-upload-wrapper">
-                <label for="upload-po" class="po-upload-label">
-                  Upload Bukti Bayar
-                </label>
+        <a-date-picker-new
+          label="Tanggal Dibayar"
+          v-model="invoiceDetail.tanggal_bayar"
+        />
+      </div>
 
-                <div class="po-upload-box">
-                  <input
-                    id="upload-po"
-                    type="file"
-                    multiple
-                    class="po-file-input"
-                    :disabled="readingBuktiBayar"
-                    @change="addfile"
-                  />
+      <!-- UPLOAD BUKTI BAYAR -->
+      <div class="form-section mt-6">
+        <div class="section-title">
+          <v-icon
+            icon="mdi-file-document-outline"
+            size="19"
+            class="mr-2"
+          />
+          Bukti Pembayaran
+        </div>
 
-                  <div class="po-upload-icon">↑</div>
+        <div class="upload-card">
+          <label for="upload-po" class="upload-area">
+            <input
+              id="upload-po"
+              type="file"
+              multiple
+              class="po-file-input"
+              :disabled="readingBuktiBayar"
+              @change="addfile"
+            />
 
-                  <div class="po-upload-text">
-                    <div class="po-upload-title">Pilih File</div>
-                    <div class="po-upload-info">Maks. 650 KB</div>
-                  </div>
-                </div>
+            <div class="upload-icon-wrapper">
+              <v-icon
+                icon="mdi-cloud-upload-outline"
+                size="30"
+              />
+            </div>
 
-                <div v-if="readingBuktiBayar" class="po-reading">
-                  Membaca file PO...
-                </div>
+            <div class="upload-content">
+              <div class="upload-title">
+                Klik untuk memilih file
               </div>
 
-              <!-- Hasil Upload Bukti Bayar -->
-              <div v-if="poFiles.length" class="po-files-wrapper">
-                <div class="po-upload-label">File Terpilih</div>
+              <div class="upload-description">
+                Upload bukti pembayaran invoice
+              </div>
 
-                <div class="po-file-list">
-                  <div
-                    v-for="(file, index) in poFiles"
-                    :key="index"
-                    class="po-file-item"
-                  >
-                    <div class="po-file-name">📄 {{ file.name }}</div>
-
-                    <button
-                      type="button"
-                      class="po-file-remove"
-                      :disabled="readingBuktiBayar"
-                      @click="poFiles.splice(index, 1)"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
+              <div class="upload-limit">
+                Maksimal ukuran file 650 KB
               </div>
             </div>
-          </div>
-        </v-card-text>
+          </label>
 
-        <!-- Actions -->
-        <v-card-actions class="pa-4 bg-grey-lighten-4 d-flex justify-end gap-3">
-          <v-btn
-            variant="outlined"
-            color="grey-darken-1"
-            :disabled="readingBuktiBayar || savingInvoice"
-            @click="data.dialogSelesai = false"
+          <!-- LOADING -->
+          <div
+            v-if="readingBuktiBayar"
+            class="upload-loading"
           >
-            Batal
-          </v-btn>
-          <v-btn
-            color="primary"
-            variant="flat"
-            prepend-icon="mdi-check-circle-outline"
-            :disabled="readingBuktiBayar || savingInvoice"
-            @click="ubahStatusSelesai"
-          >
-            Selesai
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+            <v-progress-circular
+              indeterminate
+              size="20"
+              width="2"
+              class="mr-2"
+            />
+            Membaca file...
+          </div>
+        </div>
+
+        <!-- FILE TERPILIH -->
+        <div v-if="poFiles.length" class="selected-files mt-4">
+          <div class="selected-files-header">
+            <div class="selected-files-title">
+              File Terpilih
+            </div>
+
+            <div class="file-count">
+              {{ poFiles.length }} file
+            </div>
+          </div>
+
+          <div class="po-file-list">
+            <div
+              v-for="(file, index) in poFiles"
+              :key="index"
+              class="po-file-item"
+            >
+              <div class="file-left">
+                <div class="file-icon">
+                  <v-icon
+                    icon="mdi-file-check-outline"
+                    size="20"
+                  />
+                </div>
+
+                <div class="file-info">
+                  <div class="po-file-name">
+                    {{ file.name }}
+                  </div>
+
+                  <div class="file-size">
+                    {{ Math.ceil(file.size / 1024) }} KB
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="po-file-remove"
+                :disabled="readingBuktiBayar"
+                @click="poFiles.splice(index, 1)"
+              >
+                <v-icon
+                  icon="mdi-close"
+                  size="18"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </v-card-text>
+
+    <!-- FOOTER -->
+    <v-divider />
+
+    <v-card-actions class="dialog-footer">
+      <v-btn
+        variant="text"
+        color="grey-darken-1"
+        :disabled="readingBuktiBayar || savingInvoice"
+        @click="data.dialogSelesai = false"
+      >
+        Batal
+      </v-btn>
+
+      <v-btn
+        color="primary"
+        variant="flat"
+        rounded="lg"
+        prepend-icon="mdi-check-circle-outline"
+        :loading="savingInvoice"
+        :disabled="readingBuktiBayar || savingInvoice"
+        @click="ubahStatusSelesai"
+      >
+        Simpan Bukti Bayar
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 
     <a-icon-success v-if="invoiceDetail.status == 'Selesai'" />
 
-    <div class="preview-container d-flex justify-center">
-      <v-card flat class="border rounded-lg pa-4 mb-4 elevation-1" width="850">
-        <v-row align="center" justify="space-between">
-          <v-col cols="12" sm="6" class="d-flex align-center">
-            <v-avatar color="primary" class="mr-3" size="40">
-              <v-icon color="white">mdi-file-document-outline</v-icon>
-            </v-avatar>
-            <div>
-              <div class="text-caption text-grey-darken-1 font-weight-medium">
-                INVOICE
-              </div>
-              <div class="text-h6 font-weight-bold primary--text">
-                #INV/SNS/2026/{{ invoiceDetail.id }}
-              </div>
-              <div class="text-caption font-italic">
-                <nuxtLink :to="'/admin/penawaran/' + invoiceDetail.id_penawaran"
-                  >No. Quotation : {{ invoiceDetail.no_penawaran }}</nuxtLink
-                >
-              </div>
-            </div>
-          </v-col>
-
-          <v-col cols="12" sm="6" class="text-sm-right">
-            <v-chip
-              size="small"
-              class="font-weight-bold text-uppercase mb-2"
-              label
-            >
-              {{ invoiceDetail.status }}
-            </v-chip>
-
-            <v-chip
-              v-if="invoiceDetail.status == 'Draft'"
-              prepend-icon="mdi-check-circle-outline"
-              color="primary"
-              size="small"
-              class="font-weight-bold text-uppercase mb-2 ml-3"
-              label
-              @click="openDialogSelesai"
-            >
-              <!-- @click="ubahStatusSelesai" -->
-              Selesai
-            </v-chip>
-
-            <div
-              class="text-caption text-grey-darken-1 d-flex align-center justify-sm-end mt-2"
-            >
-              <v-icon size="small" class="mr-1"
-                >mdi-account-circle-outline</v-icon
-              >
-              <span class="font-weight-medium mr-2">{{
-                invoiceDetail.createdBy
-              }}</span>
-              <span>•</span>
-              <v-icon size="small" class="ml-2 mr-1">mdi-pencil-outline</v-icon>
-              <span>{{ rubahtanggalunix(invoiceDetail.createdAt) }}</span>
-            </div>
-          </v-col>
-        </v-row>
-      </v-card>
-    </div>
+    <!-- ========================================================= -->
+    <!-- HEADER INVOICE - COMPACT CORPORATE -->
+    <!-- ========================================================= -->
 
     <div class="preview-container d-flex justify-center">
       <v-card
         flat
-        class="invoice-reference-card border rounded-lg pa-4 mb-4 elevation-1"
+        class="invoice-top-card border rounded-lg mb-3 elevation-1"
         width="850"
       >
-        <v-row align="center" class="ma-0">
+        <div class="invoice-top-inner">
+          <!-- LEFT -->
+          <div class="invoice-main-info">
+            <div class="invoice-icon-box">
+              <v-icon size="21" color="white">
+                mdi-file-document-outline
+              </v-icon>
+            </div>
+
+            <div class="invoice-heading">
+              <div class="invoice-eyebrow">
+                INVOICE
+              </div>
+
+              <div class="invoice-number">
+                #INV/SNS/2026/{{ invoiceDetail.id }}
+              </div>
+
+              <NuxtLink
+                :to="'/admin/penawaran/' + invoiceDetail.id_penawaran"
+                class="quotation-link"
+              >
+                <span>Quotation</span>
+                <strong>{{ invoiceDetail.no_penawaran }}</strong>
+                <v-icon size="13">mdi-open-in-new</v-icon>
+              </NuxtLink>
+              <v-divider class="my-2"></v-divider>
+
+              <div class="text-caption">
+                {{ invoiceDetail.perihal }}
+              </div>
+              <div class="text-caption font-weight-bold" style="display: flex;">
+                <v-icon color="#1e3a5f" class="mr-1">mdi-domain</v-icon>{{ invoiceDetail.nama_customer }}
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div class="invoice-meta">
+            <div class="invoice-status-row">
+              <v-chip
+                size="small"
+                variant="flat"
+                class="invoice-status"
+                label
+              >
+                {{ invoiceDetail.status }}
+              </v-chip>
+
+              <v-chip
+                v-if="invoiceDetail.status == 'Draft'"
+                prepend-icon="mdi-check-circle-outline"
+                color="primary"
+                size="small"
+                class="invoice-complete-btn"
+                label
+                @click="openDialogSelesai"
+              >
+                Upload Bukti Bayar (Selesai)
+              </v-chip>
+            </div>
+
+            <div class="invoice-created">
+              <div class="created-item">
+                <v-icon size="15">mdi-account-circle-outline</v-icon>
+                <span>{{ invoiceDetail.createdBy }}</span>
+              </div>
+
+              <span class="created-separator">•</span>
+
+              <div class="created-item">
+                <v-icon size="15">mdi-clock-outline</v-icon>
+                <span>{{ rubahtanggalunix(invoiceDetail.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </v-card>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- REFERENCE CARD - COMPACT -->
+    <!-- ========================================================= -->
+
+    <div class="preview-container d-flex justify-center">
+      <v-card
+        flat
+        class="invoice-reference-card border rounded-lg mb-3 elevation-1"
+        width="850"
+      >
+        <div class="reference-grid">
           <!-- INVOICE BASED ON -->
-          <v-col cols="12" sm="6" class="pa-0 pr-sm-4">
-            <div class="reference-label">INVOICE BASED ON</div>
+          <div class="reference-block reference-left">
+            <div class="reference-label">
+              INVOICE BASED ON
+            </div>
+
             <div class="reference-value">
               {{ invoiceDetail.no_preorder || "-" }}
             </div>
-          </v-col>
-          <!-- DOCUMENT PO -->
-          <v-col cols="12" sm="6" class="pa-0 pl-sm-4 mt-4 mt-sm-0">
-            <div class="reference-label text-sm-right">
+          </div>
+
+          <!-- PURCHASE ORDER -->
+          <div class="reference-block reference-right">
+            <div class="reference-label">
               PURCHASE ORDER DOCUMENT
             </div>
-            <div v-if="invoiceDetail.doc_preorder?.length" class="po-list">
+
+            <div
+              v-if="invoiceDetail.doc_preorder?.length"
+              class="po-list"
+            >
               <v-chip
                 v-for="(item, index) in invoiceDetail.doc_preorder"
                 :key="index"
@@ -231,30 +362,46 @@
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <v-icon size="15" class="mr-1">
+                <v-icon size="14" class="mr-1">
                   mdi-file-document-outline
                 </v-icon>
+
                 {{ item.name }}
               </v-chip>
             </div>
-            <div v-else class="reference-empty text-sm-right">
+
+            <div
+              v-else
+              class="reference-empty"
+            >
               No document attached
             </div>
-          </v-col>
-          
-          <v-divider class="my-3"></v-divider>
+          </div>
 
-           <v-col cols="12" sm="6" class="pa-0 pr-sm-4">
-            <div class="reference-label">Tanggal Bayar</div>
-            <div class="reference-value">
-              {{ invoiceDetail.tanggal_bayar }}
+          <!-- DIVIDER -->
+          <div class="reference-divider"></div>
+
+          <!-- TANGGAL BAYAR -->
+          <div class="reference-block reference-left payment-block">
+            <div class="reference-label">
+              TANGGAL BAYAR
             </div>
-          </v-col>
-          <v-col cols="12" sm="6" class="pa-0 pl-sm-4 mt-4 mt-sm-0">
-            <div class="reference-label text-sm-right">
+
+            <div class="reference-value">
+              {{ invoiceDetail.tanggal_bayar || "-" }}
+            </div>
+          </div>
+
+          <!-- BUKTI BAYAR -->
+          <div class="reference-block reference-right payment-block">
+            <div class="reference-label">
               DOC. BUKTI BAYAR
             </div>
-            <div v-if="invoiceDetail.doc_bukti_bayar?.length" class="po-list">
+
+            <div
+              v-if="invoiceDetail.doc_bukti_bayar?.length"
+              class="po-list"
+            >
               <v-chip
                 v-for="(item, index) in invoiceDetail.doc_bukti_bayar"
                 :key="index"
@@ -267,24 +414,33 @@
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <v-icon size="15" class="mr-1">
+                <v-icon size="14" class="mr-1">
                   mdi-file-document-outline
                 </v-icon>
+
                 {{ item.name }}
               </v-chip>
             </div>
-            <div v-else class="reference-empty text-sm-right">
+
+            <div
+              v-else
+              class="reference-empty"
+            >
               No document attached
             </div>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
       </v-card>
     </div>
+
+    <!-- ========================================================= -->
+    <!-- INVOICE PAPER - TIDAK DIUBAH -->
+    <!-- ========================================================= -->
 
     <div class="preview-container d-flex justify-center">
       <div ref="printArea" class="invoice-paper-wrapper">
         <v-card width="850" class="pa-10 invoice-paper elevation-2">
-          <!-- Header -->
+
           <div class="d-flex justify-space-between align-start mb-4">
             <div>
               <img
@@ -292,6 +448,7 @@
                 class="logo-header"
                 alt="Logo SNS"
               />
+
               <div class="company-address">
                 <strong>CV. SOLUSI NUSA SEGARA</strong><br />
                 Ruko Dream Land Blok A No.05, Dreamland Square, Marina City,
@@ -301,10 +458,10 @@
                 Hp. +62821 9998 8670
               </div>
             </div>
+
             <div class="invoice-title">INVOICE</div>
           </div>
 
-          <!-- Info Customer & Invoice -->
           <div class="info-grid mb-4">
             <div class="info-box-left">
               <table class="w-100">
@@ -313,11 +470,10 @@
                     <td width="80">Customer</td>
                     <td width="10">:</td>
                     <td>
-                      <span>
-                        {{ invoiceDetail.nama_customer }}
-                      </span>
+                      <span>{{ invoiceDetail.nama_customer }}</span>
                     </td>
                   </tr>
+
                   <tr>
                     <td style="vertical-align: top">Location</td>
                     <td style="vertical-align: top">:</td>
@@ -325,29 +481,35 @@
                       {{ invoiceDetail.alamat_customer }}
                     </td>
                   </tr>
+
                   <tr>
                     <td width="80">Attn</td>
                     <td width="10">:</td>
                     <td>
-                      <span> {{ invoiceDetail.pic }} </span>
+                      <span>{{ invoiceDetail.pic }}</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+
             <div class="info-box-right">
               <table class="w-100">
                 <tbody>
                   <tr>
                     <td width="110">Invoice No</td>
                     <td width="10">:</td>
-                    <td>INV/SNS/2026/{{ invoiceDetail.no_inv }}</td>
+                    <td>
+                      INV/SNS/2026/{{ invoiceDetail.no_inv }}
+                    </td>
                   </tr>
+
                   <tr>
                     <td>Inv Date</td>
                     <td>:</td>
                     <td>{{ formatTanggal(invoiceDetail.tanggal) }}</td>
                   </tr>
+
                   <tr>
                     <td>Currency</td>
                     <td>:</td>
@@ -358,7 +520,6 @@
             </div>
           </div>
 
-          <!-- Main Table -->
           <table class="main-table">
             <thead>
               <tr>
@@ -369,6 +530,7 @@
                 <th width="35%">AMOUNT</th>
               </tr>
             </thead>
+
             <tbody>
               <tr
                 v-for="(item, index) in invoiceDetail.item_pekerjaan"
@@ -376,7 +538,7 @@
               >
                 <td class="no-cell v-align-middle">
                   <div class="text-center font-weight-bold">
-                    <span> {{ index + 1 }}. </span>
+                    <span>{{ index + 1 }}.</span>
                   </div>
                 </td>
 
@@ -408,53 +570,64 @@
                 </td>
               </tr>
 
-              <!-- Total & Tax Calculation -->
               <tr>
                 <td></td>
                 <td></td>
                 <td></td>
+
                 <td class="footer-label">
                   <strong>SUB TOTAL</strong>
                 </td>
+
                 <td class="footer-value">
                   <div class="d-flex justify-space-between">
-                    <span>Rp</span
-                    ><span>{{ rupiah(invoiceDetail.subtotal_invoice) }}</span>
+                    <span>Rp</span>
+                    <span>{{ rupiah(invoiceDetail.subtotal_invoice) }}</span>
                   </div>
                 </td>
               </tr>
+
               <tr v-if="invoiceDetail.pakai_ppn == true">
                 <td></td>
                 <td></td>
                 <td></td>
-                <td class="footer-label"><strong>PPn 11%</strong></td>
+
+                <td class="footer-label">
+                  <strong>PPn 11%</strong>
+                </td>
+
                 <td class="footer-value">
                   <div class="d-flex justify-space-between">
-                    <span>Rp</span><span>{{ rupiah(invoiceDetail.ppn) }}</span>
+                    <span>Rp</span>
+                    <span>{{ rupiah(invoiceDetail.ppn) }}</span>
                   </div>
                 </td>
               </tr>
+
               <tr>
                 <td></td>
                 <td></td>
                 <td></td>
+
                 <td class="footer-label">
                   <strong>TOTAL</strong>
                 </td>
+
                 <td class="footer-value">
                   <div class="d-flex justify-space-between font-weight-bold">
-                    <span>Rp</span
-                    ><span>{{ rupiah(invoiceDetail.grandtotal_invoice) }}</span>
+                    <span>Rp</span>
+                    <span>
+                      {{ rupiah(invoiceDetail.grandtotal_invoice) }}
+                    </span>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <!-- Terbilang -->
           <div class="terbilang-strip">
-            <strong
-              >Terbilang : #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }}
+            <strong>
+              Terbilang : #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }}
               Rupiah.
             </strong>
           </div>
@@ -464,10 +637,14 @@
               <tr>
                 <td class="remark-cell">
                   <div class="remark-border-box">
-                    <strong class="text-body-2 font-weight-bold"
-                      >TERMS & CONDITIONS :</strong
+                    <strong class="text-body-2 font-weight-bold">
+                      TERMS & CONDITIONS :
+                    </strong>
+
+                    <ul
+                      class="remark-list-style"
+                      style="list-style: none"
                     >
-                    <ul class="remark-list-style" style="list-style: none">
                       <li
                         v-for="(item, index) in invoiceDetail.termCondition"
                         :key="index"
@@ -481,7 +658,6 @@
             </tbody>
           </table>
 
-          <!-- Bank & Signature -->
           <div class="d-flex justify-space-between mt-6 page-break-section">
             <div class="d-flex justify-space-between">
               <div class="bank-details">
@@ -493,11 +669,13 @@
                         <td>:</td>
                         <td>BCA</td>
                       </tr>
+
                       <tr>
                         <td>NO. REKENING</td>
                         <td>:</td>
                         <td>8691 8096 92</td>
                       </tr>
+
                       <tr>
                         <td>NAMA PENERIMA</td>
                         <td>:</td>
@@ -508,15 +686,18 @@
                 </div>
               </div>
             </div>
+
             <div class="text-center signature-area">
-              <span class="font-italic">Your sincerely,</span><br /><strong
-                >CV. SOLUSI NUSA SEGARA</strong
-              >
+              <span class="font-italic">Your sincerely,</span><br />
+
+              <strong>CV. SOLUSI NUSA SEGARA</strong>
+
               <v-img
                 src="/public/ttd_ridwan.png"
                 width="120"
                 class="ml-11"
               ></v-img>
+
               <strong>( Muhammad Ridwan )</strong>
             </div>
           </div>
@@ -524,7 +705,7 @@
       </div>
     </div>
 
-    <!-- Actions -->
+    <!-- ACTIONS -->
     <div class="d-flex justify-center gap-3 mt-4">
       <v-btn
         prepend-icon="mdi-file-pdf-box"
@@ -532,7 +713,7 @@
         variant="elevated"
         :loading="isSavingPdf"
         @click="handleSavePdf"
-        width="22%"
+
         class="mr-2"
       >
         Save PDF Invoice
@@ -543,11 +724,13 @@
         color="indigo"
         variant="elevated"
         @click="printInvoice"
-        width="22%"
+
       >
         Print Invoice
       </v-btn>
     </div>
+
+    <v-divider class="my-1 mt-10" opacity="100" color="primary"></v-divider>
 
     <div class="preview-container d-flex justify-center mt-8">
       <DeliveryOrder :invoice-detail="invoiceDetail" />
@@ -570,9 +753,10 @@ const uploadStoreInstance = uploadStore();
 const notificationStore = useNotificationStore();
 const userStore = useUserStore();
 const route = useRoute();
-const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
-  null,
-);
+
+const confirmationDialog =
+  ref<InstanceType<typeof ConfirmationDialog> | null>(null);
+
 const dialogDikirim = ref(false);
 const isSavingPdf = ref(false);
 const readingBuktiBayar = ref(false);
@@ -612,17 +796,23 @@ const poObjectUrls = new Map<string, string>();
 async function tambahDokumenBb(event: Event) {
   const input = event.target as HTMLInputElement;
   const files = Array.from(input.files || []);
+
   input.value = "";
-  if (!files.length || readingBuktiBayar.value || savingInvoice.value) return;
+
+  if (!files.length || readingBuktiBayar.value || savingInvoice.value)
+    return;
 
   const draft = invoiceDetail.value;
+
   const existingBytes = new TextEncoder().encode(
     JSON.stringify(draft),
   ).byteLength;
+
   const fileBytes = files.reduce(
     (total, file) => total + 4 * Math.ceil(file.size / 3),
     0,
   );
+
   if (existingBytes + fileBytes > MAX_INVOICE_BYTES) {
     return notificationStore.showError(
       "Total dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
@@ -630,21 +820,28 @@ async function tambahDokumenBb(event: Event) {
   }
 
   readingBuktiBayar.value = true;
+
   try {
     const documents: invoiceBuktiBayarM[] = [];
+
     for (const file of files) {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
+
         reader.onload = () =>
           typeof reader.result === "string"
             ? resolve(reader.result)
             : reject(new Error("File PO tidak dapat dibaca"));
+
         reader.onerror = () =>
           reject(reader.error || new Error("File PO tidak dapat dibaca"));
+
         reader.onabort = () =>
           reject(new Error("Pembacaan file PO dibatalkan"));
+
         reader.readAsDataURL(file);
       });
+
       documents.push({
         name: file.name,
         dataUrl,
@@ -652,15 +849,22 @@ async function tambahDokumenBb(event: Event) {
         contentType: file.type || "application/octet-stream",
       });
     }
-    const doc_bukti_bayar = [...(draft.doc_bukti_bayar || []), ...documents];
+
+    const doc_bukti_bayar = [
+      ...(draft.doc_bukti_bayar || []),
+      ...documents,
+    ];
+
     if (
-      new TextEncoder().encode(JSON.stringify({ ...draft, doc_bukti_bayar }))
-        .byteLength > MAX_INVOICE_BYTES
+      new TextEncoder().encode(
+        JSON.stringify({ ...draft, doc_bukti_bayar }),
+      ).byteLength > MAX_INVOICE_BYTES
     ) {
       return notificationStore.showError(
         "Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
       );
     }
+
     if (invoiceDetail.value === draft && data.dialogSelesai)
       draft.doc_bukti_bayar = doc_bukti_bayar;
   } catch (error) {
@@ -675,30 +879,39 @@ async function tambahDokumenBb(event: Event) {
 function bukaDokumenPo(document: invoiceBuktiBayarM) {
   try {
     let url = document.dataUrl;
+
     if (url.startsWith("data:")) {
       const cachedUrl = poObjectUrls.get(url);
+
       if (cachedUrl) {
         url = cachedUrl;
       } else {
         const separator = url.indexOf(",");
         const header = url.slice(0, separator);
+
         if (separator < 0 || !header.endsWith(";base64")) {
           throw new Error("Format dokumen PO tidak valid");
         }
-        const bytes = Uint8Array.from(atob(url.slice(separator + 1)), (char) =>
-          char.charCodeAt(0),
+
+        const bytes = Uint8Array.from(
+          atob(url.slice(separator + 1)),
+          (char) => char.charCodeAt(0),
         );
+
         const contentType =
           header.slice(5).split(";")[0] ||
           document.contentType ||
           "application/octet-stream";
+
         const objectUrl = URL.createObjectURL(
           new Blob([bytes], { type: contentType }),
         );
+
         poObjectUrls.set(url, objectUrl);
         url = objectUrl;
       }
     }
+
     window.open(url, "_blank", "noopener,noreferrer");
   } catch {
     notificationStore.showError(
@@ -726,63 +939,82 @@ function tutupDialogDikirim() {
 
 async function ubahStatusDikirim() {
   const id = route.params.id as string;
-  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
+
+  const invoice = JSON.parse(
+    JSON.stringify(invoiceDetail.value),
+  ) as invoiceM;
+
   invoice.status = "Dikirim";
   invoice.dokumen_dikirim = uploadStoreInstance.getUrlRef;
-
   invoice.dikirimAt = moment().unix();
   invoice.dikirimBy = userStore.getEmail;
 
   const updated = await invoiceStore.updateInvoiceAct(id, invoice);
+
   if (!updated) return;
 
   await invoiceStore.tarikDetailInvoiceAct(id);
+
   tutupDialogDikirim();
+
   navigateTo("/admin/invoice/dikirim");
 }
+
 const poFiles = ref<File[]>([]);
 
 function readPoFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
     reader.onload = () => {
       if (typeof reader.result === "string") resolve(reader.result);
       else reject(new Error("File PO tidak dapat dibaca"));
     };
+
     reader.onerror = () =>
       reject(reader.error || new Error("File PO tidak dapat dibaca"));
-    reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
+
+    reader.onabort = () =>
+      reject(new Error("Pembacaan file PO dibatalkan"));
+
     reader.readAsDataURL(file);
   });
 }
 
 function addfile(event: Event) {
   const target = event.target as HTMLInputElement;
+
   if (target.files && target.files.length > 0) {
-    poFiles.value = [...poFiles.value, ...Array.from(target.files)];
+    poFiles.value = [
+      ...poFiles.value,
+      ...Array.from(target.files),
+    ];
   }
+
   target.value = "";
 }
 
 async function ubahStatusSelesai() {
-  // 1. Validasi Input Tanggal Bayar
   if (!invoiceDetail.value.tanggal_bayar) {
     notificationStore.showError("Tanggal di Bayar wajib diisi!");
     return;
   }
 
-  // 2. Konfirmasi User
   const confirmed = await confirmationDialog.value?.show(
     "Konfirmasi Selesai",
     "Anda yakin ingin mengubah status invoice menjadi Selesai?",
   );
+
   if (!confirmed) return;
 
   const id = route.params.id as string;
-  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
 
-  // 3. Konversi File Baru ke Format Document
+  const invoice = JSON.parse(
+    JSON.stringify(invoiceDetail.value),
+  ) as invoiceM;
+
   const newDocuments: invoiceBuktiBayarM[] = [];
+
   for (const file of poFiles.value) {
     newDocuments.push({
       name: file.name,
@@ -792,8 +1024,6 @@ async function ubahStatusSelesai() {
     });
   }
 
-  // 4. Update Field Invoice
-  // Gabungkan file lama dengan file baru
   invoice.doc_bukti_bayar = [
     ...(invoiceDetail.value.doc_bukti_bayar || []),
     ...newDocuments,
@@ -801,25 +1031,26 @@ async function ubahStatusSelesai() {
 
   invoice.status = "Selesai";
   invoice.tanggal_bayar = invoiceDetail.value.tanggal_bayar;
-  // (Baris duplikat invoice.doc_bukti_bayar di sini SUDAH DIHAPUS)
   invoice.selesaiAt = moment().unix();
   invoice.selesaiBy = userStore.getEmail;
 
-  // 5. Simpan ke Store / API
   const updated = await invoiceStore.updateInvoiceAct(id, invoice);
+
   if (!updated) return;
 
-  // 6. Reset Form & Refresh Data
-  poFiles.value = []; // Clear file input lokal setelah berhasil simpan
+  poFiles.value = [];
   data.dialogSelesai = false;
+
   await invoiceStore.tarikDetailInvoiceAct(id);
 }
 
 function printInvoice() {
   const content = printArea.value;
+
   if (!content) return;
 
   const printWindow = window.open("", "_blank");
+
   if (!printWindow) return;
 
   const styles = Array.from(
@@ -833,16 +1064,40 @@ function printInvoice() {
       <head>
         <title>INV - </title>
         ${styles}
+
         <style>
-          body { background: white !important; margin: 0; padding: 0; }
-          .invoice-paper { border: none !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; }
-          .logo-header { max-width: 100px !important; height: auto !important; }
-          @page { margin: 0.5cm; }
-          .page-break-section { page-break-inside: avoid; break-inside: avoid; }
+          body {
+            background: white !important;
+            margin: 0;
+            padding: 0;
+          }
+
+          .invoice-paper {
+            border: none !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          .logo-header {
+            max-width: 100px !important;
+            height: auto !important;
+          }
+
+          @page {
+            margin: 0.5cm;
+          }
+
+          .page-break-section {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
         </style>
       </head>
+
       <body>
         ${content.innerHTML}
+
         <script>
           window.onload = () => {
             window.print();
@@ -852,32 +1107,37 @@ function printInvoice() {
       </body>
     </html>
   `);
+
   printWindow.document.close();
 }
 
 const handleSavePdf = async () => {
   const targetElement = printArea.value;
+
   if (!targetElement || isSavingPdf.value) return;
 
   isSavingPdf.value = true;
 
   try {
-    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import("html2canvas"),
-      import("jspdf"),
-    ]);
+    const [{ default: html2canvas }, { jsPDF }] =
+      await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
 
     const fullCanvas = await html2canvas(targetElement, {
       scale: 2,
       useCORS: true,
       backgroundColor: "#ffffff",
       logging: false,
+
       onclone: (clonedDocument) => {
         clonedDocument
           .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
           .forEach((element) => {
             (element as HTMLElement).style.display = "none";
           });
+
         clonedDocument
           .querySelectorAll(".print-only-cell")
           .forEach((element) => {
@@ -887,28 +1147,43 @@ const handleSavePdf = async () => {
     });
 
     const pdf = new jsPDF("p", "mm", "a4");
+
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    // Gap footer diperkecil agar pas & tidak terlalu jauh dari bawah
-    const footerGapMm = 5; // Gap bawah tipis & pas (sebelumnya 15mm)
-    const marginTopSecondPageMm = 12; // Margin atas halaman 2+
-    const marginBottomMm = 10; // Margin bawah halaman 2+
+    const footerGapMm = 5;
+    const marginTopSecondPageMm = 12;
+    const marginBottomMm = 10;
 
-    // Deteksi elemen-elemen penting agar tidak terpotong di tengah baris
-    const containerRect = targetElement.getBoundingClientRect();
-    const scaleY = fullCanvas.height / containerRect.height;
+    const containerRect =
+      targetElement.getBoundingClientRect();
 
-    const breakableElements = targetElement.querySelectorAll(
-      ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid",
-    );
+    const scaleY =
+      fullCanvas.height / containerRect.height;
 
-    const avoidPositionsPx: { top: number; bottom: number }[] = [];
+    const breakableElements =
+      targetElement.querySelectorAll(
+        ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid",
+      );
+
+    const avoidPositionsPx: {
+      top: number;
+      bottom: number;
+    }[] = [];
+
     breakableElements.forEach((el) => {
       const rect = el.getBoundingClientRect();
-      const topPx = (rect.top - containerRect.top) * scaleY;
-      const bottomPx = (rect.bottom - containerRect.top) * scaleY;
-      avoidPositionsPx.push({ top: topPx, bottom: bottomPx });
+
+      const topPx =
+        (rect.top - containerRect.top) * scaleY;
+
+      const bottomPx =
+        (rect.bottom - containerRect.top) * scaleY;
+
+      avoidPositionsPx.push({
+        top: topPx,
+        bottom: bottomPx,
+      });
     });
 
     let currentCanvasY = 0;
@@ -919,40 +1194,64 @@ const handleSavePdf = async () => {
         pdf.addPage();
       }
 
-      const currentTopMarginMm = pageCount > 0 ? marginTopSecondPageMm : 0;
+      const currentTopMarginMm =
+        pageCount > 0 ? marginTopSecondPageMm : 0;
+
       const currentBottomMarginMm =
         pageCount > 0 ? marginBottomMm : footerGapMm;
 
       const maxUsablePdfHeightMm =
-        pdfHeight - currentTopMarginMm - currentBottomMarginMm;
-      let targetSliceHeightPx =
-        (maxUsablePdfHeightMm * fullCanvas.width) / pdfWidth;
+        pdfHeight -
+        currentTopMarginMm -
+        currentBottomMarginMm;
 
-      const remainingCanvasHeightPx = fullCanvas.height - currentCanvasY;
+      let targetSliceHeightPx =
+        (maxUsablePdfHeightMm * fullCanvas.width) /
+        pdfWidth;
+
+      const remainingCanvasHeightPx =
+        fullCanvas.height - currentCanvasY;
 
       if (remainingCanvasHeightPx > targetSliceHeightPx) {
-        const theoreticalCutY = currentCanvasY + targetSliceHeightPx;
+        const theoreticalCutY =
+          currentCanvasY + targetSliceHeightPx;
 
-        // Cek jika pemotongan jatuh di tengah-tengah elemen/baris
-        const conflictingElement = avoidPositionsPx.find(
-          (pos) => theoreticalCutY > pos.top && theoreticalCutY < pos.bottom,
-        );
+        const conflictingElement =
+          avoidPositionsPx.find(
+            (pos) =>
+              theoreticalCutY > pos.top &&
+              theoreticalCutY < pos.bottom,
+          );
 
-        if (conflictingElement && conflictingElement.top > currentCanvasY) {
-          targetSliceHeightPx = conflictingElement.top - currentCanvasY;
+        if (
+          conflictingElement &&
+          conflictingElement.top > currentCanvasY
+        ) {
+          targetSliceHeightPx =
+            conflictingElement.top - currentCanvasY;
         }
       } else {
-        targetSliceHeightPx = remainingCanvasHeightPx;
+        targetSliceHeightPx =
+          remainingCanvasHeightPx;
       }
 
-      const pageCanvas = document.createElement("canvas");
+      const pageCanvas =
+        document.createElement("canvas");
+
       pageCanvas.width = fullCanvas.width;
       pageCanvas.height = targetSliceHeightPx;
 
       const ctx = pageCanvas.getContext("2d");
+
       if (ctx) {
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+
+        ctx.fillRect(
+          0,
+          0,
+          pageCanvas.width,
+          pageCanvas.height,
+        );
 
         ctx.drawImage(
           fullCanvas,
@@ -967,9 +1266,12 @@ const handleSavePdf = async () => {
         );
       }
 
-      const imgData = pageCanvas.toDataURL("image/png");
+      const imgData =
+        pageCanvas.toDataURL("image/png");
+
       const slicePdfHeightMm =
-        (targetSliceHeightPx * pdfWidth) / fullCanvas.width;
+        (targetSliceHeightPx * pdfWidth) /
+        fullCanvas.width;
 
       pdf.addImage(
         imgData,
@@ -985,7 +1287,8 @@ const handleSavePdf = async () => {
     }
 
     const year = new Date().getFullYear();
-    const invoiceId = invoiceDetail.value?.id || route.params.id;
+    const invoiceId =
+      invoiceDetail.value?.id || route.params.id;
 
     pdf.save(`INV-SNS-${year}-${invoiceId}.pdf`);
   } catch (error) {
@@ -997,6 +1300,221 @@ const handleSavePdf = async () => {
 </script>
 
 <style scoped>
+/* ============================================================
+   TOP INVOICE CARD
+   ============================================================ */
+
+.invoice-top-card {
+  background: #ffffff;
+  border-color: #e2e8f0 !important;
+  overflow: hidden;
+}
+
+.invoice-top-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 18px;
+}
+
+.invoice-main-info {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.invoice-icon-box {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #1e3a5f;
+  margin-right: 12px;
+}
+
+.invoice-heading {
+  min-width: 0;
+}
+
+.invoice-eyebrow {
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.invoice-number {
+  font-size: 18px;
+  line-height: 1.15;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.quotation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  text-decoration: none;
+  font-size: 11px;
+  color: #64748b;
+  transition: 0.2s ease;
+}
+
+.quotation-link strong {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.quotation-link:hover strong {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.invoice-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.invoice-status-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.invoice-status {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.invoice-complete-btn {
+  font-size: 10px;
+  letter-spacing: 0.03em;
+}
+
+.invoice-created {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  color: #64748b;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.created-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.created-separator {
+  color: #cbd5e1;
+}
+
+/* ============================================================
+   REFERENCE CARD
+   ============================================================ */
+
+.invoice-reference-card {
+  background: #ffffff;
+  border-color: #e2e8f0 !important;
+  overflow: hidden;
+}
+
+.reference-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0;
+}
+
+.reference-block {
+  padding: 12px 16px;
+  min-width: 0;
+}
+
+.reference-left {
+  border-right: 1px solid #eef2f7;
+}
+
+.reference-right {
+  text-align: right;
+}
+
+.reference-label {
+  font-size: 9px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.reference-value {
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.reference-divider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: #eef2f7;
+}
+
+.payment-block {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.reference-empty {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.po-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+}
+
+.po-chip {
+  height: 26px !important;
+  max-width: 100%;
+  color: #334155;
+  border-color: #dbe3ec !important;
+  background: #f8fafc;
+  font-size: 11px;
+}
+
+.po-chip :deep(.v-chip__content) {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   INVOICE PAPER
+   ============================================================ */
+
 .logo-header {
   max-width: 100px;
   height: auto;
@@ -1015,6 +1533,7 @@ const handleSavePdf = async () => {
   font-weight: bold;
   border-bottom: none;
 }
+
 .company-address {
   font-size: 13px;
   margin-top: 5px;
@@ -1024,6 +1543,7 @@ const handleSavePdf = async () => {
   display: flex;
   border: 1px solid #000;
 }
+
 .info-box-left {
   padding: 10px;
   font-size: 14px;
@@ -1079,6 +1599,7 @@ const handleSavePdf = async () => {
 .signature-area {
   font-size: 14px;
 }
+
 .bank-table {
   border-collapse: collapse;
   font-size: 14px;
@@ -1151,10 +1672,18 @@ const handleSavePdf = async () => {
   break-inside: avoid;
 }
 
+.remark-border-box,
+.main-table tr,
+.terbilang-strip {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
 @media print {
   .no-print {
     display: none !important;
   }
+
   .bg-light-blue,
   .bg-blue-total,
   .main-table th {
@@ -1163,104 +1692,16 @@ const handleSavePdf = async () => {
     print-color-adjust: exact;
     border: 1px solid #000;
   }
+
   .page-break-section {
     page-break-inside: avoid;
     break-inside: avoid;
   }
 }
 
-/* Tambahkan aturan ini di <style scoped> */
-.remark-border-box,
-.main-table tr,
-.terbilang-strip {
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
-}
-
-.invoice-reference-card {
-  background: #ffffff;
-  border-color: #e2e8f0 !important;
-}
-
-.reference-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #64748b;
-  margin-bottom: 5px;
-}
-
-.reference-value {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1e293b;
-  letter-spacing: 0.02em;
-}
-
-.po-chip {
-  color: #334155;
-  border-color: #cbd5e1 !important;
-  background: #f8fafc;
-}
-
-.reference-empty {
-  font-size: 13px;
-  color: #94a3b8;
-}
-
-.invoice-reference-card {
-  background: #ffffff;
-  border-color: #e2e8f0 !important;
-}
-.reference-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #64748b;
-  margin-bottom: 6px;
-  line-height: 1.2;
-}
-.reference-value {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1e293b;
-  letter-spacing: 0.02em;
-  line-height: 1.4;
-}
-.po-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 6px;
-}
-.po-chip {
-  color: #334155;
-  border-color: #cbd5e1 !important;
-  background: #f8fafc;
-  max-width: 100%;
-}
-.po-chip :deep(.v-chip__content) {
-  display: flex;
-  align-items: center;
-  max-width: 100%;
-}
-.reference-empty {
-  font-size: 13px;
-  color: #94a3b8;
-  line-height: 1.4;
-}
-@media (max-width: 599px) {
-  .po-list {
-    justify-content: flex-start;
-  }
-  .reference-label.text-sm-right {
-    text-align: left !important;
-  }
-  .reference-empty.text-sm-right {
-    text-align: left !important;
-  }
-}
+/* ============================================================
+   UPLOAD
+   ============================================================ */
 
 .po-upload-row {
   display: flex;
@@ -1286,7 +1727,6 @@ const handleSavePdf = async () => {
   color: #334155;
 }
 
-/* Upload Box */
 .po-upload-box {
   position: relative;
   width: 150px;
@@ -1341,7 +1781,6 @@ const handleSavePdf = async () => {
   color: #94a3b8;
 }
 
-/* Files */
 .po-file-list {
   display: flex;
   flex-direction: column;
@@ -1382,4 +1821,337 @@ const handleSavePdf = async () => {
 .po-file-remove:hover:not(:disabled) {
   color: #dc2626;
 }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 599px) {
+  .invoice-top-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 13px 14px;
+  }
+
+  .invoice-meta {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .invoice-created {
+    justify-content: flex-start;
+  }
+
+  .reference-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reference-left {
+    border-right: none;
+  }
+
+  .reference-right {
+    text-align: left;
+  }
+
+  .reference-divider {
+    grid-column: auto;
+  }
+
+  .po-list {
+    justify-content: flex-start;
+  }
+
+  .po-upload-row {
+    flex-direction: column;
+  }
+}
+.finish-invoice-dialog {
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* HEADER */
+.finish-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 24px;
+  background: linear-gradient(
+    135deg,
+    #f8fafc 0%,
+    #ffffff 100%
+  );
+}
+
+.finish-header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f5e9;
+  color: #2e7d32;
+  flex-shrink: 0;
+}
+
+.finish-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.3;
+}
+
+.finish-header-subtitle {
+  margin-top: 3px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* SECTION */
+.form-section {
+  width: 100%;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* UPLOAD */
+.upload-card {
+  width: 100%;
+}
+
+.upload-area {
+  position: relative;
+  min-height: 150px;
+  padding: 25px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 14px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-area:hover {
+  border-color: #1976d2;
+  background: #f5f9ff;
+}
+
+.po-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-icon-wrapper {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e3f2fd;
+  color: #1976d2;
+  flex-shrink: 0;
+}
+
+.upload-content {
+  text-align: left;
+}
+
+.upload-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.upload-description {
+  margin-top: 3px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.upload-limit {
+  margin-top: 7px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* LOADING */
+.upload-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* SELECTED FILE */
+.selected-files {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.selected-files-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.selected-files-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.file-count {
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: #e3f2fd;
+  color: #1976d2;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.po-file-list {
+  padding: 6px;
+}
+
+.po-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  transition: background 0.15s ease;
+}
+
+.po-file-item:hover {
+  background: #f8fafc;
+}
+
+.file-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.file-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ecfdf5;
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.file-info {
+  min-width: 0;
+}
+
+.po-file-name {
+  max-width: 480px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.file-size {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.po-file-remove {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.po-file-remove:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* FOOTER */
+.dialog-footer {
+  min-height: 72px;
+  padding: 14px 24px;
+  background: #fafafa;
+  gap: 8px;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .finish-dialog-header {
+    padding: 18px;
+  }
+
+  .finish-header-title {
+    font-size: 16px;
+  }
+
+  .finish-header-subtitle {
+    font-size: 12px;
+  }
+
+  .upload-area {
+    flex-direction: column;
+    text-align: center;
+    padding: 22px 15px;
+  }
+
+  .upload-content {
+    text-align: center;
+  }
+
+  .dialog-footer {
+    padding: 12px 16px;
+  }
+
+  .po-file-name {
+    max-width: 250px;
+  }
+}
 </style>
+

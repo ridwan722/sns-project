@@ -307,6 +307,8 @@ const emptyForm = (): invoiceM => ({
   termCondition: [],
   no_preorder: "",
   doc_preorder: [],
+  tanggal_bayar: "",
+  doc_bukti_bayar: [],
 });
 
 onMounted(async () => {
@@ -346,6 +348,7 @@ watch(
       item_pekerjaan: (props.penawaran.penawaran_item || []).map((item) => ({
         nama: item.nama,
         qty: item.qty,
+        kategori_item: item.kategori_item,
         uom: item.uom,
         amount: item.amount,
         subtotal_item: item.subtotal_item,

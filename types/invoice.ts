@@ -16,6 +16,13 @@ export interface invoicePoDocumentM {
   contentType: string;
 }
 
+export interface invoiceBuktiBayarM {
+  name: string;
+  dataUrl: string;
+  size: number;
+  contentType: string;
+}
+
 export interface invoiceM {
   id?: string;
   id_invoice?: string;
@@ -46,4 +53,8 @@ export interface invoiceM {
   selesaiAt?: number;
   selesaiBy?: string;
   termCondition: termconditionM[];
+
+  // BUKTI BAYAR
+  tanggal_bayar: string,
+  doc_bukti_bayar: invoiceBuktiBayarM[]
 }

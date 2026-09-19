@@ -753,7 +753,7 @@ function tambahBarisPenawaran() {
   newPenawaran.value.penawaran_item.push({
     nama: "",
     amount: 0,
-    uom: "",
+    uom: "Unit",
     kategori_item: "Barang",
     qty: 1,
     subtotal_item: 0,

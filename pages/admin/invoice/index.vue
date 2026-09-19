@@ -695,6 +695,8 @@ function emptyInvoice(): invoiceM {
     createdAt: 0,
     createdBy: "",
     termCondition: [],
+    tanggal_bayar: "",
+    doc_bukti_bayar: [],
   };
 }
 

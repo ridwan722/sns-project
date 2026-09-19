@@ -8,9 +8,7 @@
 
           <div class="company-info">
             <h1 class="company-title">PT. HIGHLANDER</h1>
-            <p class="company-tagline">
-              Integrated Maritime Management
-            </p>
+            <p class="company-tagline">Integrated Maritime Management</p>
           </div>
         </div>
 
@@ -129,9 +127,7 @@
             v-for="(item, index) in props.detailpenawaran?.penawaran_item"
             :key="index"
           >
-            <td class="text-center font-bold">
-              {{ index + 1 }}.
-            </td>
+            <td class="text-center font-bold">{{ index + 1 }}.</td>
 
             <td class="font-bold">
               {{ item.nama }}
@@ -141,13 +137,9 @@
               {{ item.qty }}
             </td>
 
-            <td class="text-right">
-              Rp {{ rupiah(item.amount) }}
-            </td>
+            <td class="text-right">Rp {{ rupiah(item.amount) }}</td>
 
-            <td class="text-right">
-              Rp {{ rupiah(item.subtotal_item) }}
-            </td>
+            <td class="text-right">Rp {{ rupiah(item.subtotal_item) }}</td>
           </tr>
         </tbody>
 
@@ -155,9 +147,7 @@
           <tr>
             <td colspan="3" class="border-none"></td>
 
-            <td class="text-right font-bold total-label">
-              TOTAL
-            </td>
+            <td class="text-right font-bold total-label">TOTAL</td>
 
             <td class="text-right font-bold total-value">
               Rp {{ rupiah(props.detailpenawaran?.grand_total_penawaran) }}
@@ -167,9 +157,7 @@
       </table>
 
       <div class="terms-container">
-        <h3 class="terms-header">
-          TERMS & CONDITIONS
-        </h3>
+        <h3 class="terms-header">TERMS & CONDITIONS</h3>
 
         <ul
           class="terms-main-list"
@@ -188,9 +176,7 @@
 
           <div class="sig-space"></div>
 
-          <p class="sig-line">
-            PT. HIGHLANDER
-          </p>
+          <p class="sig-line">PT. HIGHLANDER</p>
         </div>
 
         <div class="sig-col">
@@ -198,18 +184,13 @@
 
           <div class="sig-space"></div>
 
-          <p class="sig-line">
-            Client's Name
-          </p>
+          <p class="sig-line">Client's Name</p>
         </div>
       </div>
 
       <!-- BUTTON -->
       <div class="no-print action-bar">
-        <button
-          class="btn-print"
-          @click="handlePrint"
-        >
+        <button class="btn-print" @click="handlePrint">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -227,12 +208,7 @@
               d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
             ></path>
 
-            <rect
-              x="6"
-              y="14"
-              width="12"
-              height="8"
-            ></rect>
+            <rect x="6" y="14" width="12" height="8"></rect>
           </svg>
 
           Cetak PDF / Print
@@ -255,10 +231,6 @@ const handlePrint = () => {
 </script>
 
 <style scoped>
-/* ========================================================= */
-/* BUTTON */
-/* ========================================================= */
-
 .action-bar {
   position: fixed;
   top: 20px;
@@ -293,11 +265,6 @@ const handlePrint = () => {
   background-color: #a61c1c;
 }
 
-
-/* ========================================================= */
-/* SCREEN */
-/* ========================================================= */
-
 .pdf-wrapper {
   width: 100%;
 
@@ -330,11 +297,6 @@ const handlePrint = () => {
 
   box-sizing: border-box;
 }
-
-
-/* ========================================================= */
-/* HEADER */
-/* ========================================================= */
 
 .header {
   display: flex;
@@ -402,11 +364,6 @@ const handlePrint = () => {
   margin: 10px 0 14px 0;
 }
 
-
-/* ========================================================= */
-/* META */
-/* ========================================================= */
-
 .meta-section {
   display: flex;
 
@@ -473,21 +430,11 @@ const handlePrint = () => {
   text-align: left;
 }
 
-
-/* ========================================================= */
-/* OPENING */
-/* ========================================================= */
-
 .opening-text {
   margin: 10px 0 12px 0;
 
   font-size: 9.5px;
 }
-
-
-/* ========================================================= */
-/* QUOTATION TABLE */
-/* ========================================================= */
 
 .quotation-table {
   width: 100%;
@@ -540,11 +487,6 @@ const handlePrint = () => {
   background-color: #fbfbfb;
 }
 
-
-/* ========================================================= */
-/* TOTAL */
-/* ========================================================= */
-
 .quotation-table tfoot td {
   border: none !important;
 
@@ -575,11 +517,6 @@ const handlePrint = () => {
   vertical-align: middle;
 }
 
-
-/* ========================================================= */
-/* TERMS */
-/* ========================================================= */
-
 .terms-container {
   margin-top: 10px;
 }
@@ -607,11 +544,6 @@ const handlePrint = () => {
 .terms-main-list > li {
   margin-bottom: 3px;
 }
-
-
-/* ========================================================= */
-/* SIGNATURE */
-/* ========================================================= */
 
 .signatures {
   display: flex;
@@ -643,11 +575,6 @@ const handlePrint = () => {
   width: 160px;
 }
 
-
-/* ========================================================= */
-/* HELPERS */
-/* ========================================================= */
-
 .text-center {
   text-align: center;
 }
@@ -660,35 +587,15 @@ const handlePrint = () => {
   font-weight: bold;
 }
 
-
-/* ========================================================= */
-/* PRINT */
-/* ========================================================= */
-
 @media print {
-
-  /* =============================================== */
-  /* SEMBUNYIKAN SELURUH APLIKASI */
-  /* =============================================== */
-
   body * {
     visibility: hidden !important;
   }
-
-
-  /* =============================================== */
-  /* TAMPILKAN HANYA CANVAS QUOTATION */
-  /* =============================================== */
 
   #offer-to-print,
   #offer-to-print * {
     visibility: visible !important;
   }
-
-
-  /* =============================================== */
-  /* CANVAS PRINT */
-  /* =============================================== */
 
   #offer-to-print {
     position: absolute !important;
@@ -711,11 +618,6 @@ const handlePrint = () => {
     box-shadow: none !important;
   }
 
-
-  /* =============================================== */
-  /* WRAPPER */
-  /* =============================================== */
-
   .pdf-wrapper {
     display: block !important;
 
@@ -728,19 +630,9 @@ const handlePrint = () => {
     background: transparent !important;
   }
 
-
-  /* =============================================== */
-  /* HILANGKAN BUTTON */
-  /* =============================================== */
-
   .no-print {
     display: none !important;
   }
-
-
-  /* =============================================== */
-  /* TABLE MULTI PAGE */
-  /* =============================================== */
 
   .quotation-table {
     width: 100% !important;
@@ -750,27 +642,19 @@ const handlePrint = () => {
     break-inside: auto !important;
   }
 
-
   .quotation-table thead {
     display: table-header-group !important;
   }
 
-
   .quotation-table tfoot {
     display: table-footer-group !important;
   }
-
 
   .quotation-table tr {
     page-break-inside: avoid !important;
 
     break-inside: avoid !important;
   }
-
-
-  /* =============================================== */
-  /* JANGAN POTONG BAGIAN PENTING */
-  /* =============================================== */
 
   .terms-container,
   .signatures {
@@ -779,22 +663,12 @@ const handlePrint = () => {
     break-inside: avoid !important;
   }
 
-
-  /* =============================================== */
-  /* WARNA TETAP KELUAR DI PDF */
-  /* =============================================== */
-
   .quotation-table th,
   .total-value {
     -webkit-print-color-adjust: exact !important;
 
     print-color-adjust: exact !important;
   }
-
-
-  /* =============================================== */
-  /* A4 */
-  /* =============================================== */
 
   @page {
     size: A4 portrait;

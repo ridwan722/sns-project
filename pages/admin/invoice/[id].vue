@@ -1,316 +1,3 @@
-<script setup lang="ts">
-import moment from "moment";
-import type { ConfirmationDialog } from "#components";
-import type { invoiceM, invoicePoDocumentM } from "~/types/invoice";
-import { uploadStore } from "~/stores/uploadStore";
-
-definePageMeta({
-  layout: "admin",
-});
-
-const invoiceStore = useinvoiceStore();
-const uploadStoreInstance = uploadStore();
-const notificationStore = useNotificationStore();
-const userStore = useUserStore();
-const route = useRoute();
-const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
-  null,
-);
-const dialogDikirim = ref(false);
-const isSavingPdf = ref(false);
-
-onMounted(async () => {
-  useloadingStore().setLoading(true);
-  await invoiceStore.tarikDetailInvoiceAct(route.params.id as string);
-  useloadingStore().setLoading(false);
-});
-
-const formatTanggal = (tanggal: string) => {
-  if (!tanggal) return "-";
-
-  const date = new Date(tanggal);
-
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  })
-    .format(date)
-    .replace(/\//g, "-");
-};
-
-const invoiceDetail = computed(() => invoiceStore.getDetailInvoice);
-
-const poObjectUrls = new Map<string, string>();
-
-function bukaDokumenPo(document: invoicePoDocumentM) {
-  try {
-    let url = document.dataUrl;
-    if (url.startsWith("data:")) {
-      const cachedUrl = poObjectUrls.get(url);
-      if (cachedUrl) {
-        url = cachedUrl;
-      } else {
-        const separator = url.indexOf(",");
-        const header = url.slice(0, separator);
-        if (separator < 0 || !header.endsWith(";base64")) {
-          throw new Error("Format dokumen PO tidak valid");
-        }
-        const bytes = Uint8Array.from(atob(url.slice(separator + 1)), (char) =>
-          char.charCodeAt(0),
-        );
-        const contentType =
-          header.slice(5).split(";")[0] ||
-          document.contentType ||
-          "application/octet-stream";
-        const objectUrl = URL.createObjectURL(
-          new Blob([bytes], { type: contentType }),
-        );
-        poObjectUrls.set(url, objectUrl);
-        url = objectUrl;
-      }
-    }
-    window.open(url, "_blank", "noopener,noreferrer");
-  } catch {
-    notificationStore.showError(
-      "Dokumen PO tidak dapat dibuka. Silakan coba unggah ulang file.",
-    );
-  }
-}
-
-onBeforeUnmount(() => {
-  poObjectUrls.forEach((url) => URL.revokeObjectURL(url));
-  poObjectUrls.clear();
-});
-
-const printArea = ref<HTMLElement | null>(null);
-
-function bukaDialogDikirim() {
-  uploadStoreInstance.setReset();
-  dialogDikirim.value = true;
-}
-
-function tutupDialogDikirim() {
-  uploadStoreInstance.setReset();
-  dialogDikirim.value = false;
-}
-
-async function ubahStatusDikirim() {
-  const id = route.params.id as string;
-  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
-  invoice.status = "Dikirim";
-  invoice.dokumen_dikirim = uploadStoreInstance.getUrlRef;
-
-  invoice.dikirimAt = moment().unix();
-  invoice.dikirimBy = userStore.getEmail;
-
-  const updated = await invoiceStore.updateInvoiceAct(id, invoice);
-  if (!updated) return;
-
-  await invoiceStore.tarikDetailInvoiceAct(id);
-  tutupDialogDikirim();
-  navigateTo("/admin/invoice/dikirim");
-}
-
-async function ubahStatusSelesai() {
-  const confirmed = await confirmationDialog.value?.show(
-    "Konfirmasi Selesai",
-    "Anda yakin ingin mengubah status invoice menjadi Selesai?",
-  );
-  if (!confirmed) return;
-
-  const id = route.params.id as string;
-  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
-  invoice.status = "Selesai";
-  invoice.selesaiAt = moment().unix();
-  invoice.selesaiBy = userStore.getEmail;
-
-  const updated = await invoiceStore.updateInvoiceAct(id, invoice);
-  if (!updated) return;
-  await invoiceStore.tarikDetailInvoiceAct(id);
-}
-
-function printInvoice() {
-  const content = printArea.value;
-  if (!content) return;
-
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) return;
-
-  const styles = Array.from(
-    document.querySelectorAll('style, link[rel="stylesheet"]'),
-  )
-    .map((style) => style.outerHTML)
-    .join("");
-
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>INV - </title>
-        ${styles}
-        <style>
-          body { background: white !important; margin: 0; padding: 0; }
-          .invoice-paper { border: none !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; }
-          .logo-header { max-width: 100px !important; height: auto !important; }
-          @page { margin: 0.5cm; }
-          .page-break-section { page-break-inside: avoid; break-inside: avoid; }
-        </style>
-      </head>
-      <body>
-        ${content.innerHTML}
-        <script>
-          window.onload = () => {
-            window.print();
-            window.close();
-          };
-        <\/script>
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
-}
-
-const handleSavePdf = async () => {
-  const targetElement = printArea.value;
-  if (!targetElement || isSavingPdf.value) return;
-
-  isSavingPdf.value = true;
-
-  try {
-    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import("html2canvas"),
-      import("jspdf"),
-    ]);
-
-    const fullCanvas = await html2canvas(targetElement, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-      logging: false,
-      onclone: (clonedDocument) => {
-        clonedDocument
-          .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
-          .forEach((element) => {
-            (element as HTMLElement).style.display = "none";
-          });
-        clonedDocument
-          .querySelectorAll(".print-only-cell")
-          .forEach((element) => {
-            (element as HTMLElement).style.display = "table-cell";
-          });
-      },
-    });
-
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-
-    // Gap footer diperkecil agar pas & tidak terlalu jauh dari bawah
-    const footerGapMm = 5; // Gap bawah tipis & pas (sebelumnya 15mm)
-    const marginTopSecondPageMm = 12; // Margin atas halaman 2+
-    const marginBottomMm = 10; // Margin bawah halaman 2+
-
-    // Deteksi elemen-elemen penting agar tidak terpotong di tengah baris
-    const containerRect = targetElement.getBoundingClientRect();
-    const scaleY = fullCanvas.height / containerRect.height;
-
-    const breakableElements = targetElement.querySelectorAll(
-      ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid",
-    );
-
-    const avoidPositionsPx: { top: number; bottom: number }[] = [];
-    breakableElements.forEach((el) => {
-      const rect = el.getBoundingClientRect();
-      const topPx = (rect.top - containerRect.top) * scaleY;
-      const bottomPx = (rect.bottom - containerRect.top) * scaleY;
-      avoidPositionsPx.push({ top: topPx, bottom: bottomPx });
-    });
-
-    let currentCanvasY = 0;
-    let pageCount = 0;
-
-    while (currentCanvasY < fullCanvas.height) {
-      if (pageCount > 0) {
-        pdf.addPage();
-      }
-
-      const currentTopMarginMm = pageCount > 0 ? marginTopSecondPageMm : 0;
-      const currentBottomMarginMm =
-        pageCount > 0 ? marginBottomMm : footerGapMm;
-
-      const maxUsablePdfHeightMm =
-        pdfHeight - currentTopMarginMm - currentBottomMarginMm;
-      let targetSliceHeightPx =
-        (maxUsablePdfHeightMm * fullCanvas.width) / pdfWidth;
-
-      const remainingCanvasHeightPx = fullCanvas.height - currentCanvasY;
-
-      if (remainingCanvasHeightPx > targetSliceHeightPx) {
-        const theoreticalCutY = currentCanvasY + targetSliceHeightPx;
-
-        // Cek jika pemotongan jatuh di tengah-tengah elemen/baris
-        const conflictingElement = avoidPositionsPx.find(
-          (pos) => theoreticalCutY > pos.top && theoreticalCutY < pos.bottom,
-        );
-
-        if (conflictingElement && conflictingElement.top > currentCanvasY) {
-          targetSliceHeightPx = conflictingElement.top - currentCanvasY;
-        }
-      } else {
-        targetSliceHeightPx = remainingCanvasHeightPx;
-      }
-
-      const pageCanvas = document.createElement("canvas");
-      pageCanvas.width = fullCanvas.width;
-      pageCanvas.height = targetSliceHeightPx;
-
-      const ctx = pageCanvas.getContext("2d");
-      if (ctx) {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-
-        ctx.drawImage(
-          fullCanvas,
-          0,
-          currentCanvasY,
-          fullCanvas.width,
-          targetSliceHeightPx,
-          0,
-          0,
-          fullCanvas.width,
-          targetSliceHeightPx,
-        );
-      }
-
-      const imgData = pageCanvas.toDataURL("image/png");
-      const slicePdfHeightMm =
-        (targetSliceHeightPx * pdfWidth) / fullCanvas.width;
-
-      pdf.addImage(
-        imgData,
-        "PNG",
-        0,
-        currentTopMarginMm,
-        pdfWidth,
-        slicePdfHeightMm,
-      );
-
-      currentCanvasY += targetSliceHeightPx;
-      pageCount++;
-    }
-
-    const year = new Date().getFullYear();
-    const invoiceId = invoiceDetail.value?.id || route.params.id;
-
-    pdf.save(`INV-SNS-${year}-${invoiceId}.pdf`);
-  } catch (error) {
-    console.error("Gagal menyimpan PDF:", error);
-  } finally {
-    isSavingPdf.value = false;
-  }
-};
-</script>
-
 <template>
   <div>
     <ConfirmationDialog ref="confirmationDialog" />
@@ -347,6 +34,90 @@ const handleSavePdf = async () => {
             Simpan & Kirim
           </v-btn>
         </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="data.dialogSelesai"
+      max-width="700"
+      scrollable
+      :persistent="readingBuktiBayar || savingInvoice"
+    >
+      <v-card>
+        <v-card-title> Selesaikan Invoice </v-card-title>
+        <v-card-text>
+          <a-date-picker-new
+            label="Tanggal di Bayar"
+            v-moodel="invoiceDetail.tanggal_bayar"
+          />
+
+          <div class="mt-3">
+            <div class="po-upload-row">
+              <!-- Upload -->
+              <div class="po-upload-wrapper">
+                <label for="invoice-po-files" class="po-upload-label">
+                  Upload Bukti Bayar
+                </label>
+
+                <div class="po-upload-box">
+                  <input
+                    id="invoice-po-files"
+                    type="file"
+                    multiple
+                    :disabled="readingBuktiBayar || savingInvoice"
+                    @change="tambahDokumenBb"
+                    class="po-file-input"
+                  />
+
+                  <div class="po-upload-icon">↑</div>
+
+                  <div class="po-upload-text">
+                    <div class="po-upload-title">Pilih File</div>
+                    <div class="po-upload-info">Maks. 650 KB</div>
+                  </div>
+                </div>
+
+                <div v-if="readingBuktiBayar" class="po-reading">
+                  Membaca file PO...
+                </div>
+              </div>
+
+              <!-- Hasil Upload -->
+              <div
+                v-if="invoiceDetail.doc_bukti_bayar?.length"
+                class="po-files-wrapper"
+              >
+                <div class="po-upload-label">File Terpilih</div>
+
+                <div class="po-file-list">
+                  <div
+                    v-for="(document, index) in invoiceDetail.doc_bukti_bayar"
+                    :key="index"
+                    class="po-file-item"
+                  >
+                    <a
+                      :href="document.dataUrl"
+                      :download="document.name"
+                      class="po-file-name"
+                    >
+                      📄 {{ document.name }}
+                    </a>
+
+                    <button
+                      type="button"
+                      class="po-file-remove"
+                      :disabled="readingBuktiBayar || savingInvoice"
+                      :aria-label="`Hapus ${document.name}`"
+                      @click="invoiceDetail.doc_bukti_bayar?.splice(index, 1)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </v-card-text>
       </v-card>
     </v-dialog>
 
@@ -388,8 +159,9 @@ const handleSavePdf = async () => {
               size="small"
               class="font-weight-bold text-uppercase mb-2 ml-3"
               label
-              @click="ubahStatusSelesai"
+              @click="openDialogSelesai"
             >
+              <!-- @click="ubahStatusSelesai" -->
               Selesai
             </v-chip>
 
@@ -430,9 +202,9 @@ const handleSavePdf = async () => {
             <div class="reference-label text-sm-right">
               PURCHASE ORDER DOCUMENT
             </div>
-            <div v-if="invoiceDetail.doc_preorder?.length" class="po-list">
+            <div v-if="invoiceDetail.doc_bukti_bayar?.length" class="po-list">
               <v-chip
-                v-for="(item, index) in invoiceDetail.doc_preorder"
+                v-for="(item, index) in invoiceDetail.doc_bukti_bayar"
                 :key="index"
                 size="small"
                 variant="outlined"
@@ -733,6 +505,391 @@ const handleSavePdf = async () => {
   </div>
 </template>
 
+<script setup lang="ts">
+import moment from "moment";
+import type { ConfirmationDialog } from "#components";
+import type { invoiceM, invoiceBuktiBayarM } from "~/types/invoice";
+import { uploadStore } from "~/stores/uploadStore";
+
+definePageMeta({
+  layout: "admin",
+});
+
+const invoiceStore = useinvoiceStore();
+const uploadStoreInstance = uploadStore();
+const notificationStore = useNotificationStore();
+const userStore = useUserStore();
+const route = useRoute();
+const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
+  null,
+);
+const dialogDikirim = ref(false);
+const isSavingPdf = ref(false);
+const readingBuktiBayar = ref(false);
+
+onMounted(async () => {
+  useloadingStore().setLoading(true);
+  await invoiceStore.tarikDetailInvoiceAct(route.params.id as string);
+  useloadingStore().setLoading(false);
+});
+
+const data = reactive({
+  dialogSelesai: false,
+});
+
+const formatTanggal = (tanggal: string) => {
+  if (!tanggal) return "-";
+
+  const date = new Date(tanggal);
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  })
+    .format(date)
+    .replace(/\//g, "-");
+};
+
+function openDialogSelesai() {
+  data.dialogSelesai = true;
+}
+
+const invoiceDetail = computed(() => invoiceStore.getDetailInvoice);
+
+const poObjectUrls = new Map<string, string>();
+
+async function tambahDokumenBb(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const files = Array.from(input.files || []);
+  input.value = "";
+  if (!files.length || readingBuktiBayar.value || savingInvoice.value) return;
+
+  const draft = invoiceDetail.value;
+  const existingBytes = new TextEncoder().encode(
+    JSON.stringify(draft),
+  ).byteLength;
+  const fileBytes = files.reduce(
+    (total, file) => total + 4 * Math.ceil(file.size / 3),
+    0,
+  );
+  if (existingBytes + fileBytes > MAX_INVOICE_BYTES) {
+    return notificationStore.showError(
+      "Total dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
+    );
+  }
+
+  readingBuktiBayar.value = true;
+  try {
+    const documents: invoiceBuktiBayarM[] = [];
+    for (const file of files) {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () =>
+          typeof reader.result === "string"
+            ? resolve(reader.result)
+            : reject(new Error("File PO tidak dapat dibaca"));
+        reader.onerror = () =>
+          reject(reader.error || new Error("File PO tidak dapat dibaca"));
+        reader.onabort = () =>
+          reject(new Error("Pembacaan file PO dibatalkan"));
+        reader.readAsDataURL(file);
+      });
+      documents.push({
+        name: file.name,
+        dataUrl,
+        size: file.size,
+        contentType: file.type || "application/octet-stream",
+      });
+    }
+    const doc_bukti_bayar = [...(draft.doc_bukti_bayar || []), ...documents];
+    if (
+      new TextEncoder().encode(JSON.stringify({ ...draft, doc_bukti_bayar }))
+        .byteLength > MAX_INVOICE_BYTES
+    ) {
+      return notificationStore.showError(
+        "Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
+      );
+    }
+    if (invoiceDetail.value === draft && data.dialogSelesai)
+      draft.doc_bukti_bayar = doc_bukti_bayar;
+  } catch (error) {
+    notificationStore.showError(
+      "File PO tidak dapat dibaca. Silakan coba lagi.",
+    );
+  } finally {
+    readingBuktiBayar.value = false;
+  }
+}
+
+function bukaDokumenPo(document: invoiceBuktiBayarM) {
+  try {
+    let url = document.dataUrl;
+    if (url.startsWith("data:")) {
+      const cachedUrl = poObjectUrls.get(url);
+      if (cachedUrl) {
+        url = cachedUrl;
+      } else {
+        const separator = url.indexOf(",");
+        const header = url.slice(0, separator);
+        if (separator < 0 || !header.endsWith(";base64")) {
+          throw new Error("Format dokumen PO tidak valid");
+        }
+        const bytes = Uint8Array.from(atob(url.slice(separator + 1)), (char) =>
+          char.charCodeAt(0),
+        );
+        const contentType =
+          header.slice(5).split(";")[0] ||
+          document.contentType ||
+          "application/octet-stream";
+        const objectUrl = URL.createObjectURL(
+          new Blob([bytes], { type: contentType }),
+        );
+        poObjectUrls.set(url, objectUrl);
+        url = objectUrl;
+      }
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  } catch {
+    notificationStore.showError(
+      "Dokumen PO tidak dapat dibuka. Silakan coba unggah ulang file.",
+    );
+  }
+}
+
+onBeforeUnmount(() => {
+  poObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+  poObjectUrls.clear();
+});
+
+const printArea = ref<HTMLElement | null>(null);
+
+function bukaDialogDikirim() {
+  uploadStoreInstance.setReset();
+  dialogDikirim.value = true;
+}
+
+function tutupDialogDikirim() {
+  uploadStoreInstance.setReset();
+  dialogDikirim.value = false;
+}
+
+async function ubahStatusDikirim() {
+  const id = route.params.id as string;
+  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
+  invoice.status = "Dikirim";
+  invoice.dokumen_dikirim = uploadStoreInstance.getUrlRef;
+
+  invoice.dikirimAt = moment().unix();
+  invoice.dikirimBy = userStore.getEmail;
+
+  const updated = await invoiceStore.updateInvoiceAct(id, invoice);
+  if (!updated) return;
+
+  await invoiceStore.tarikDetailInvoiceAct(id);
+  tutupDialogDikirim();
+  navigateTo("/admin/invoice/dikirim");
+}
+
+async function ubahStatusSelesai() {
+  const confirmed = await confirmationDialog.value?.show(
+    "Konfirmasi Selesai",
+    "Anda yakin ingin mengubah status invoice menjadi Selesai?",
+  );
+  if (!confirmed) return;
+
+  const id = route.params.id as string;
+  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
+  invoice.status = "Selesai";
+  invoice.selesaiAt = moment().unix();
+  invoice.selesaiBy = userStore.getEmail;
+
+  const updated = await invoiceStore.updateInvoiceAct(id, invoice);
+  if (!updated) return;
+  await invoiceStore.tarikDetailInvoiceAct(id);
+}
+
+function printInvoice() {
+  const content = printArea.value;
+  if (!content) return;
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return;
+
+  const styles = Array.from(
+    document.querySelectorAll('style, link[rel="stylesheet"]'),
+  )
+    .map((style) => style.outerHTML)
+    .join("");
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>INV - </title>
+        ${styles}
+        <style>
+          body { background: white !important; margin: 0; padding: 0; }
+          .invoice-paper { border: none !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; }
+          .logo-header { max-width: 100px !important; height: auto !important; }
+          @page { margin: 0.5cm; }
+          .page-break-section { page-break-inside: avoid; break-inside: avoid; }
+        </style>
+      </head>
+      <body>
+        ${content.innerHTML}
+        <script>
+          window.onload = () => {
+            window.print();
+            window.close();
+          };
+        <\/script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
+const handleSavePdf = async () => {
+  const targetElement = printArea.value;
+  if (!targetElement || isSavingPdf.value) return;
+
+  isSavingPdf.value = true;
+
+  try {
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+
+    const fullCanvas = await html2canvas(targetElement, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      onclone: (clonedDocument) => {
+        clonedDocument
+          .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
+          .forEach((element) => {
+            (element as HTMLElement).style.display = "none";
+          });
+        clonedDocument
+          .querySelectorAll(".print-only-cell")
+          .forEach((element) => {
+            (element as HTMLElement).style.display = "table-cell";
+          });
+      },
+    });
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    // Gap footer diperkecil agar pas & tidak terlalu jauh dari bawah
+    const footerGapMm = 5; // Gap bawah tipis & pas (sebelumnya 15mm)
+    const marginTopSecondPageMm = 12; // Margin atas halaman 2+
+    const marginBottomMm = 10; // Margin bawah halaman 2+
+
+    // Deteksi elemen-elemen penting agar tidak terpotong di tengah baris
+    const containerRect = targetElement.getBoundingClientRect();
+    const scaleY = fullCanvas.height / containerRect.height;
+
+    const breakableElements = targetElement.querySelectorAll(
+      ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid",
+    );
+
+    const avoidPositionsPx: { top: number; bottom: number }[] = [];
+    breakableElements.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      const topPx = (rect.top - containerRect.top) * scaleY;
+      const bottomPx = (rect.bottom - containerRect.top) * scaleY;
+      avoidPositionsPx.push({ top: topPx, bottom: bottomPx });
+    });
+
+    let currentCanvasY = 0;
+    let pageCount = 0;
+
+    while (currentCanvasY < fullCanvas.height) {
+      if (pageCount > 0) {
+        pdf.addPage();
+      }
+
+      const currentTopMarginMm = pageCount > 0 ? marginTopSecondPageMm : 0;
+      const currentBottomMarginMm =
+        pageCount > 0 ? marginBottomMm : footerGapMm;
+
+      const maxUsablePdfHeightMm =
+        pdfHeight - currentTopMarginMm - currentBottomMarginMm;
+      let targetSliceHeightPx =
+        (maxUsablePdfHeightMm * fullCanvas.width) / pdfWidth;
+
+      const remainingCanvasHeightPx = fullCanvas.height - currentCanvasY;
+
+      if (remainingCanvasHeightPx > targetSliceHeightPx) {
+        const theoreticalCutY = currentCanvasY + targetSliceHeightPx;
+
+        // Cek jika pemotongan jatuh di tengah-tengah elemen/baris
+        const conflictingElement = avoidPositionsPx.find(
+          (pos) => theoreticalCutY > pos.top && theoreticalCutY < pos.bottom,
+        );
+
+        if (conflictingElement && conflictingElement.top > currentCanvasY) {
+          targetSliceHeightPx = conflictingElement.top - currentCanvasY;
+        }
+      } else {
+        targetSliceHeightPx = remainingCanvasHeightPx;
+      }
+
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = fullCanvas.width;
+      pageCanvas.height = targetSliceHeightPx;
+
+      const ctx = pageCanvas.getContext("2d");
+      if (ctx) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+
+        ctx.drawImage(
+          fullCanvas,
+          0,
+          currentCanvasY,
+          fullCanvas.width,
+          targetSliceHeightPx,
+          0,
+          0,
+          fullCanvas.width,
+          targetSliceHeightPx,
+        );
+      }
+
+      const imgData = pageCanvas.toDataURL("image/png");
+      const slicePdfHeightMm =
+        (targetSliceHeightPx * pdfWidth) / fullCanvas.width;
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        currentTopMarginMm,
+        pdfWidth,
+        slicePdfHeightMm,
+      );
+
+      currentCanvasY += targetSliceHeightPx;
+      pageCount++;
+    }
+
+    const year = new Date().getFullYear();
+    const invoiceId = invoiceDetail.value?.id || route.params.id;
+
+    pdf.save(`INV-SNS-${year}-${invoiceId}.pdf`);
+  } catch (error) {
+    console.error("Gagal menyimpan PDF:", error);
+  } finally {
+    isSavingPdf.value = false;
+  }
+};
+</script>
+
 <style scoped>
 .logo-header {
   max-width: 100px;
@@ -997,5 +1154,126 @@ const handleSavePdf = async () => {
   .reference-empty.text-sm-right {
     text-align: left !important;
   }
+}
+
+.po-upload-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.po-upload-wrapper {
+  flex-shrink: 0;
+}
+
+.po-files-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.po-upload-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Upload Box */
+.po-upload-box {
+  position: relative;
+  width: 150px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.po-upload-box:hover {
+  border-color: #64748b;
+  background: #f1f5f9;
+}
+
+.po-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.po-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 17px;
+}
+
+.po-upload-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.po-upload-info {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* Files */
+.po-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.po-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.po-file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #475569;
+}
+
+.po-file-remove {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.po-file-remove:hover:not(:disabled) {
+  color: #dc2626;
 }
 </style>

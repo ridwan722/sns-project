@@ -41,32 +41,35 @@
       v-model="data.dialogSelesai"
       max-width="700"
       scrollable
-      :persistent="readingBuktiBayar || savingInvoice"
+      :persistent="readingBuktiBayar"
     >
       <v-card>
-        <v-card-title> Selesaikan Invoice </v-card-title>
+        <v-card-title>Selesaikan Invoice</v-card-title>
+
         <v-card-text>
+          <!-- Date Picker -->
           <a-date-picker-new
             label="Tanggal di Bayar"
-            v-moodel="invoiceDetail.tanggal_bayar"
+            v-model="invoiceDetail.tanggal_bayar"
           />
 
+          <!-- Section Upload Bukti Bayar -->
           <div class="mt-3">
             <div class="po-upload-row">
-              <!-- Upload -->
+              <!-- Upload Box -->
               <div class="po-upload-wrapper">
-                <label for="invoice-po-files" class="po-upload-label">
+                <label for="upload-po" class="po-upload-label">
                   Upload Bukti Bayar
                 </label>
 
                 <div class="po-upload-box">
                   <input
-                    id="invoice-po-files"
+                    id="upload-po"
                     type="file"
                     multiple
-                    :disabled="readingBuktiBayar || savingInvoice"
-                    @change="tambahDokumenBb"
                     class="po-file-input"
+                    :disabled="readingBuktiBayar"
+                    @change="addfile"
                   />
 
                   <div class="po-upload-icon">↑</div>
@@ -82,33 +85,23 @@
                 </div>
               </div>
 
-              <!-- Hasil Upload -->
-              <div
-                v-if="invoiceDetail.doc_bukti_bayar?.length"
-                class="po-files-wrapper"
-              >
+              <!-- Hasil Upload Bukti Bayar -->
+              <div v-if="poFiles.length" class="po-files-wrapper">
                 <div class="po-upload-label">File Terpilih</div>
 
                 <div class="po-file-list">
                   <div
-                    v-for="(document, index) in invoiceDetail.doc_bukti_bayar"
+                    v-for="(file, index) in poFiles"
                     :key="index"
                     class="po-file-item"
                   >
-                    <a
-                      :href="document.dataUrl"
-                      :download="document.name"
-                      class="po-file-name"
-                    >
-                      📄 {{ document.name }}
-                    </a>
+                    <div class="po-file-name">📄 {{ file.name }}</div>
 
                     <button
                       type="button"
                       class="po-file-remove"
-                      :disabled="readingBuktiBayar || savingInvoice"
-                      :aria-label="`Hapus ${document.name}`"
-                      @click="invoiceDetail.doc_bukti_bayar?.splice(index, 1)"
+                      :disabled="readingBuktiBayar"
+                      @click="poFiles.splice(index, 1)"
                     >
                       ×
                     </button>
@@ -118,6 +111,27 @@
             </div>
           </div>
         </v-card-text>
+
+        <!-- Actions -->
+        <v-card-actions class="pa-4 bg-grey-lighten-4 d-flex justify-end gap-3">
+          <v-btn
+            variant="outlined"
+            color="grey-darken-1"
+            :disabled="readingBuktiBayar || savingInvoice"
+            @click="data.dialogSelesai = false"
+          >
+            Batal
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="flat"
+            prepend-icon="mdi-check-circle-outline"
+            :disabled="readingBuktiBayar || savingInvoice"
+            @click="ubahStatusSelesai"
+          >
+            Selesai
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -690,8 +704,38 @@ async function ubahStatusDikirim() {
   tutupDialogDikirim();
   navigateTo("/admin/invoice/dikirim");
 }
+const poFiles = ref<File[]>([]);
+
+function readPoFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") resolve(reader.result);
+      else reject(new Error("File PO tidak dapat dibaca"));
+    };
+    reader.onerror = () =>
+      reject(reader.error || new Error("File PO tidak dapat dibaca"));
+    reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function addfile(event: Event) {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    poFiles.value = [...poFiles.value, ...Array.from(target.files)];
+  }
+  target.value = "";
+}
 
 async function ubahStatusSelesai() {
+  // 1. Validasi Input Tanggal Bayar
+  if (!invoiceDetail.value.tanggal_bayar) {
+    notificationStore.showError("Tanggal di Bayar wajib diisi!");
+    return;
+  }
+
+  // 2. Konfirmasi User
   const confirmed = await confirmationDialog.value?.show(
     "Konfirmasi Selesai",
     "Anda yakin ingin mengubah status invoice menjadi Selesai?",
@@ -700,12 +744,37 @@ async function ubahStatusSelesai() {
 
   const id = route.params.id as string;
   const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
+
+  // 3. Konversi File Baru ke Format Document
+  const newDocuments: invoiceBuktiBayarM[] = [];
+  for (const file of poFiles.value) {
+    newDocuments.push({
+      name: file.name,
+      dataUrl: await readPoFile(file),
+      size: file.size,
+      contentType: file.type || "application/octet-stream",
+    });
+  }
+
+  // 4. Update Field Invoice
+  // Gabungkan file lama dengan file baru
+  invoice.doc_bukti_bayar = [
+    ...(invoiceDetail.value.doc_bukti_bayar || []),
+    ...newDocuments,
+  ];
+
   invoice.status = "Selesai";
+  invoice.tanggal_bayar = invoiceDetail.value.tanggal_bayar;
+  // (Baris duplikat invoice.doc_bukti_bayar di sini SUDAH DIHAPUS)
   invoice.selesaiAt = moment().unix();
   invoice.selesaiBy = userStore.getEmail;
 
+  // 5. Simpan ke Store / API
   const updated = await invoiceStore.updateInvoiceAct(id, invoice);
   if (!updated) return;
+
+  // 6. Reset Form & Refresh Data
+  poFiles.value = []; // Clear file input lokal setelah berhasil simpan
   await invoiceStore.tarikDetailInvoiceAct(id);
 }
 

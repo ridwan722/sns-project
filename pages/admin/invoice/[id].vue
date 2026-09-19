@@ -135,6 +135,8 @@
       </v-card>
     </v-dialog>
 
+    <a-icon-success v-if="invoiceDetail.status == 'Selesai'" />
+
     <div class="preview-container d-flex justify-center">
       <v-card flat class="border rounded-lg pa-4 mb-4 elevation-1" width="850">
         <v-row align="center" justify="space-between">
@@ -215,6 +217,42 @@
           <v-col cols="12" sm="6" class="pa-0 pl-sm-4 mt-4 mt-sm-0">
             <div class="reference-label text-sm-right">
               PURCHASE ORDER DOCUMENT
+            </div>
+            <div v-if="invoiceDetail.doc_preorder?.length" class="po-list">
+              <v-chip
+                v-for="(item, index) in invoiceDetail.doc_preorder"
+                :key="index"
+                size="small"
+                variant="outlined"
+                class="po-chip font-weight-medium"
+                label
+                :href="item.dataUrl"
+                @click.prevent="bukaDokumenPo(item)"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <v-icon size="15" class="mr-1">
+                  mdi-file-document-outline
+                </v-icon>
+                {{ item.name }}
+              </v-chip>
+            </div>
+            <div v-else class="reference-empty text-sm-right">
+              No document attached
+            </div>
+          </v-col>
+          
+          <v-divider class="my-3"></v-divider>
+
+           <v-col cols="12" sm="6" class="pa-0 pr-sm-4">
+            <div class="reference-label">Tanggal Bayar</div>
+            <div class="reference-value">
+              {{ invoiceDetail.tanggal_bayar }}
+            </div>
+          </v-col>
+          <v-col cols="12" sm="6" class="pa-0 pl-sm-4 mt-4 mt-sm-0">
+            <div class="reference-label text-sm-right">
+              DOC. BUKTI BAYAR
             </div>
             <div v-if="invoiceDetail.doc_bukti_bayar?.length" class="po-list">
               <v-chip
@@ -497,7 +535,7 @@
         width="22%"
         class="mr-2"
       >
-        Save PDF
+        Save PDF Invoice
       </v-btn>
 
       <v-btn
@@ -511,10 +549,8 @@
       </v-btn>
     </div>
 
-    <div class="preview-container d-flex justify-center">
-      <div ref="printArea" class="invoice-paper-wrapper">
-        <DeliveryOrder :invoice-detail="invoiceDetail" />
-      </div>
+    <div class="preview-container d-flex justify-center mt-8">
+      <DeliveryOrder :invoice-detail="invoiceDetail" />
     </div>
   </div>
 </template>
@@ -775,6 +811,7 @@ async function ubahStatusSelesai() {
 
   // 6. Reset Form & Refresh Data
   poFiles.value = []; // Clear file input lokal setelah berhasil simpan
+  data.dialogSelesai = false;
   await invoiceStore.tarikDetailInvoiceAct(id);
 }
 

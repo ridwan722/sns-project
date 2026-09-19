@@ -553,25 +553,25 @@ const handleSavePdf = async () => {
         </div>
       </v-card>
     </div>
-    <div class="no-print action-bar d-flex justify-end gap-2 mt-4">
-      <v-btn
-        color="primary"
-        variant="elevated"
-        prepend-icon="mdi-printer"
-        class="mr-2"
-        @click="printDeliveryOrder"
-      >
-        Cetak Delivery Order
-      </v-btn>
+    <div class="no-print action-bar d-flex justify-center gap-2 mt-4">
 
       <v-btn
-        color="success"
+        color="red"
         variant="elevated"
         prepend-icon="mdi-file-pdf-box"
         :loading="isSavingPdf"
         @click="handleSavePdf"
       >
         Save PDF Delivery Order
+      </v-btn>
+       <v-btn
+        color="primary"
+        variant="elevated"
+        prepend-icon="mdi-printer"
+        class="ml-2"
+        @click="printDeliveryOrder"
+      >
+        Cetak Delivery Order
       </v-btn>
     </div>
   </div>

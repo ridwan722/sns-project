@@ -837,6 +837,7 @@ onMounted(async () => {
   await customerStore.tarikDataCustomerAct();
   useloadingStore().setLoading(true);
   await invoiceStore.tarikDataInvoiceAct();
+  data.showAllInvoice = true;
   useloadingStore().setLoading(false);
   termconditionStore.tarikDataTermconditionAct();
 });

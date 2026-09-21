@@ -60,10 +60,10 @@ async function verifyPin() {
         <div class="text-group">
           <h1 class="hero-title">
             Selamat Datang di <br />
-            <span class="brand-gradient">SNS ADMIN</span>
+            <span class="brand-gradient">SOLUSI NUSA SEGARA</span>
           </h1>
           <p class="hero-subtitle">
-            Platform administrasi terpadu untuk mengelola operasional, performa, dan data bisnis Anda secara presisi.
+            Platform administrasi terpadu untuk mengelola operasional, performa, dan data bisnis Anda.
           </p>
         </div>
 

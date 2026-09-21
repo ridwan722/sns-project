@@ -704,16 +704,24 @@ const sortedTermConditions = computed(() => {
   const terms = [...termconditionStore.getDataTermcondition];
   const selected = newInvoice.value.termCondition || [];
 
-  // Yang dipilih mengikuti urutan saat dipilih
+  // Gunakan snapshot yang tersimpan di invoice untuk term yang dipilih.
+  // Dengan begitu isi invoice tidak berubah bila master T&C diedit/dihapus.
   const selectedTerms = selected
     .map((selectedItem: any) => {
-      return terms.find((term: any) =>
+      const masterTerm = terms.find((term: any) =>
         term.id
           ? term.id === selectedItem.id
           : term.nama_term === selectedItem.nama_term,
       );
+
+      return {
+        ...masterTerm,
+        ...selectedItem,
+        id: selectedItem.id ?? masterTerm?.id,
+        nama_term: selectedItem.nama_term || masterTerm?.nama_term || "",
+      };
     })
-    .filter(Boolean);
+    .filter((term) => term.nama_term);
 
   // Yang belum dipilih tetap mengikuti urutan asli
   const unselectedTerms = terms.filter(
@@ -894,6 +902,14 @@ function openDialogEditInvoice(item: invoiceM) {
   );
 
   const invoice = JSON.parse(JSON.stringify(item)) as invoiceM;
+  // Data invoice lama dapat belum memiliki field ini atau tersimpan dengan
+  // bentuk yang tidak lengkap. Pastikan v-model checkbox selalu menerima array.
+  invoice.termCondition = Array.isArray(invoice.termCondition)
+    ? invoice.termCondition.filter(
+        (term): term is invoiceM["termCondition"][number] =>
+          !!term && typeof term.nama_term === "string",
+      )
+    : [];
   if (customer?.id) {
     invoice.id_customer = customer.id;
     invoice.nama_customer = customer.nama;

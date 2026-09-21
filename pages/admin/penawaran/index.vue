@@ -418,6 +418,12 @@
         </div>
       </template>
 
+      <template v-slot:item.perihal="{ item }">
+        <div class="subject-cell">
+          <span>{{ item.perihal }}</span>
+        </div>
+      </template>
+
       <template v-slot:item.nama_perusahaan="{ item }">
         <div style="display: flex; align-items: center">
           <v-icon color="primary" class="mb-1 mr-2">mdi-domain</v-icon>
@@ -911,5 +917,14 @@ async function refreshData() {
 }
 .gap-2 {
   gap: 8px;
+}
+
+.subject-cell {
+  display: block;
+  max-width: 220px;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
 }
 </style>

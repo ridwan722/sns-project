@@ -82,11 +82,7 @@ export default defineNuxtConfig({
       appId: process.env.appId,
 
       databaseURL:
-<<<<<<< HEAD
-        "https://dutarayamarine-default-rtdb.asia-southeast1.firebasedatabase.app",
-=======
         "https://sns-project-315db-default-rtdb.asia-southeast1.firebasedatabase.app",
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
     },
   },
 });

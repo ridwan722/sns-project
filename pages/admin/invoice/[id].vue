@@ -397,19 +397,17 @@
           <div class="letterhead">
             <div class="header-section">
               <div class="logo-wrapper">
-                <img src="/logokopsurat.png" alt="Logo Header" />
+                <img src="/Logo-SNS.png" alt="Logo Header" />
               </div>
 
               <div class="letterhead-info">
-                <h1 class="company-name">PT. DUTA RAYA MARINE</h1>
+                <h1 class="company-name">CV. SOLUSI NUSA SEGARA</h1>
                 <p class="address-line">
-                  Cipta Grand City G-8, Sagulung, Kota Batam, <br />
-                  Kepulauan Riau 29425
+                  Ruko Dream Land Blok A No.05, Dreamland Square, Marina City Tanjung Riau, <br />
+                  Kec. Sekupang, Kota Batam 29425
                 </p>
                 <p class="phone-line">
-                  E-mail: sales@dutarayamarine.com, HP : (+62) 853 6201 8099
-                  <br />
-                  Website: www.dutarayamarine.com
+                  HP: +62821 9998 8670
                 </p>
               </div>
 
@@ -865,7 +863,7 @@
             }}</span
             ><br />
 
-            <strong>PT. DUTA RAYA MARINE</strong>
+            <strong>CV. SOLUSI NUSA SEGARA</strong>
 
             <v-img
               v-if="invoiceDetail.sign_by == 'Seilla Maryana'"

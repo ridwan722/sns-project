@@ -50,8 +50,8 @@ async function verifyPin() {
         <div class="logo-wrapper">
           <div class="logo-badge">
             <img
-              src="/Logo-DRM.png"
-              alt="PT. Duta Raya Marine Logo"
+              src="/Logo-SNS.png"
+              alt="SNS Logo"
               class="logo-img"
             />
           </div>
@@ -60,7 +60,7 @@ async function verifyPin() {
         <div class="text-group">
           <h1 class="hero-title">
             Selamat Datang di <br />
-            <span class="brand-gradient">DUTA RAYA MARINE</span>
+            <span class="brand-gradient">SOLUSI NUSA SEGARA</span>
           </h1>
           <p class="hero-subtitle">
             Platform administrasi terpadu untuk mengelola operasional, performa, dan data bisnis Anda.

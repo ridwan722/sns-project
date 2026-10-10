@@ -389,12 +389,12 @@ const handleSavePdf = async () => {
         <div class="header-section text-center mb-6">
           <div class="d-flex align-center justify-center mb-2">
             <img
-              src="/Logo-DRM.png"
+              src="/Logo-SNS.png"
               class="logo-header mr-3"
               alt="Logo Perusahaan"
             />
 
-            <h1 class="company-name">PT. DUTA RAYA MARINE</h1>
+            <h1 class="company-name">CV. SOLUSI NUSA SEGARA</h1>
           </div>
 
           <div class="company-address">
@@ -403,7 +403,7 @@ const handleSavePdf = async () => {
 
             <br />
 
-            Hp. +62853 6201 8099
+            Hp. +62821 9998 8670
           </div>
 
           <div class="document-title mt-4">DELIVERY ORDER</div>

@@ -309,7 +309,7 @@ const logout = async () => {
     <!-- BRAND / MINI LOGO HEADER -->
     <div class="side-brand-header">
       <div class="mini-logo-box">
-        <img src="/Logo-DRM.png" alt="DRM Logo" class="mini-logo-img" />
+        <img src="/Logo-SNS.png" alt="SNS Logo" class="mini-logo-img" />
       </div>
     </div>
 
@@ -472,20 +472,20 @@ const logout = async () => {
       <div class="header-left">
         <div v-if="!mdAndUp" class="logo-box">
           <img
-            src="/Logo-DRM.png"
-            alt="PT. DUTA RAYA MARINE"
+            src="/Logo-SNS.png"
+            alt="CV. SOLUSI NUSA SEGARA"
             class="logo-img"
           />
         </div>
 
         <div class="company-info">
           <span class="company-name desktop-company">
-            PT. DUTA RAYA MARINE
+            CV. SOLUSI NUSA SEGARA
           </span>
 
-          <span class="company-name mobile-company"> PT. DUTA RAYA MARINE </span>
+          <span class="company-name mobile-company"> CV. SOLUSI NUSA SEGARA </span>
 
-          <span class="company-subtitle"> Enterprise Management </span>
+          <span class="company-subtitle"> Enterprise Management System </span>
         </div>
 
         <v-chip

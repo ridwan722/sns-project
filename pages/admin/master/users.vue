@@ -425,7 +425,7 @@ const getRoleColor = (role: string) => {
 
 const openDialogAdd = () => {
   newUsers.value = {
-    email: "sales@dutarayamarine.com",
+    email: "uwanracergo72@gmail.com",
     displayName: "Super Admin",
     role: "Administrator",
     id_perusahaan: "",

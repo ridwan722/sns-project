@@ -426,7 +426,7 @@ const downloadExcel = () => {
   };
 
   const worksheet = XLSX.utils.aoa_to_sheet([
-    ["REKAPAN KAS DUTA RAYA MARINE"],
+    ["REKAPAN KAS SOLUSI NUSA SEGARA"],
     [`Periode: ${period} (Urutan Terlama ke Terbaru)`],
     [],
     [

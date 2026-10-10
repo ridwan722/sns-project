@@ -17,6 +17,7 @@ type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {},
 export const AdminHeader: typeof import("../components/Admin/Header.vue").default
 export const AdminPenawaranDialogBuatInvoice: typeof import("../components/Admin/Penawaran/dialog-buat-invoice.vue").default
 export const AdminPenawaranDialogBuatPengeluaran: typeof import("../components/Admin/Penawaran/dialog-buat-pengeluaran.vue").default
+export const AdminPenawaranDialogPurchaseorder: typeof import("../components/Admin/Penawaran/dialog-purchaseorder.vue").default
 export const AdminSideMenu: typeof import("../components/Admin/SideMenu.vue").default
 export const AppNotification: typeof import("../components/AppNotification.vue").default
 export const ConfirmationDialog: typeof import("../components/ConfirmationDialog.vue").default
@@ -43,12 +44,14 @@ export const ATextarea: typeof import("../components/a/textarea.vue").default
 export const ATimePicker: typeof import("../components/a/time-picker.vue").default
 export const CanvasPenawaranPt: typeof import("../components/canvas-penawaran-pt.vue").default
 export const CanvasPenawaran: typeof import("../components/canvas-penawaran.vue").default
+export const CanvasPurchaseorder: typeof import("../components/canvas-purchaseorder.vue").default
 export const DeliveryOrder: typeof import("../components/delivery-order.vue").default
 export const DialogTambahBeritaAcara: typeof import("../components/dialog-tambah-berita-acara.vue").default
 export const LoadingApp: typeof import("../components/loadingApp.vue").default
 export const Print: typeof import("../components/print.vue").default
 export const UploadImage: typeof import("../components/uploadImage.vue").default
 export const UploadImage2: typeof import("../components/uploadImage2.vue").default
+export const WorkCompleteReport: typeof import("../components/work-complete-report.vue").default
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue").default
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout").default
 export const NuxtErrorBoundary: typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue").default
@@ -75,6 +78,7 @@ export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components
 export const LazyAdminHeader: LazyComponent<typeof import("../components/Admin/Header.vue").default>
 export const LazyAdminPenawaranDialogBuatInvoice: LazyComponent<typeof import("../components/Admin/Penawaran/dialog-buat-invoice.vue").default>
 export const LazyAdminPenawaranDialogBuatPengeluaran: LazyComponent<typeof import("../components/Admin/Penawaran/dialog-buat-pengeluaran.vue").default>
+export const LazyAdminPenawaranDialogPurchaseorder: LazyComponent<typeof import("../components/Admin/Penawaran/dialog-purchaseorder.vue").default>
 export const LazyAdminSideMenu: LazyComponent<typeof import("../components/Admin/SideMenu.vue").default>
 export const LazyAppNotification: LazyComponent<typeof import("../components/AppNotification.vue").default>
 export const LazyConfirmationDialog: LazyComponent<typeof import("../components/ConfirmationDialog.vue").default>
@@ -101,12 +105,14 @@ export const LazyATextarea: LazyComponent<typeof import("../components/a/textare
 export const LazyATimePicker: LazyComponent<typeof import("../components/a/time-picker.vue").default>
 export const LazyCanvasPenawaranPt: LazyComponent<typeof import("../components/canvas-penawaran-pt.vue").default>
 export const LazyCanvasPenawaran: LazyComponent<typeof import("../components/canvas-penawaran.vue").default>
+export const LazyCanvasPurchaseorder: LazyComponent<typeof import("../components/canvas-purchaseorder.vue").default>
 export const LazyDeliveryOrder: LazyComponent<typeof import("../components/delivery-order.vue").default>
 export const LazyDialogTambahBeritaAcara: LazyComponent<typeof import("../components/dialog-tambah-berita-acara.vue").default>
 export const LazyLoadingApp: LazyComponent<typeof import("../components/loadingApp.vue").default>
 export const LazyPrint: LazyComponent<typeof import("../components/print.vue").default>
 export const LazyUploadImage: LazyComponent<typeof import("../components/uploadImage.vue").default>
 export const LazyUploadImage2: LazyComponent<typeof import("../components/uploadImage2.vue").default>
+export const LazyWorkCompleteReport: LazyComponent<typeof import("../components/work-complete-report.vue").default>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue").default>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout").default>
 export const LazyNuxtErrorBoundary: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue").default>

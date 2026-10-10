@@ -284,6 +284,7 @@ declare global {
   const usepettyCashStore: typeof import('../../stores/pettyCashStore').usepettyCashStore
   const usetermconditionStore: typeof import('../../stores/termconditionStore').usetermconditionStore
   const useunmanageStore: typeof import('../../stores/unmanageStore').useunmanageStore
+  const usevendorStore: typeof import('../../stores/vendorStore').usevendorStore
   const waktuServer: typeof import('../../composables/useFirestore').waktuServer
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
@@ -589,6 +590,7 @@ declare module 'vue' {
     readonly usepettyCashStore: UnwrapRef<typeof import('../../stores/pettyCashStore')['usepettyCashStore']>
     readonly usetermconditionStore: UnwrapRef<typeof import('../../stores/termconditionStore')['usetermconditionStore']>
     readonly useunmanageStore: UnwrapRef<typeof import('../../stores/unmanageStore')['useunmanageStore']>
+    readonly usevendorStore: UnwrapRef<typeof import('../../stores/vendorStore')['usevendorStore']>
     readonly waktuServer: UnwrapRef<typeof import('../../composables/useFirestore')['waktuServer']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>

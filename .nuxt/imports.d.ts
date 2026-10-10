@@ -55,6 +55,7 @@ export { usetermconditionStore } from '../stores/termconditionStore';
 export { useunmanageStore } from '../stores/unmanageStore';
 export { uploadStore } from '../stores/uploadStore';
 export { useUserStore } from '../stores/userStore';
+export { usevendorStore } from '../stores/vendorStore';
 export { useDate, useLocale, useDefaults, useDisplay, useLayout, useRtl, useTheme, useGoTo } from 'vuetify';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useFirebaseApp } from '../node_modules/nuxt-vuefire/dist/runtime/app/composables';

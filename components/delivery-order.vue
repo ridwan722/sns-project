@@ -367,7 +367,7 @@ const handleSavePdf = async () => {
     // invoiceDetail adalah props, JANGAN pakai .value
     const invoiceId = props.invoiceDetail?.id || "DO";
 
-    pdf.save(`Delivery-Order-SNS-${year}.pdf`);
+    pdf.save(`Delivery Order-SNS-${props.invoiceDetail.perihal}.pdf`);
   } catch (error) {
     console.error("Gagal menyimpan PDF Delivery Order:", error);
 

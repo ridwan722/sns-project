@@ -1,4 +1,3 @@
-```vue
 <template>
   <div>
     <ConfirmationDialog ref="confirmationDialog" />
@@ -332,7 +331,7 @@
           <!-- INVOICE BASED ON -->
           <div class="reference-block reference-left">
             <div class="reference-label">
-              INVOICE BASED ON
+              PO BASED ON
             </div>
 
             <div class="reference-value">
@@ -429,6 +428,37 @@
               No document attached
             </div>
           </div>
+        </div>
+      </v-card>
+    </div>
+
+     <div class="preview-container d-flex justify-center">
+      <v-card
+        flat
+        class="invoice-reference-card border rounded-lg mb-3 elevation-1"
+        width="850"
+      >
+        <div class="preview-container justify-center text-center">
+          <span>Invoice : {{ rupiah(invoiceDetail.grandtotal_invoice) }}</span>
+          <br />
+          <span
+            >pengeluaran pada Project ini :
+            {{ rupiah(invoiceDetail.grandtotal_pengeluaran) }}</span
+          >
+          <br />
+
+          <h2>
+            {{
+              (
+                invoiceDetail.grandtotal_invoice -
+                invoiceDetail.grandtotal_pengeluaran
+              ).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                maximumFractionDigits: 0,
+              })
+            }}
+          </h2>
         </div>
       </v-card>
     </div>
@@ -734,6 +764,9 @@
 
     <div class="preview-container d-flex justify-center mt-8">
       <DeliveryOrder :invoice-detail="invoiceDetail" />
+    </div>
+     <div class="preview-container d-flex justify-center mt-8">
+      <work-complete-report :invoice-detail="invoiceDetail" />
     </div>
   </div>
 </template>

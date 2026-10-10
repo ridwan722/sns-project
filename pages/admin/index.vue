@@ -180,6 +180,19 @@ onErrorCaptured((err: unknown) => {
                 </NuxtLink>
               </div>
 
+               <div class="action-grid-1 mt-2">
+                <NuxtLink to="/admin/master/vendor" class="compact-action-card">
+                  <div class="action-icon">
+                    <v-icon icon="mdi-human-dolly" size="18" />
+                  </div>
+                  <div class="action-text">
+                    <span class="title">Master Vendor</span>
+                    <span class="sub">Master Vendor / Supplyer</span>
+                  </div>
+                  <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
+                </NuxtLink>
+              </div>
+
               <div class="action-grid-1 mt-2">
                 <NuxtLink to="/admin/master/barang" class="compact-action-card">
                   <div class="action-icon">

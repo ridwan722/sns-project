@@ -1,4 +1,5 @@
 import type { termconditionM } from "./termconditionModel";
+import type { pengeluaranM } from "./penawaranModel";
 
 export interface invoiceItemM {
   nama: string;
@@ -27,17 +28,19 @@ export interface invoiceM {
   id?: string;
   id_invoice?: string;
   no_inv: string;
-  no_preorder?:string;
-  doc_preorder?: invoicePoDocumentM[];
+
   id_customer: string;
   nama_customer: string;
   alamat_customer: string;
   vessel: string;
-  id_penawaran?: string,
-  no_penawaran?: string,
   no_telp: string;
   email: string;
   pic: string,
+
+  id_penawaran?: string,
+  no_penawaran?: string,
+  tanggal_penawaran?: string,
+
   tanggal: string;
   perihal: string;
   item_pekerjaan: invoiceItemM[];
@@ -45,6 +48,7 @@ export interface invoiceM {
   subtotal_invoice: number;
   ppn: number;
   grandtotal_invoice: number;
+sign_by: string,
   status: string;
   createdAt: number;
   createdBy: string;
@@ -52,9 +56,18 @@ export interface invoiceM {
   dikirimBy?: string;
   selesaiAt?: number;
   selesaiBy?: string;
+
   termCondition: termconditionM[];
+
+  tanggal_preorder?: string;
+  no_preorder?: string;
+  doc_preorder?: invoicePoDocumentM[];
 
   // BUKTI BAYAR
   tanggal_bayar: string,
   doc_bukti_bayar: invoiceBuktiBayarM[]
+  down_payment: false,
+  dp_persen: 0,
+  pengeluaran?: pengeluaranM[];
+  grandtotal_pengeluaran?: number;
 }

@@ -30,22 +30,14 @@ onErrorCaptured((err: unknown) => {
           <div class="header-tag">ENTERPRISE SYSTEM</div>
           <h1 class="header-title">Ringkasan Sistem & Directory Menu</h1>
         </div>
-<<<<<<< HEAD
         <!-- <div class="header-metrics">
-=======
-        <div class="header-metrics">
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
           <div class="metric-pill">
             <span class="metric-label">Server</span>
             <span class="metric-value status-online">
               <span class="dot"></span> 
             </span>
           </div>
-<<<<<<< HEAD
         </div> -->
-=======
-        </div>
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
       </header>
 
       <!-- Main Bento Grid -->
@@ -188,7 +180,6 @@ onErrorCaptured((err: unknown) => {
                 </NuxtLink>
               </div>
 
-<<<<<<< HEAD
                <div class="action-grid-1 mt-2">
                 <NuxtLink to="/admin/master/vendor" class="compact-action-card">
                   <div class="action-icon">
@@ -198,17 +189,6 @@ onErrorCaptured((err: unknown) => {
                     <span class="title">Master Vendor</span>
                     <span class="sub"
                       >Master Vendor / Supplyer</span
-=======
-              <div class="action-grid-1 mt-2">
-                <NuxtLink to="/admin/master/barang" class="compact-action-card">
-                  <div class="action-icon">
-                    <v-icon icon="mdi-package-variant-closed" size="18" />
-                  </div>
-                  <div class="action-text">
-                    <span class="title">Master Barang / Service</span>
-                    <span class="sub"
-                      >Master Barang dan Harga Modal</span
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
                     >
                   </div>
                   <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
@@ -231,7 +211,6 @@ onErrorCaptured((err: unknown) => {
               </div>
 
               <div class="action-grid-1 mt-2">
-<<<<<<< HEAD
                 <NuxtLink to="/admin/master/barang" class="compact-action-card">
                   <div class="action-icon">
                     <v-icon icon="mdi-package-variant-closed" size="18" />
@@ -247,8 +226,6 @@ onErrorCaptured((err: unknown) => {
               </div>
 
               <div class="action-grid-1 mt-2">
-=======
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
                 <NuxtLink to="/admin/petty-cash" class="compact-action-card">
                   <div class="action-icon">
                     <v-icon icon="mdi-package-variant-closed" size="18" />

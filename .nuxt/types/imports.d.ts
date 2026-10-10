@@ -143,7 +143,6 @@ declare global {
   const setToken: typeof import('../../composables/useFirestore').setToken
   const setberitaacara: typeof import('../../composables/useFireinv').setberitaacara
   const setdatabase: typeof import('../../composables/useFirestore').setdatabase
-  const setinvoice: typeof import('../../composables/useFireinv').setinvoice
   const setrevisiinvoice: typeof import('../../composables/useFireinv').setrevisiinvoice
   const setrevisipenawaran: typeof import('../../composables/useFireinv').setrevisipenawaran
   const setrevisitoinvoice: typeof import('../../composables/useFireinv').setrevisitoinvoice
@@ -450,7 +449,6 @@ declare module 'vue' {
     readonly setToken: UnwrapRef<typeof import('../../composables/useFirestore')['setToken']>
     readonly setberitaacara: UnwrapRef<typeof import('../../composables/useFireinv')['setberitaacara']>
     readonly setdatabase: UnwrapRef<typeof import('../../composables/useFirestore')['setdatabase']>
-    readonly setinvoice: UnwrapRef<typeof import('../../composables/useFireinv')['setinvoice']>
     readonly setrevisiinvoice: UnwrapRef<typeof import('../../composables/useFireinv')['setrevisiinvoice']>
     readonly setrevisipenawaran: UnwrapRef<typeof import('../../composables/useFireinv')['setrevisipenawaran']>
     readonly setrevisitoinvoice: UnwrapRef<typeof import('../../composables/useFireinv')['setrevisitoinvoice']>

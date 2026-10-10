@@ -40,15 +40,7 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
 import { ref, computed, nextTick, onMounted } from "vue";
-=======
-<<<<<<< HEAD
-import { ref, computed, nextTick, onMounted } from "vue";
-=======
-import { ref, computed } from "vue";
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 
 const props = defineProps({
   modelValue: {
@@ -108,16 +100,11 @@ const inputRef = ref(null);
 const errorMessages = ref([]);
 const showError = ref(false);
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 function resizeTextarea() {
   const textarea = inputRef.value;
 
   if (!textarea) return;
 
-<<<<<<< HEAD
   // Reset dulu supaya tinggi bisa mengecil ketika isi dihapus
   textarea.style.height = "auto";
 
@@ -125,17 +112,6 @@ function resizeTextarea() {
   textarea.style.height = `${textarea.scrollHeight}px`;
 }
 
-=======
-  // Reset dulu
-  textarea.style.height = "48px";
-
-  // Kalau isi lebih tinggi dari 2 baris, ikuti isi
-  textarea.style.height = `${Math.max(48, textarea.scrollHeight)}px`;
-}
-
-=======
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 function onInput(event) {
   if (props.disabled) return;
 
@@ -143,19 +119,10 @@ function onInput(event) {
 
   errorMessages.value = [];
   showError.value = false;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 
   nextTick(() => {
     resizeTextarea();
   });
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 }
 
 function validate() {
@@ -186,21 +153,12 @@ const firstErrorMessage = computed(() => {
     : "";
 });
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 onMounted(() => {
   nextTick(() => {
     resizeTextarea();
   });
 });
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 defineExpose({
   validate,
   focus: () => inputRef.value?.focus(),
@@ -247,7 +205,6 @@ defineExpose({
 }
 
 .textarea-field {
-<<<<<<< HEAD
   min-height: 48px;
   line-height: 1.5;
 
@@ -256,20 +213,6 @@ defineExpose({
 
   /* Tinggi mengikuti isi */
   overflow: hidden;
-=======
-  min-height: 70px;
-  line-height: 1.5;
-<<<<<<< HEAD
-
-  /* Jangan pakai resize vertical */
-  resize: none;
-
-  /* Tinggi mengikuti isi */
-  overflow: hidden;
-=======
-  resize: vertical;
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
->>>>>>> cf65f83967ee8be2293312599613429f6f075741
 }
 
 .input-field:focus {

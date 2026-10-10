@@ -67,6 +67,45 @@
   <div>
     <div id="offer-to-print" class="offer-card">
       <div class="watermark">
+<<<<<<< HEAD
+        <img src="/logowatermark.png" alt="Logo Watermark" />
+      </div>
+
+      <div class="letterhead">
+        <div class="header-section">
+          <div class="logo-wrapper">
+            <img width="160" src="/logokopsurat.png" alt="Logo Header" />
+          </div>
+
+          <div class="letterhead-info">
+            <h1 class="company-name">PT. DUTA RAYA MARINE</h1>
+            <p class="address-line">
+              Cipta Grand City G-8, Sagulung, Kota Batam, <br />
+              Kepulauan Riau 29425
+            </p>
+            <p class="phone-line">
+              E-mail: sales@dutarayamarine.com, HP : (+62) 853 6201 8099 <br />
+              Website: www.dutarayamarine.com
+            </p>
+          </div>
+
+          <div class="header-spacer" aria-hidden="true"></div>
+        </div>
+
+        <div class="header-divider">
+          <div
+            class="accent-bar"
+            :style="{ backgroundColor: warnaBackgroundCustom }"
+          ></div>
+          <div class="secondary-bar"></div>
+        </div>
+      </div>
+
+      <div class="content-body">
+         <div class="text-center">
+          <strong style="font-size: 20px">QUOTATION</strong>
+        </div>
+=======
         <img src="/Logo-SNS.png" alt="Logo Watermark" />
       </div>
 
@@ -112,6 +151,7 @@
           </div>
         </div>
 
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
         <div class="info-grid-card">
           <div class="grid-col">
             <div class="meta-row">
@@ -122,6 +162,20 @@
               }}</span>
             </div>
             <div class="meta-row">
+<<<<<<< HEAD
+              <span class="lbl">{{ t.date }}</span>
+              <span class="sep">:</span>
+              <span class="val bold">
+  {{
+    props.detailpenawaran.tanggal_penawaran
+      ? moment(props.detailpenawaran.tanggal_penawaran).format("DD-MM-YYYY")
+      : "-"
+  }}
+</span>
+            </div>
+            <div class="meta-row">
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
               <span class="lbl">{{ t.to }}</span>
               <span class="sep">:</span>
               <span class="val bold">{{
@@ -130,6 +184,8 @@
             </div>
 
             <div class="meta-row">
+<<<<<<< HEAD
+=======
               <span class="lbl">{{ t.address }}</span>
               <span class="sep">:</span>
               <span class="val bold">{{
@@ -137,12 +193,15 @@
               }}</span>
             </div>
             <div class="meta-row">
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
               <span class="lbl">{{ t.attn }}</span>
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.pic || "-" }}</span>
             </div>
 
             <div class="meta-row">
+<<<<<<< HEAD
+=======
               <span class="lbl">{{ t.phone }}</span>
               <span class="sep">:</span>
               <span class="val">{{
@@ -151,12 +210,17 @@
             </div>
 
             <div class="meta-row">
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
               <span class="lbl">{{ t.email }}</span>
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.email || "-" }}</span>
             </div>
+<<<<<<< HEAD
+
+=======
           </div>
           <div class="grid-col">
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             <div class="meta-row">
               <span class="lbl">{{ t.subject }}</span>
               <span class="sep">:</span>
@@ -164,21 +228,51 @@
                 props.detailpenawaran.perihal || "-"
               }}</span>
             </div>
+<<<<<<< HEAD
+
+            <div class="meta-row">
+              <span class="lbl">{{ t.address }}</span>
+              <span class="sep">:</span>
+              <span class="val bold-navy">{{
+                props.detailpenawaran.alamat_perusahaan || "-"
+              }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="lbl">{{ t.vessel }}</span>
+              <span class="sep">:</span>
+              <span class="val bold-navy">{{
+                props.detailpenawaran.vessel || "-"
+              }}</span>
+=======
             <div class="meta-row">
               <span class="lbl">{{ t.vessel }}</span>
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.vessel }}</span>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             </div>
 
             <div class="meta-row">
               <span class="lbl">{{ t.location }}</span>
               <span class="sep">:</span>
+<<<<<<< HEAD
+              <span class="val bold-navy">Batam</span>
+=======
               <span class="val">Batam</span>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             </div>
           </div>
         </div>
 
         <div class="text-salutation">
+<<<<<<< HEAD
+          <!-- <p class="salutation-title">{{ t.salutationTitle }}</p> -->
+          <p class="salutation-body" v-if="lang === 'id'">
+            Bersama ini kami sampaikan penawaran harga sebagai berikut:
+          </p>
+          <p class="salutation-body" v-else>
+            We are pleased to submit our quotation as follows:
+=======
           <p class="salutation-title">{{ t.salutationTitle }}</p>
           <p class="salutation-body" v-if="lang === 'id'">
             Sehubungan dengan kebutuhan operasional perusahaan Bapak/Ibu,
@@ -193,6 +287,7 @@
             <strong>{{ props.detailpenawaran.perihal }}</strong> to
             <strong>{{ props.detailpenawaran.nama_perusahaan }}</strong
             >, with the following details:
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
           </p>
         </div>
 
@@ -230,7 +325,11 @@
                   class="text-center print-only-cell"
                   :style="{ color: warnaTeksHeader }"
                 >
+<<<<<<< HEAD
+                  SN
+=======
                   NO
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                 </th>
 
                 <th
@@ -240,7 +339,11 @@
                 >
                   {{ t.thDescription }}
                 </th>
+<<<<<<< HEAD
+                <!-- <th
+=======
                  <!-- <th
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                   width="60"
                   class="text-center no-print"
 
@@ -273,7 +376,11 @@
                   class="text-right"
                   :style="{ color: warnaTeksHeader }"
                 >
+<<<<<<< HEAD
+                  Total Price
+=======
                   Total Amount
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                 </th>
               </tr>
             </thead>
@@ -296,9 +403,21 @@
                   class="text-left text-slate-800"
                   style="white-space: pre-line"
                 >
+<<<<<<< HEAD
+                  <div
+                    v-for="(line, lineIndex) in item.nama.split(/\r?\n/)"
+                    :key="lineIndex"
+                    class="description-line"
+                  >
+                    {{ line || " " }}
+                  </div>
+                </td>
+                <!-- <td class="text-center no-print">{{ item.kategori_item }}</td> -->
+=======
                   {{ item.nama }}
                 </td>
                  <!-- <td class="text-center no-print">{{ item.kategori_item }}</td> -->
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                 <td class="text-center">{{ item.qty }}</td>
                 <td class="text-center text-slate-500">{{ item.uom }}</td>
                 <td class="text-right text-slate-600">
@@ -311,6 +430,8 @@
             </tbody>
 
             <tfoot v-if="showTotal">
+<<<<<<< HEAD
+=======
               <tr class="summary-row subtotal-row">
                 <td colspan="5" class="text-right text-slate-600">
                   {{ t.subtotal }}
@@ -326,11 +447,16 @@
                 </td>
               </tr>
 
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
               <tr class="summary-row grand-total-row">
                 <td colspan="5" class="text-right font-weight-bold text-navy">
                   {{ t.grandTotal }}
                 </td>
+<<<<<<< HEAD
+                <td class="text-right font-weight-bold text-navy">
+=======
                 <td class="text-right font-weight-bold text-navy gt-text">
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                   Rp {{ rupiah(props.detailpenawaran.grand_total_penawaran) }}
                 </td>
               </tr>
@@ -366,11 +492,15 @@
           </div>
         </div>
 
+<<<<<<< HEAD
+        <div class="closing-paragraph" v-if="(detailpenawaran.termCondition?.length ?? 0) > 0" >
+=======
         <p class="closing-paragraph" v-if="showTable">
           {{ t.closingText }}
         </p>
 
         <div class="closing-paragraph" v-if="showTable">
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
           <p><strong>TERMS &amp; CONDITIONS:</strong></p>
           <ul class="ml-3" style="list-style: none; padding-left: 0">
             <li
@@ -385,11 +515,25 @@
         <div class="signatures-wrapper">
           <div class="sig-block">
             <p class="sig-header">{{ t.sigHeaderLeft }}</p>
+<<<<<<< HEAD
+            <p class="sig-sub">PT. DUTA RAYA MARINE</p>
+            <div class="sig-img-container">
+              <img src="/ttd_ridwan.png" v-if="detailpenawaran.sign_by == 'Muhammad Ridwan'" alt="Signature" class="sig-image" />
+              <img src="/ttd_seilla.png" v-if="detailpenawaran.sign_by == 'Seilla Maryana'" alt="Signature" class="sig-image" />
+              <img src="/ttd_leo.png" v-if="detailpenawaran.sign_by == 'Leo Adiatmaja Sembiring'" alt="Signature" class="sig-image" />
+              <div v-if="detailpenawaran.sign_by == 'Lilis Trisnawati'" class="sig-image font-italic text-grey-lighten-1 text-caption" >No Signature Required</div>
+            </div>
+            <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Muhammad Ridwan'">Muhammad Ridwan</p>
+            <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Seilla Maryana'">Seilla Maryana</p>
+             <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Leo Adiatmaja Sembiring'">Leo Adiatmaja Sembiring</p>
+              <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Lilis Trisnawati'">Lilis Trisnawati</p>
+=======
             <p class="sig-sub">CV. SOLUSI NUSA SEGARA</p>
             <div class="sig-img-container">
               <img src="/ttd_ridwan.png" alt="Signature" class="sig-image" />
             </div>
             <p class="sig-person-name">Muhammad Ridwan</p>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
           </div>
 
           <div class="sig-block">
@@ -406,7 +550,13 @@
         </div>
       </div>
 
+<<<<<<< HEAD
+      <div class="page-footer" aria-hidden="true">
+        <div class="footer-line"></div>
+      </div>
+=======
       <div class="footer-wave"></div>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
     </div>
 
     <div
@@ -443,6 +593,10 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import type { penawaranM } from "~/types/penawaranModel";
+<<<<<<< HEAD
+import moment from "moment";
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 
 const props = defineProps<{
   detailpenawaran: penawaranM;
@@ -467,6 +621,10 @@ const t = computed(() => {
   if (lang.value === "id") {
     return {
       refNo: "No. Penawaran",
+<<<<<<< HEAD
+      date: "Tanggal",
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
       to: "Kepada",
       attn: "Up.",
       phone: "No. Telp",
@@ -492,6 +650,10 @@ const t = computed(() => {
   }
   return {
     refNo: "Quotation Ref No",
+<<<<<<< HEAD
+    date: "Date",
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
     to: "To",
     attn: "Attn",
     phone: "Phone",
@@ -501,7 +663,11 @@ const t = computed(() => {
     subject: "Subject",
     vessel: "Vessel",
     salutationTitle: "Dear Sir/Madam,",
+<<<<<<< HEAD
+    thDescription: "DESCRIPTION",
+=======
     thDescription: "DESCRIPTION / KETERANGAN",
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
     thQty: "QTY",
     thUom: "UOM",
     thUnitPrice: "UNIT/PRICE",
@@ -597,7 +763,11 @@ function numberToWordsEnglish(n: number): string {
     "",
     "Twenty",
     "Thirty",
+<<<<<<< HEAD
+    "Fourty",
+=======
     "Forty",
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
     "Fifty",
     "Sixty",
     "Seventy",
@@ -673,6 +843,226 @@ const formatTanggal = (tanggal: string) => {
 const rubahtanggalpenawaran = (tgl: any) => formatTanggal(tgl);
 const rupiah = (val: number) => new Intl.NumberFormat("id-ID").format(val || 0);
 
+<<<<<<< HEAD
+const loadWatermarkImage = (): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = "/logowatermark.png";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+  });
+};
+
+const createPaginatedQuotationPdf = async () => {
+  const offerElement = document.getElementById("offer-to-print");
+  const letterheadElement = offerElement?.querySelector(".letterhead");
+  const contentElement = offerElement?.querySelector(".content-body");
+  const footerElement = offerElement?.querySelector(".page-footer");
+  if (!letterheadElement || !contentElement || !footerElement) return null;
+
+  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+    import("html2canvas"),
+    import("jspdf"),
+  ]);
+  const preparePrintClone = (clonedDocument: Document) => {
+    clonedDocument
+      .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
+      .forEach((element) => {
+        (element as HTMLElement).style.display = "none";
+      });
+    clonedDocument
+      .querySelectorAll(".print-only-cell")
+      .forEach((element) => {
+        (element as HTMLElement).style.display = "table-cell";
+      });
+    clonedDocument
+      .querySelectorAll(".modern-table tbody tr")
+      .forEach((element) => {
+        (element as HTMLElement).style.breakInside = "avoid";
+        (element as HTMLElement).style.pageBreakInside = "avoid";
+      });
+    clonedDocument
+      .querySelectorAll(".modern-table tbody td")
+      .forEach((element) => {
+        (element as HTMLElement).style.verticalAlign = "top";
+      });
+  };
+  const captureOptions = {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    logging: false,
+    onclone: preparePrintClone,
+  };
+  const [letterheadCanvas, footerCanvas, contentCanvas, watermarkImage] =
+    await Promise.all([
+      html2canvas(letterheadElement as HTMLElement, captureOptions),
+      html2canvas(footerElement as HTMLElement, captureOptions),
+      html2canvas(contentElement as HTMLElement, captureOptions),
+      loadWatermarkImage(),
+    ]);
+
+  const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const sideMargin = 12;
+  const topMargin = 8;
+  const footerMargin = 8;
+  const contentWidth = pageWidth - sideMargin * 2;
+  const letterheadHeight =
+    (letterheadCanvas.height * contentWidth) / letterheadCanvas.width;
+  const footerHeight = (footerCanvas.height * contentWidth) / footerCanvas.width;
+  const contentTop = topMargin + letterheadHeight + 6;
+  const contentBottom = pageHeight - footerMargin - footerHeight - 5;
+  const printableContentHeight = contentBottom - contentTop;
+  const pixelsPerMm = contentCanvas.width / contentWidth;
+  const pageSliceHeight = Math.floor(printableContentHeight * pixelsPerMm);
+
+  // Keep each rendered text line intact while allowing long items to continue on
+  // the next page instead of leaving the rest of the current page empty.
+  const contentRect = contentElement.getBoundingClientRect();
+  const canvasScale = contentCanvas.width / contentRect.width;
+  const safeBoundaries = new Set<number>();
+  contentElement
+    .querySelectorAll<HTMLElement>(".description-line")
+    .forEach((line) => {
+      const range = document.createRange();
+      range.selectNodeContents(line);
+      Array.from(range.getClientRects()).forEach((rect) => {
+        safeBoundaries.add(
+          Math.ceil((rect.bottom - contentRect.top) * canvasScale) + 2,
+        );
+      });
+      range.detach();
+    });
+  contentElement
+    .querySelectorAll(".modern-table tbody tr")
+    .forEach((row) => {
+      const rect = row.getBoundingClientRect();
+      safeBoundaries.add(
+        Math.ceil((rect.bottom - contentRect.top) * canvasScale) + 2,
+      );
+    });
+  const pageBreakBoundaries = Array.from(safeBoundaries)
+    .filter((boundary) => boundary > 0 && boundary < contentCanvas.height)
+    .sort((a, b) => a - b);
+
+  const watermarkCanvas = document.createElement("canvas");
+  watermarkCanvas.width = 600;
+  watermarkCanvas.height = Math.round(
+    (watermarkImage.height / watermarkImage.width) * watermarkCanvas.width,
+  );
+  const watermarkContext = watermarkCanvas.getContext("2d");
+  if (watermarkContext) {
+    watermarkContext.globalAlpha = 0.105;
+    watermarkContext.drawImage(
+      watermarkImage,
+      0,
+      0,
+      watermarkCanvas.width,
+      watermarkCanvas.height,
+    );
+  }
+
+  const letterheadImage = letterheadCanvas.toDataURL("image/png");
+  const footerImage = footerCanvas.toDataURL("image/png");
+  const watermarkImageData = watermarkCanvas.toDataURL("image/png");
+  const watermarkWidth = 105;
+  const watermarkHeight =
+    (watermarkCanvas.height / watermarkCanvas.width) * watermarkWidth;
+
+  let sourceY = 0;
+  let pageIndex = 0;
+  while (sourceY < contentCanvas.height) {
+    let targetY = Math.min(sourceY + pageSliceHeight, contentCanvas.height);
+    if (targetY < contentCanvas.height) {
+      const safeBoundary = pageBreakBoundaries
+        .filter((boundary) => boundary > sourceY && boundary <= targetY)
+        .slice(-1)[0];
+      if (safeBoundary) targetY = safeBoundary;
+    }
+    if (pageIndex > 0) pdf.addPage();
+
+    const sliceHeight = targetY - sourceY;
+    const sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = contentCanvas.width;
+    sliceCanvas.height = sliceHeight;
+    sliceCanvas
+      .getContext("2d")
+      ?.drawImage(
+        contentCanvas,
+        0,
+        sourceY,
+        contentCanvas.width,
+        sliceHeight,
+        0,
+        0,
+        contentCanvas.width,
+        sliceHeight,
+      );
+
+    pdf.addImage(
+      watermarkImageData,
+      "PNG",
+      (pageWidth - watermarkWidth) / 2,
+      (pageHeight - watermarkHeight) / 2,
+      watermarkWidth,
+      watermarkHeight,
+    );
+    pdf.addImage(
+      letterheadImage,
+      "PNG",
+      sideMargin,
+      topMargin,
+      contentWidth,
+      letterheadHeight,
+    );
+    pdf.addImage(
+      footerImage,
+      "PNG",
+      sideMargin,
+      pageHeight - footerMargin - footerHeight,
+      contentWidth,
+      footerHeight,
+    );
+    pdf.addImage(
+      sliceCanvas.toDataURL("image/png"),
+      "PNG",
+      sideMargin,
+      contentTop,
+      contentWidth,
+      sliceHeight / pixelsPerMm,
+    );
+
+    sourceY = targetY;
+    pageIndex++;
+  }
+
+  return pdf;
+};
+
+const handlePrint = async () => {
+  try {
+    const pdf = await createPaginatedQuotationPdf();
+    if (!pdf) return;
+
+    const pdfUrl = URL.createObjectURL(pdf.output("blob"));
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText =
+      "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+    iframe.onload = () => {
+      setTimeout(() => iframe.contentWindow?.print(), 300);
+    };
+    iframe.src = pdfUrl;
+    document.body.appendChild(iframe);
+    setTimeout(() => {
+      URL.revokeObjectURL(pdfUrl);
+      iframe.remove();
+    }, 60_000);
+  } catch (error) {
+    console.error("Gagal menyiapkan print quotation:", error);
+    useNotificationStore().showError("Gagal menyiapkan print quotation");
+=======
 const handlePrint = () => {
   const printContents = document.getElementById("offer-to-print")?.innerHTML;
   if (!printContents) return;
@@ -789,10 +1179,26 @@ const handlePrint = () => {
   } else {
     iframe.onload = printAction;
     printAction();
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   }
 };
 
 const handleSavePdf = async () => {
+<<<<<<< HEAD
+  if (isSavingPdf.value) return;
+  isSavingPdf.value = true;
+  try {
+    const pdf = await createPaginatedQuotationPdf();
+    if (!pdf) return;
+
+    const quotationId = props.detailpenawaran?.id_penawaran || "DRM";
+    pdf.save(
+      `${quotationId}.pdf`,
+    );
+  } catch (error) {
+    console.error("Gagal membuat PDF quotation:", error);
+    useNotificationStore().showError("Gagal membuat PDF quotation");
+=======
   const offerElement = document.getElementById("offer-to-print");
   if (!offerElement || isSavingPdf.value) return;
 
@@ -849,6 +1255,7 @@ const handleSavePdf = async () => {
     const nomorQT = number.match(/\d{5}$/)?.[0] || "00000";
 
     pdf.save(`Quotation ${subject} #${nomorQT}.pdf`);
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   } finally {
     isSavingPdf.value = false;
   }
@@ -859,7 +1266,11 @@ const handleSavePdf = async () => {
 .offer-card {
   width: 210mm;
   min-height: 297mm;
+<<<<<<< HEAD
+  padding: 2mm 18mm 25mm 18mm;
+=======
   padding: 14mm 18mm 25mm 18mm;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   margin: 0 auto;
   background: #ffffff;
   position: relative;
@@ -881,11 +1292,31 @@ const handleSavePdf = async () => {
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0.105;
+<<<<<<< HEAD
+  width: 540px;
+=======
   width: 440px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   z-index: 0;
   pointer-events: none;
 }
 .watermark img {
+<<<<<<< HEAD
+  width: 540px;
+}
+
+.header-section {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) 130px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  padding: 2px 0 8px;
+}
+
+.logo-wrapper img {
+
+=======
   width: 100%;
 }
 
@@ -906,12 +1337,22 @@ const handleSavePdf = async () => {
 
 .logo-wrapper img {
   width: 105px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   height: auto;
   display: block;
 }
 
+<<<<<<< HEAD
+.letterhead-info {
+  text-align: center;
+}
+
+.company-name {
+  font-size: 26px;
+=======
 .company-name {
   font-size: 17px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   font-weight: 800;
   color: #0f2b48;
   letter-spacing: 0.3px;
@@ -919,6 +1360,13 @@ const handleSavePdf = async () => {
   line-height: 1.2;
 }
 
+<<<<<<< HEAD
+.address-line,
+.phone-line {
+  font-size: 9.5px;
+  line-height: 1.4;
+  margin: 1px 0 0;
+=======
 .header-contact {
   text-align: right;
   line-height: 1.4;
@@ -933,6 +1381,7 @@ const handleSavePdf = async () => {
   align-items: center;
   justify-content: flex-end;
   max-width: 250px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 }
 
 .header-divider {
@@ -940,7 +1389,11 @@ const handleSavePdf = async () => {
   flex-direction: column;
   gap: 2px;
   margin-top: 6px;
+<<<<<<< HEAD
+  margin-bottom: 6px;
+=======
   margin-bottom: 16px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 }
 
 .accent-bar {
@@ -979,6 +1432,12 @@ const handleSavePdf = async () => {
   text-transform: uppercase;
 }
 
+<<<<<<< HEAD
+.info-grid-card {
+  display: grid;
+  gap: 16px;
+
+=======
 .doc-date {
   font-size: 11px;
   color: #475569;
@@ -990,6 +1449,7 @@ const handleSavePdf = async () => {
   gap: 16px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   border-radius: 8px;
   padding: 10px 14px;
   margin-bottom: 14px;
@@ -999,7 +1459,11 @@ const handleSavePdf = async () => {
   display: flex;
   align-items: center;
   font-size: 10.5px;
+<<<<<<< HEAD
+  margin-bottom: 0px;
+=======
   margin-bottom: 3px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 }
 .meta-row:last-child {
   margin-bottom: 0;
@@ -1007,13 +1471,18 @@ const handleSavePdf = async () => {
 
 .meta-row .lbl {
   width: 105px;
+<<<<<<< HEAD
+=======
   color: #64748b;
   font-weight: 600;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   flex-shrink: 0;
 }
 
 .meta-row .sep {
   width: 12px;
+<<<<<<< HEAD
+=======
   color: #94a3b8;
 }
 
@@ -1035,6 +1504,7 @@ const handleSavePdf = async () => {
 .meta-row .val.bold-navy {
   font-weight: 700;
   color: #0f2b48;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 }
 
 .text-salutation {
@@ -1046,7 +1516,11 @@ const handleSavePdf = async () => {
 
 .salutation-title {
   font-weight: 700;
+<<<<<<< HEAD
+  margin-bottom: 0px;
+=======
   margin-bottom: 3px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   color: #0f2b48;
 }
 
@@ -1086,6 +1560,14 @@ const handleSavePdf = async () => {
   border-bottom: 1px solid #f1f5f9;
 }
 
+<<<<<<< HEAD
+.description-line {
+  min-height: 1.5em;
+  line-height: 1.5;
+}
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 .modern-table tbody tr.zebra-row {
   background-color: #f8fafc;
 }
@@ -1227,6 +1709,24 @@ const handleSavePdf = async () => {
   margin-top: 2px;
 }
 
+<<<<<<< HEAD
+.page-footer {
+  position: absolute;
+  bottom: 0;
+  left: 18mm;
+  right: 18mm;
+  height: 12mm;
+  z-index: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.footer-line {
+  width: 100%;
+  height: 1px;
+  background-color: #cbd5e1;
+=======
 .footer-wave {
   position: absolute;
   bottom: 0;
@@ -1241,6 +1741,7 @@ const handleSavePdf = async () => {
   width: 100%;
   height: 100%;
   display: block;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 }
 
 .text-navy {

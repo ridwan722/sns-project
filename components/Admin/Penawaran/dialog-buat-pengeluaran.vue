@@ -18,8 +18,17 @@
               d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
             />
           </svg>
+<<<<<<< HEAD
           <span class="modal-title">Tambah Pengeluaran <br> <span class="text-caption">Project : {{ penawaran.perihal }}</span></span>
 
+=======
+<<<<<<< HEAD
+          <span class="modal-title">Tambah Pengeluaran <br> <span class="text-caption">Project : {{ penawaran.perihal }}</span></span>
+
+=======
+          <span class="modal-title">Tambah Pengeluaran</span>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
         </div>
         <button
           class="btn-close"
@@ -30,7 +39,14 @@
         </button>
       </div>
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
       <!-- Content Body -->
       <div class="modal-body">
         <!-- Customer Info Section -->
@@ -53,7 +69,15 @@
           :disabled="saving"
         />
         <div class="form-grid">
+<<<<<<< HEAD
           <a-field-number-new v-model="form.qty" label="Qty" :disabled="saving" />
+=======
+<<<<<<< HEAD
+          <a-field-number-new v-model="form.qty" label="Qty" :disabled="saving" />
+=======
+          <a-text-field-new v-model="form.qty" label="Qty" :disabled="saving" />
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
           <a-select-new
             v-model="form.satuan"
             label="Satuan"
@@ -107,7 +131,15 @@
 
               <div class="po-upload-text">
                 <div class="po-upload-title">Pilih File</div>
+<<<<<<< HEAD
                 <div class="po-upload-info">Ukuran file bebas</div>
+=======
+<<<<<<< HEAD
+                <div class="po-upload-info">Ukuran file bebas</div>
+=======
+                <div class="po-upload-info">Maks. 650 KB</div>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
               </div>
             </div>
           </div>
@@ -136,6 +168,10 @@
             </div>
           </div>
         </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
           <a-select-new
             v-model="form.status_pengeluaran"
             :items="['Hutang', 'Lunas']"
@@ -143,6 +179,11 @@
             :disabled="saving"
             class="mt-2"
           />
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
       </div>
 
 
@@ -167,12 +208,25 @@
 
 <script setup lang="ts">
 import moment from "moment";
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
 import type {
   buktiPengeluaranM,
   penawaranM,
   pengeluaranM,
 } from "~/types/penawaranModel";
+<<<<<<< HEAD
 const billFiles = ref<File[]>([]);
+=======
+const billFiles = ref<File[]>([]);
+=======
+import type { penawaranM, pengeluaranM, buktiPengeluaranM } from "~/types/penawaranModel";
+const billFiles = ref<File[]>([]);
+const MAX_INVOICE_BYTES = 900_000;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
 const props = defineProps<{
   modelValue: boolean;
   penawaran: penawaranM;
@@ -197,7 +251,14 @@ const emptyForm = (): pengeluaranM => ({
   doc_pengeluaran: [],
   no_telp_vendor: "",
   lokasi_vendor: "",
+<<<<<<< HEAD
   status_pengeluaran: "Hutang",
+=======
+<<<<<<< HEAD
+  status_pengeluaran: "Hutang",
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
   tanggal_pengeluaran: moment().format("YYYY-MM-DD"),
 });
 const form = ref<pengeluaranM>(emptyForm());
@@ -241,6 +302,22 @@ async function save() {
 
   saving.value = true;
   try {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+    const estimatedFileBytes = billFiles.value.reduce(
+      (total, file) => total + 4 * Math.ceil(file.size / 3),
+      0,
+    );
+    if (estimatedFileBytes > MAX_INVOICE_BYTES) {
+      return notificationStore.showError(
+        "Total file PO terlalu besar. Kurangi ukuran atau jumlah file (maksimal sekitar 650 KB total).",
+      );
+    }
+
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
     const documents: buktiPengeluaranM[] = [];
     for (const file of billFiles.value) {
       documents.push({
@@ -252,6 +329,21 @@ async function save() {
     }
     form.value.doc_pengeluaran = documents;
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+    if (
+      new TextEncoder().encode(JSON.stringify(form.value)).byteLength >
+      MAX_INVOICE_BYTES
+    ) {
+      return notificationStore.showError(
+        "Ukuran invoice beserta file PO terlalu besar. Kurangi ukuran atau jumlah file PO.",
+      );
+    }
+
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
     await createPengeluaran(
       {
         ...form.value,
@@ -263,6 +355,10 @@ async function save() {
     emit("update:modelValue", false);
     emit("saved");
   } catch (error) {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
   console.error("ERROR CREATE PENGELUARAN:", error);
 
   notificationStore.showError(
@@ -271,6 +367,13 @@ async function save() {
       : "Gagal menyimpan pengeluaran",
   );
 } finally {
+<<<<<<< HEAD
+=======
+=======
+    notificationStore.showError("Gagal menyimpan pengeluaran");
+  } finally {
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
     saving.value = false;
   }
 }
@@ -280,6 +383,10 @@ function readBillFile(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") resolve(reader.result);
+<<<<<<< HEAD
+      else reject(new Error("File bukti tidak dapat dibaca"));
+=======
+<<<<<<< HEAD
       else reject(new Error("File bukti tidak dapat dibaca"));
     };
     reader.onerror = () =>
@@ -289,6 +396,21 @@ function readBillFile(file: File): Promise<string> {
   });
 }
 
+=======
+      else reject(new Error("File PO tidak dapat dibaca"));
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
+    };
+    reader.onerror = () =>
+      reject(reader.error || new Error("File bukti tidak dapat dibaca"));
+    reader.onabort = () => reject(new Error("Pembacaan file dibatalkan"));
+    reader.readAsDataURL(file);
+  });
+}
+<<<<<<< HEAD
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
 </script>
 
 <style scoped>

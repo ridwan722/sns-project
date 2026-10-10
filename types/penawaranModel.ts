@@ -20,6 +20,11 @@ export interface penawaranM {
 
   tanggal_kirim_penawaran?: string;
 
+<<<<<<< HEAD
+  sign_by?: string;
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   terkirim_at?: number;
   terkirim_by?: string;
   grandtotal_pengeluaran?: number;
@@ -56,8 +61,16 @@ export interface pengeluaranM {
   satuan: string;
   qty: number;
 
+<<<<<<< HEAD
   status_pengeluaran: string,
 
+=======
+<<<<<<< HEAD
+  status_pengeluaran: string,
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
   doc_pengeluaran: buktiPengeluaranM[];
   nama_vendor: string;
   no_telp_vendor: string;
@@ -70,6 +83,12 @@ export interface buktiPengeluaranM {
   dataUrl: string;
   size: number;
   contentType: string;
+<<<<<<< HEAD
+  fileId?: string;
+}
+
+=======
 }
 
 
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a

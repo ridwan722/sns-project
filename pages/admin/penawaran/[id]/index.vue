@@ -10,7 +10,14 @@ import dialogBuatPengeluaran from "~/components/Admin/Penawaran/dialog-buat-peng
 import { ref } from "vue";
 
 const activeTab = ref(0);
+<<<<<<< HEAD
 const purchaseorderPreviewKey = ref(0);
+=======
+<<<<<<< HEAD
+const purchaseorderPreviewKey = ref(0);
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
 
 definePageMeta({ layout: "admin" });
 
@@ -36,7 +43,14 @@ const data = reactive({
   pageKategori: 1,
   dialogPenawaran: false,
   dialogAddPengeluaran: false,
+<<<<<<< HEAD
   dialogPurchaseOrder: false,
+=======
+<<<<<<< HEAD
+  dialogPurchaseOrder: false,
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
 
   new_pemberkasan: {
     id_dokumen: "",
@@ -85,12 +99,21 @@ async function opendialogaddpengeluaran() {
     :penawaran="detailpenawaran"
   />
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
   <admin-penawaran-dialog-purchaseorder
     v-model="data.dialogPurchaseOrder"
     :penawaran="detailpenawaran"
     @saved="purchaseorderPreviewKey++"
   />
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
   <div v-if="detailpenawaran" class="quotation-page">
     <!-- STICKY HEADER WRAPPER -->
     <header class="top-sticky-container">
@@ -109,9 +132,21 @@ async function opendialogaddpengeluaran() {
         </div>
 
         <div class="page-heading">
+<<<<<<< HEAD
 
             <h1 class="page-title">Detail Quotation</h1>
 
+=======
+<<<<<<< HEAD
+
+            <h1 class="page-title">Detail Quotation</h1>
+
+=======
+          <div>
+            <h1 class="page-title">Detail Quotation</h1>
+          </div>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
         </div>
       </div>
     </header>
@@ -166,6 +201,9 @@ async function opendialogaddpengeluaran() {
                   {{ detailpenawaran.nama_perusahaan || "-" }}
                 </div>
               </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
             </div>
 
             <div class="info-card-footer text-center">
@@ -229,6 +267,101 @@ async function opendialogaddpengeluaran() {
                   Lihat Catatan Pengeluaran
                 </v-btn>
               </div>
+=======
+
+              <div class="info-field">
+                <div class="field-label">PIC</div>
+                <div class="contact-row">
+                  <div class="contact-icon">
+                    <v-icon size="16"> mdi-account-outline </v-icon>
+                  </div>
+                  <span>{{ detailpenawaran.pic || "-" }}</span>
+
+                  <div class="contact-icon">
+                    <v-icon size="16"> mdi-phone-outline </v-icon>
+                  </div>
+                  <span>{{ detailpenawaran.no_telp || "-" }}</span>
+                </div>
+              </div>
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
+            </div>
+
+            <div class="info-card-footer text-center">
+              <div
+                v-if="detailpenawaran.status == 'INVOICE'"
+                class="invoice-status"
+              >
+                <v-icon size="15">mdi-check-circle-outline</v-icon>
+                <span>Invoice telah dibuat</span>
+              </div>
+
+              <div class="action-buttons">
+                <!-- Invoice -->
+                <v-btn
+                  block
+                  color="orange"
+                  variant="flat"
+                  size="small"
+                  append-icon="mdi-file-document-plus-outline"
+                  class="corporate-btn btn-invoice"
+                  @click="opendialogaddinv"
+                >
+                  Buat Invoice
+                </v-btn>
+
+<<<<<<< HEAD
+                <!-- PO -->
+                <v-btn
+                  block
+                  color="primary"
+                  variant="flat"
+                  size="small"
+                  append-icon="mdi-clipboard-text-outline"
+                  class="corporate-btn btn-po"
+                  @click="data.dialogPurchaseOrder = true"
+                >
+                  Buat / Edit Purchase Order (PO)
+                </v-btn>
+
+                <!-- Pengeluaran
+                <v-btn
+                  block
+                  color="green"
+                  variant="flat"
+                  size="small"
+                  append-icon="mdi-pencil-outline"
+                  class="corporate-btn btn-expense"
+                  @click="opendialogaddpengeluaran"
+                >
+                  Buat Catatan Pengeluaran
+                </v-btn> -->
+
+                <!-- Lihat Pengeluaran -->
+                <v-btn
+                  :to="`/admin/penawaran/${encodeURIComponent(String(route.params.id))}/pengeluaran`"
+                  block
+                  variant="outlined"
+                  size="small"
+                  append-icon="mdi-arrow-top-right"
+                  class="corporate-btn btn-view"
+                >
+                  Lihat Catatan Pengeluaran
+                </v-btn>
+              </div>
+=======
+              <v-btn
+                :to="`/admin/penawaran/${encodeURIComponent(String(route.params.id))}/pengeluaran`"
+                block
+                color="primary"
+                variant="outlined"
+                size="small"
+                class="mb-3"
+                append-icon="mdi-open-in-new"
+              >
+                Lihat Catatan Pengeluaran
+              </v-btn>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
             </div>
           </section>
         </aside>
@@ -275,11 +408,20 @@ async function opendialogaddpengeluaran() {
           </div>
 
           <canvas-penawaran :detailpenawaran="detailpenawaran" />
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
           <v-divider opacity="100" thickness="2" class="mb-5"></v-divider>
           <canvas-purchaseorder
             :key="purchaseorderPreviewKey"
             :detailpenawaran="detailpenawaran"
           />
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
         </main>
       </div>
     </div>
@@ -333,7 +475,15 @@ async function opendialogaddpengeluaran() {
 
 .page-title {
   margin: 0;
+<<<<<<< HEAD
   font-size: 18px;
+=======
+<<<<<<< HEAD
+  font-size: 18px;
+=======
+  font-size: 24px;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
   line-height: 1.2;
   font-weight: 800;
   color: #172033;
@@ -745,6 +895,10 @@ async function opendialogaddpengeluaran() {
     font-size: 12px !important;
   }
 }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
 
 .action-buttons {
   display: flex;
@@ -825,4 +979,9 @@ async function opendialogaddpengeluaran() {
 .invoice-status .v-icon {
   color: #16a34a !important;
 }
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
+>>>>>>> cf65f83967ee8be2293312599613429f6f075741
 </style>

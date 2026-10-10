@@ -17,6 +17,18 @@
     v-model="data.dialogTambahPenawaran"
     max-width="800"
     scrollable
+<<<<<<< HEAD
+    :fullscreen="display.mdAndDown.value"
+  >
+    <v-card class="rounded-xl-md overflow-hidden elevation-3 border-0">
+      <v-card-item class="pa-2 bg-primary text-center">
+        <h4 class="font-weight-bold  text-h6 text-sm-h5">
+          {{ data.penawaranAddEdit === "add" ? "Create" : "Edit" }} Quotation
+        </h4>
+        <!-- <p class="text-caption text-grey-darken-1 m-0">
+          Lengkapi rincian penawaran harga dan item pekerjaan di bawah ini.
+        </p> -->
+=======
     fullscreen-sm-and-down
   >
     <v-card class="rounded-xl-md overflow-hidden elevation-3 border-0">
@@ -27,6 +39,7 @@
         <p class="text-caption text-grey-darken-1 m-0">
           Lengkapi rincian penawaran harga dan item pekerjaan di bawah ini.
         </p>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
       </v-card-item>
 
       <v-card-text class="pa-4 pa-sm-6">
@@ -51,46 +64,79 @@
         <a-textarea-new
           class="mt-2"
           v-model="newPenawaran.alamat_perusahaan"
+<<<<<<< HEAD
+          placeholder="Address"
+          disabled
+          
+=======
           label="Address"
           disabled
           placeholder="*Auto"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
         />
         <v-row no-gutters>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.pic"
+<<<<<<< HEAD
+              placeholder="PIC"
+              disabled
+              
+=======
               label="PIC"
               disabled
               placeholder="*Auto"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             />
           </v-col>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.no_telp"
+<<<<<<< HEAD
+              placeholder="Phone Number"
+              disabled
+              
+=======
               label="Phone Number"
               disabled
               placeholder="*Auto"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             />
           </v-col>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.email"
+<<<<<<< HEAD
+              placeholder="Email"
+              disabled
+=======
               label="Email"
               disabled
               placeholder="@gmail.com"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             />
           </v-col>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.vessel"
+<<<<<<< HEAD
+              placeholder="Vessel"
+              disabled
+              
+=======
               label="Vessel"
               disabled
               placeholder="*Auto"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             />
           </v-col>
         </v-row>
 
+<<<<<<< HEAD
+        <v-divider class="my-2 border-opacity-50" />
+=======
         <v-divider class="my-4 border-opacity-50" />
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 
         <a-textarea-new
           v-model="newPenawaran.perihal"
@@ -99,10 +145,16 @@
           rows="2"
         />
 
+<<<<<<< HEAD
+        <div class="mx-auto text-center mb-3 mt-2">
+          <span class="text-subtitle-2 font-weight-bold text-primary">
+            Rincian Item
+=======
         <!-- Section: Rincian Item -->
         <div class="d-flex align-center justify-space-between mb-3">
           <span class="text-subtitle-2 font-weight-bold text-primary">
             Rincian Item & Penawaran
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
           </span>
         </div>
 
@@ -110,7 +162,13 @@
         <v-row
           v-for="(item, index) in newPenawaran.penawaran_item"
           :key="index"
+<<<<<<< HEAD
+          class="bg-grey-lighten-5 rounded-lg pa-1 pa-sm-1 mb-4 border border-dashed position-relative"
+          @focusin="activeSuggestionIndex = index"
+          @focusout="activeSuggestionIndex = null"
+=======
           class="bg-grey-lighten-5 rounded-lg pa-3 pa-sm-4 mb-4 border border-dashed position-relative"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
         >
           <v-col cols="10" md="11">
             <div class="d-flex justify-space-between align-center mb-2">
@@ -119,6 +177,31 @@
               >
             </div>
 
+<<<<<<< HEAD
+            <a-textarea-new
+              v-model="item.nama"
+              label="Description"
+              placeholder="Description"
+            />
+
+            <span
+              v-if="
+                activeSuggestionIndex === index &&
+                barangSesuaiNama(item.nama).length
+              "
+              class="text-grey text-caption mr-1"
+            >
+              Suggestion (Hpp):
+            </span>
+            <v-chip
+              v-for="(barang, idxBarang) in
+                activeSuggestionIndex === index
+                  ? barangSesuaiNama(item.nama)
+                  : []"
+              :key="barang.id ?? idxBarang"
+              size="x-small"
+              class="mr-1 mb-1 text-grey"
+=======
             <v-row no-gutters>
               <v-col class="pa-2">
                 <a-textarea-new
@@ -142,10 +225,35 @@
               :key="barang.id ?? idxBarang"
               size="x-small"
               class="mr-1 mb-1"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             >
               {{ barang.nama_barang }} : Rp {{ rupiah(barang.harga_hpp) }}
             </v-chip>
 
+<<<<<<< HEAD
+            <div class="d-flex align-center flex-wrap my-2">
+              <a-checkbox
+                label="Barang"
+                :model-value="item.kategori_item === 'Barang'"
+                @update:model-value="setKategoriItem(item, 'Barang', $event)"
+              />
+              <a-checkbox
+                label="Jasa"
+                class="ml-2"
+                :model-value="item.kategori_item === 'Jasa'"
+                @update:model-value="setKategoriItem(item, 'Jasa', $event)"
+              />
+              <a-checkbox
+                label="Barang & Jasa"
+                class="ml-2"
+                :model-value="item.kategori_item === 'Barang & Jasa'"
+                @update:model-value="setKategoriItem(item, 'Barang & Jasa', $event)"
+              />
+            </div>
+
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             <v-row density="compact" no-gutters>
               <v-col cols="6" sm="2" class="pa-1">
                 <a-field-number-new
@@ -165,6 +273,12 @@
                     'Meter',
                     'Box',
                     'Liter',
+<<<<<<< HEAD
+                    'Jerigen',
+                    'Can',
+                    'Pail',
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                   ]"
                   v-model="item.uom"
                   label="UOM"
@@ -174,14 +288,22 @@
               <v-col cols="12" sm="2" class="pa-1">
                 <a-field-number-new
                   v-model="item.harga_hpp"
+<<<<<<< HEAD
+                  label="Hpp (Ops.)"
+=======
                   label="HPP"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                   placeholder="0"
                 />
               </v-col>
               <v-col cols="12" sm="3" class="pa-1">
                 <a-field-number-new
                   v-model="item.amount"
+<<<<<<< HEAD
+                  label="Harga satuan"
+=======
                   label="Amount/Pcs (Rp)"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
                   placeholder="0"
                 />
               </v-col>
@@ -232,15 +354,22 @@
 
         <v-divider class="my-4 border-opacity-50" />
 
+<<<<<<< HEAD
+=======
         <!-- Section: Ringkasan Biaya -->
         <div class="text-subtitle-2 font-weight-bold text-primary mb-3">
           Ringkasan Biaya
         </div>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 
         <v-card variant="flat" class="bg-blue-grey-lighten-5 rounded-xl pa-4">
           <div class="d-flex justify-space-between align-center">
             <span class="text-subtitle-1 font-weight-bold text-grey-darken-4"
+<<<<<<< HEAD
+              >Total Quotation :</span
+=======
               >Total</span
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
             >
             <span class="text-h6 text-sm-h5 font-weight-black text-primary">
               Rp {{ rupiah(subtotalPenawaran) }}
@@ -248,6 +377,84 @@
           </div>
         </v-card>
 
+<<<<<<< HEAD
+        <v-card class="sign-card mt-3 mx-auto" elevation="0">
+          <!-- Header -->
+          <div class="sign-card-header">
+            <div>
+              <div class="sign-card-title">Sign By</div>
+              <div class="sign-card-subtitle">Yang Bertanda Tangan</div>
+            </div>
+
+            <v-icon size="20" color="grey-darken-1"> mdi-draw-pen </v-icon>
+          </div>
+
+          <v-divider />
+
+          <!-- Content -->
+          <v-card-text class="sign-card-content">
+            <a-select-new
+              v-model="newPenawaran.sign_by"
+              :items="[
+                'Seilla Maryana',
+                'Leo Adiatmaja Sembiring',
+                'Muhammad Ridwan',
+                'Lilis Trisnawati',
+              ]"
+              class="sign-select"
+            />
+
+            <!-- Signature -->
+            <div v-if="newPenawaran.sign_by" class="signature-box">
+              <div
+                v-if="newPenawaran.sign_by == 'Leo Adiatmaja Sembiring'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_leo.png" />
+
+                <div class="signature-line"></div>
+
+                <div class="signature-name">Leo Adiatmaja Sembiring</div>
+              </div>
+
+              <div
+                v-if="newPenawaran.sign_by == 'Seilla Maryana'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_seilla.png" />
+
+                <div class="signature-line"></div>
+
+                <div class="signature-name">Seilla Maryana</div>
+              </div>
+
+              <div
+                v-if="newPenawaran.sign_by == 'Muhammad Ridwan'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_ridwan.png" />
+
+                <div class="signature-line"></div>
+
+                <div class="signature-name">Muhammad Ridwan</div>
+              </div>
+
+              <div
+                v-if="newPenawaran.sign_by == 'Lilis Trisnawati'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain />
+
+                <div class="signature-line"></div>
+
+                <div class="signature-name">Lilis Trisnawati</div>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
         <div class="mt-4">
           <span class="text-caption">
             <strong>TERMS &amp; CONDITIONS:</strong>
@@ -327,7 +534,11 @@
           class="flex-grow-1 flex-sm-grow-0"
           @click="data.dialogTambahPenawaran = false"
         >
+<<<<<<< HEAD
+          Cancel
+=======
           Batal
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
         </v-btn>
         <v-btn
           size="small"
@@ -336,7 +547,11 @@
           class="font-weight-bold flex-grow-1 flex-sm-grow-0"
           @click="simpanPenawaranDialog"
         >
+<<<<<<< HEAD
+          {{ data.penawaranAddEdit === "add" ? "Save Quotation" : "Edit" }}
+=======
           {{ data.penawaranAddEdit === "add" ? "Save" : "Edit" }}
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -346,7 +561,11 @@
   <div
     class="d-flex flex-column flex-sm-row justify-space-between align-start align-sm-center mb-4 gap-2"
   >
+<<<<<<< HEAD
+    <h1 class="text-h5 font-weight-bold my-0">Quotation</h1>
+=======
     <h1 class="text-h5 font-weight-bold my-0">Penawaran</h1>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
     <v-btn
       color="primary"
       variant="flat"
@@ -363,6 +582,41 @@
   <v-card class="border rounded-lg" flat>
     <v-card-title class="pa-3 pa-sm-4">
       <div class="d-flex align-center gap-2">
+<<<<<<< HEAD
+        <div class="flex-grow-1" style="display: flex; align-items: center;">
+          <a-text-field-new
+            v-model="data.searchPenawaran"
+            placeholder="Cari semua kolom penawaran"
+          />
+          <v-btn
+            v-if="data.searchPenawaran"
+            icon
+            size="x-small"
+            variant="text"
+            color="red"
+            aria-label="Hapus pencarian"
+            class="mb-2"
+            @click="kosonginPencarian"
+          >
+            <v-icon size="20">mdi-close-circle-outline</v-icon>
+          </v-btn>
+        </div>
+         <v-btn
+          size="x-small"
+          class="border mb-2"
+          @click="tariksemua"
+          variant="text"
+        >
+          Get All Status
+        </v-btn>
+        <v-btn
+          size="23"
+          variant="outlined"
+          class="border flex-shrink-0 mb-2"
+          @click="refreshData"
+        >
+          <v-icon size="15" icon="mdi-refresh" />
+=======
         <div class="flex-grow-1">
           <a-text-field-new
             v-model="data.searchPenawaran"
@@ -378,10 +632,13 @@
           @click="refreshData"
         >
           <v-icon size="20" icon="mdi-refresh" />
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
           <v-tooltip activator="parent" location="top">
             Refresh Data
           </v-tooltip>
         </v-btn>
+<<<<<<< HEAD
+=======
 
         <v-btn
           size="x-small"
@@ -391,6 +648,7 @@
         >
           Tarik Semua Status
         </v-btn>
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
       </div>
     </v-card-title>
 
@@ -399,8 +657,12 @@
     <!-- Responsive Table -->
     <v-data-table
       :headers="data.headPenawaran"
+<<<<<<< HEAD
+      :items="penawaranTampilTersaring"
+=======
       :items="penawaranStore.getDataPenawaranTampil"
       :search="data.searchPenawaran"
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
       density="compact"
       :sort-by="[{ key: 'created_at', order: 'desc' }]"
       :hover="true"
@@ -436,7 +698,11 @@
       </template>
 
       <template v-slot:item.grand_total="{ item }">
+<<<<<<< HEAD
+        <strong>Rp {{ rupiah(item.grand_total_penawaran) }}</strong>
+=======
         Rp {{ rupiah(item.grand_total_penawaran) }}
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
       </template>
 
       <template v-slot:item.status="{ item }">
@@ -544,15 +810,27 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+<<<<<<< HEAD
+import { useDisplay } from "vuetify";
 import moment from "moment";
 import type { ConfirmationDialog } from "#components";
 import type { penawaranM } from "~/types/penawaranModel";
+import type { barangM } from "~/types/barangModel";
+=======
+import moment from "moment";
+import type { ConfirmationDialog } from "#components";
+import type { penawaranM } from "~/types/penawaranModel";
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 
 definePageMeta({
   layout: "admin",
 });
 
 const router = useRouter();
+<<<<<<< HEAD
+const display = useDisplay();
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 const customerStore = usecustomerStore();
 const termconditionStore = usetermconditionStore();
 const barangStore = usebarangStore();
@@ -563,6 +841,10 @@ const notificationStore = useNotificationStore();
 const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
   null,
 );
+<<<<<<< HEAD
+const activeSuggestionIndex = ref<number | null>(null);
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 
 onMounted(async () => {
   useloadingStore().setLoading(true);
@@ -577,6 +859,13 @@ const tariksemua = async () => {
   await penawaranStore.tarikDataPenawaranAct();
 };
 
+<<<<<<< HEAD
+const kosonginPencarian = () => {
+  data.searchPenawaran = "";
+};
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 const data = reactive({
   searchPenawaran: "",
 
@@ -590,13 +879,58 @@ const data = reactive({
     { title: "Date", value: "tanggal_penawaran", sortable: true },
     { title: "Quotation Ref No", value: "no_penawaran", sortable: true },
     { title: "Client", value: "nama_perusahaan", sortable: true },
+<<<<<<< HEAD
+    { title: "Subject", value: "perihal", sortable: true, width: "220px" },
+=======
     { title: "Subject", value: "perihal", sortable: true },
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
     { title: "Total Amount", value: "grand_total", sortable: true },
     { title: "Status", value: "status", sortable: true },
     { title: "Aksi", align: "center" as const, value: "aksi", width: "120px" },
   ],
 });
 
+<<<<<<< HEAD
+const penawaranTampilTersaring = computed(() => {
+  const query = data.searchPenawaran.trim().toLocaleLowerCase("id-ID");
+  const items = penawaranStore.getDataPenawaranTampil;
+
+  if (!query) return items;
+
+  const searchableColumns = data.headPenawaran
+    .map((header) => header.value)
+    .filter(
+      (value): value is string =>
+        typeof value === "string" && value !== "no" && value !== "aksi",
+    );
+
+  return items.filter((item) =>
+    searchableColumns.some((key) => {
+      const itemKey = key === "grand_total" ? "grand_total_penawaran" : key;
+      const value = item[itemKey as keyof typeof item];
+      if (value == null) return false;
+
+      const searchableValue =
+        key === "grand_total" && typeof value === "number"
+          ? `${value} ${rupiah(value)}`
+          : String(value);
+
+      return searchableValue.toLocaleLowerCase("id-ID").includes(query);
+    }),
+  );
+});
+
+function barangSesuaiNama(namaItem: string | null | undefined) {
+  const query = namaItem?.trim().toLocaleLowerCase("id-ID") ?? "";
+  if (!query) return [];
+
+  return barangStore.getDataBarang.filter((barang) =>
+    barang.nama_barang.toLocaleLowerCase("id-ID").includes(query),
+  );
+}
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 function emptyPenawaran(): penawaranM {
   const generatedNo = generateNoPenawaran();
   return {
@@ -611,6 +945,10 @@ function emptyPenawaran(): penawaranM {
     tanggal_penawaran: moment().format("YYYY-MM-DD"),
     created_at: 0,
     created_by: "",
+<<<<<<< HEAD
+    sign_by: "Seilla Maryana",
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
     status: "Draft",
     perihal: "",
     penawaran_item: [
@@ -661,7 +999,11 @@ const sortedTermConditions = computed(() => {
 
 function generateNoPenawaran(): string {
   const year = moment().format("YYYY");
+<<<<<<< HEAD
+  const pattern = new RegExp(`^QT/ICI/${year}/DRM/(\\d{5})$`);
+=======
   const pattern = new RegExp(`^QT/ICI/${year}/SNS/(\\d{5})$`);
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   const lastSequence = (penawaranStore.getDataPenawaran || []).reduce(
     (highest, penawaran) => {
       const match = penawaran.no_penawaran?.match(pattern);
@@ -670,7 +1012,11 @@ function generateNoPenawaran(): string {
     0,
   );
 
+<<<<<<< HEAD
+  return `QT/DRM/${year}/${String(lastSequence + 1).padStart(5, "0")}`;
+=======
   return `QT/SNS/${year}/${String(lastSequence + 1).padStart(5, "0")}`;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 }
 
 const newPenawaran = ref<penawaranM>(emptyPenawaran());
@@ -767,6 +1113,60 @@ function tambahBarisPenawaran() {
   });
 }
 
+<<<<<<< HEAD
+function setKategoriItem(
+  item: { kategori_item: string },
+  kategori: string,
+  checked: boolean,
+) {
+  if (checked) item.kategori_item = kategori;
+}
+
+async function hapusBarisPenawaran(index: number) {
+  if (newPenawaran.value.penawaran_item.length === 1) {
+    return notificationStore.showError("Minimal harus ada 1 baris item");
+  }
+
+  const confirmed = await confirmationDialog.value?.show(
+    "Konfirmasi Hapus Item",
+    `Yakin ingin menghapus item #${index + 1}?`,
+    { confirmText: "Hapus", variant: "danger" },
+  );
+  if (!confirmed) return;
+
+  newPenawaran.value.penawaran_item.splice(index, 1);
+}
+
+async function sinkronkanBarangDariPenawaran() {
+  for (const item of newPenawaran.value.penawaran_item) {
+    const namaBarang = item.nama?.trim();
+    const hargaHpp = Number(item.harga_hpp) || 0;
+    if (!namaBarang || hargaHpp <= 0) continue;
+
+    const barangLama = barangStore.getDataBarang.find(
+      (barang) =>
+        barang.nama_barang.trim().toLocaleLowerCase() ===
+        namaBarang.toLocaleLowerCase(),
+    );
+
+    if (barangLama) {
+      if (Number(barangLama.harga_hpp) !== hargaHpp) {
+        await barangStore.updateBarangAct({ ...barangLama, harga_hpp: hargaHpp });
+      }
+      continue;
+    }
+
+    const barangBaru: barangM = {
+      nama_barang: namaBarang,
+      harga_hpp: hargaHpp,
+      createdAt: moment().unix(),
+      createdBy: userStore.getEmail,
+    };
+    await barangStore.addBarangAct(barangBaru);
+  }
+}
+
+=======
 function hapusBarisPenawaran(index: number) {
   if (newPenawaran.value.penawaran_item.length === 1) {
     return notificationStore.showError("Minimal harus ada 1 baris item");
@@ -774,6 +1174,7 @@ function hapusBarisPenawaran(index: number) {
   newPenawaran.value.penawaran_item.splice(index, 1);
 }
 
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 async function simpanPenawaranDialog() {
   if (!newPenawaran.value.id_perusahaan) {
     return notificationStore.showError("Client belum dipilih");
@@ -802,6 +1203,11 @@ async function simpanPenawaranDialog() {
   newPenawaran.value.grand_total_penawaran = subtotalPenawaran.value;
   newPenawaran.value.terbilang = terbilang(subtotalPenawaran.value);
 
+<<<<<<< HEAD
+  await sinkronkanBarangDariPenawaran();
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
   if (data.penawaranAddEdit === "add") {
     newPenawaran.value.no_penawaran ||= generateNoPenawaran();
     newPenawaran.value.id_penawaran =
@@ -895,6 +1301,18 @@ async function refreshData() {
   text-decoration: none;
 }
 
+<<<<<<< HEAD
+.subject-cell {
+  display: block;
+  max-width: 220px;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+=======
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 .quotation-badge {
   display: inline-block;
   padding: 2px 10px;
@@ -919,6 +1337,90 @@ async function refreshData() {
   gap: 8px;
 }
 
+<<<<<<< HEAD
+.sign-card {
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border: 1px solid #e1e5ea;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sign-card-header {
+  min-height: 62px;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sign-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0.2px;
+}
+
+.sign-card-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #8a929d;
+}
+
+.sign-card-content {
+  padding: 18px;
+}
+
+.field-label {
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5f6874;
+  letter-spacing: 0.2px;
+}
+
+.sign-select {
+  margin-bottom: 14px;
+}
+
+/* Signature area */
+.signature-box {
+  margin-top: 8px;
+  padding: 16px 14px 14px;
+  background: #fafbfc;
+  border: 1px solid #e5e8ec;
+  border-radius: 8px;
+}
+
+.signature-label {
+  margin-bottom: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #9aa1aa;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.signature-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signature-line {
+  width: 180px;
+  border-bottom: 1px solid #737b86;
+  margin-top: -2px;
+}
+
+.signature-name {
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #303740;
+  text-align: center;
+=======
 .subject-cell {
   display: block;
   max-width: 220px;
@@ -926,5 +1428,6 @@ async function refreshData() {
   white-space: normal;
   overflow-wrap: anywhere;
   line-height: 1.35;
+>>>>>>> 717d304032bc7ebad99f749429671328a324848a
 }
 </style>

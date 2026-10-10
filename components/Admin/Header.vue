@@ -320,32 +320,16 @@ const logout = async () => {
     rail-width="72"
     class="desktop-side-menu"
   >
-<<<<<<< HEAD
-    <div class="side-brand-header">
-      <div class="mini-logo-box">
-        <img src="/Logo-DRM.png" alt="DRM Logo" class="mini-logo-img" />
-=======
     <!-- BRAND / MINI LOGO HEADER -->
     <div class="side-brand-header">
       <div class="mini-logo-box">
-        <img
-          src="/public/Logo-SNS.png"
-          alt="SNS Logo"
-          class="mini-logo-img"
-        />
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
+        <img src="/Logo-DRM.png" alt="DRM Logo" class="mini-logo-img" />
       </div>
     </div>
 
     <v-divider class="mx-3 my-2 border-opacity-25" />
 
-<<<<<<< HEAD
     <v-list nav density="compact" class="side-nav-list px-2">
-=======
-    <!-- NAVIGATION ITEMS -->
-    <v-list nav density="compact" class="side-nav-list px-2">
-      <!-- Dashboard -->
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
       <v-list-item
         to="/admin/"
         class="side-nav-item"

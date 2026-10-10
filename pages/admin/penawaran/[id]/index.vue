@@ -10,6 +10,7 @@ import dialogBuatPengeluaran from "~/components/Admin/Penawaran/dialog-buat-peng
 import { ref } from "vue";
 
 const activeTab = ref(0);
+const purchaseorderPreviewKey = ref(0);
 
 definePageMeta({ layout: "admin" });
 
@@ -35,6 +36,7 @@ const data = reactive({
   pageKategori: 1,
   dialogPenawaran: false,
   dialogAddPengeluaran: false,
+  dialogPurchaseOrder: false,
 
   new_pemberkasan: {
     id_dokumen: "",
@@ -83,6 +85,12 @@ async function opendialogaddpengeluaran() {
     :penawaran="detailpenawaran"
   />
 
+  <admin-penawaran-dialog-purchaseorder
+    v-model="data.dialogPurchaseOrder"
+    :penawaran="detailpenawaran"
+    @saved="purchaseorderPreviewKey++"
+  />
+
   <div v-if="detailpenawaran" class="quotation-page">
     <!-- STICKY HEADER WRAPPER -->
     <header class="top-sticky-container">
@@ -101,9 +109,9 @@ async function opendialogaddpengeluaran() {
         </div>
 
         <div class="page-heading">
-          <div>
+
             <h1 class="page-title">Detail Quotation</h1>
-          </div>
+
         </div>
       </div>
     </header>
@@ -158,70 +166,69 @@ async function opendialogaddpengeluaran() {
                   {{ detailpenawaran.nama_perusahaan || "-" }}
                 </div>
               </div>
-
-              <div class="info-field">
-                <div class="field-label">PIC</div>
-                <div class="contact-row">
-                  <div class="contact-icon">
-                    <v-icon size="16"> mdi-account-outline </v-icon>
-                  </div>
-                  <span>{{ detailpenawaran.pic || "-" }}</span>
-
-                  <div class="contact-icon">
-                    <v-icon size="16"> mdi-phone-outline </v-icon>
-                  </div>
-                  <span>{{ detailpenawaran.no_telp || "-" }}</span>
-                </div>
-              </div>
             </div>
 
             <div class="info-card-footer text-center">
-              <v-btn
-                :disabled="detailpenawaran.status == 'INVOICE'"
-                block
-                color="orange"
-                variant="flat"
-                size="small"
-                prepend-icon="mdi-file-document-plus-outline"
-                class="invoice-button"
-                @click="opendialogaddinv"
-              >
-                Buat Invoice
-              </v-btn>
-
               <div
                 v-if="detailpenawaran.status == 'INVOICE'"
-                class="d-flex align-center justify-center mt-2"
+                class="invoice-status"
               >
-                <v-icon size="15" color="red">mdi-information-outline</v-icon>
-                <span class="text-red text-caption ml-1"
-                  >Invoice telah dibuat</span
-                >
+                <v-icon size="15">mdi-check-circle-outline</v-icon>
+                <span>Invoice telah dibuat</span>
               </div>
 
-              <v-btn
-                block
-                color="primary"
-                variant="flat"
-                size="small"
-                prepend-icon="mdi-export"
-                class="invoice-button mb-3 mt-3"
-                @click="opendialogaddpengeluaran"
-              >
-                Buat Catatan Pengeluaran
-              </v-btn>
+              <div class="action-buttons">
+                <!-- Invoice -->
+                <v-btn
+                  block
+                  color="orange"
+                  variant="flat"
+                  size="small"
+                  append-icon="mdi-file-document-plus-outline"
+                  class="corporate-btn btn-invoice"
+                  @click="opendialogaddinv"
+                >
+                  Buat Invoice
+                </v-btn>
 
-              <v-btn
-                :to="`/admin/penawaran/${encodeURIComponent(String(route.params.id))}/pengeluaran`"
-                block
-                color="primary"
-                variant="outlined"
-                size="small"
-                class="mb-3"
-                append-icon="mdi-open-in-new"
-              >
-                Lihat Catatan Pengeluaran
-              </v-btn>
+                <!-- PO -->
+                <v-btn
+                  block
+                  color="primary"
+                  variant="flat"
+                  size="small"
+                  append-icon="mdi-clipboard-text-outline"
+                  class="corporate-btn btn-po"
+                  @click="data.dialogPurchaseOrder = true"
+                >
+                  Buat / Edit Purchase Order (PO)
+                </v-btn>
+
+                <!-- Pengeluaran
+                <v-btn
+                  block
+                  color="green"
+                  variant="flat"
+                  size="small"
+                  append-icon="mdi-pencil-outline"
+                  class="corporate-btn btn-expense"
+                  @click="opendialogaddpengeluaran"
+                >
+                  Buat Catatan Pengeluaran
+                </v-btn> -->
+
+                <!-- Lihat Pengeluaran -->
+                <v-btn
+                  :to="`/admin/penawaran/${encodeURIComponent(String(route.params.id))}/pengeluaran`"
+                  block
+                  variant="outlined"
+                  size="small"
+                  append-icon="mdi-arrow-top-right"
+                  class="corporate-btn btn-view"
+                >
+                  Lihat Catatan Pengeluaran
+                </v-btn>
+              </div>
             </div>
           </section>
         </aside>
@@ -268,6 +275,11 @@ async function opendialogaddpengeluaran() {
           </div>
 
           <canvas-penawaran :detailpenawaran="detailpenawaran" />
+          <v-divider opacity="100" thickness="2" class="mb-5"></v-divider>
+          <canvas-purchaseorder
+            :key="purchaseorderPreviewKey"
+            :detailpenawaran="detailpenawaran"
+          />
         </main>
       </div>
     </div>
@@ -321,7 +333,7 @@ async function opendialogaddpengeluaran() {
 
 .page-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1.2;
   font-weight: 800;
   color: #172033;
@@ -732,5 +744,85 @@ async function opendialogaddpengeluaran() {
   .tab-item {
     font-size: 12px !important;
   }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.corporate-btn {
+  height: 28px !important;
+  min-height: 28px !important;
+  border-radius: 7px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  box-shadow: none !important;
+  transition: all 0.18s ease;
+}
+
+/* Icon */
+.corporate-btn :deep(.v-icon) {
+  font-size: 16px !important;
+  opacity: 0.9;
+}
+
+/* Hover */
+.corporate-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Invoice */
+.btn-invoice {
+  background: #f59e0b !important;
+  color: #fff !important;
+}
+
+.btn-invoice:hover {
+  background: #d97706 !important;
+}
+
+/* Pengeluaran */
+.btn-expense {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+
+.btn-expense:hover {
+  background: #1d4ed8 !important;
+}
+
+/* Lihat pengeluaran */
+.btn-view {
+  border: 1px solid #d1d5db !important;
+  background: #fff !important;
+  color: #374151 !important;
+}
+
+.btn-view:hover {
+  background: #f8fafc !important;
+  border-color: #9ca3af !important;
+}
+
+/* Status invoice */
+.invoice-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 9px;
+  padding: 7px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.invoice-status .v-icon {
+  color: #16a34a !important;
 }
 </style>

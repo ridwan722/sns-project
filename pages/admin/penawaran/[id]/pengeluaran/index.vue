@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { doc, updateDoc } from "firebase/firestore";
-import { useDocument, useFirestore } from "vuefire";
+import { collection, doc, updateDoc } from "firebase/firestore";
+import { useCollection, useDocument, useFirestore } from "vuefire";
+import { persistPengeluaranDocuments } from "~/composables/useInvoiceAresaDigital";
+import dialogBuatPengeluaran from "~/components/Admin/Penawaran/dialog-buat-pengeluaran.vue";
 import type {
   buktiPengeluaranM,
   penawaranM,
@@ -15,16 +17,76 @@ const route = useRoute();
 const db = useFirestore();
 
 const idPenawaran = computed(() => String(route.params.id));
+const addPengeluaranDialog = ref(false);
 
 const penawaranRef = computed(() => doc(db, "penawaran", idPenawaran.value));
+const pengeluaranFileChunksRef = computed(() =>
+  collection(db, "penawaran", idPenawaran.value, "pengeluaran_file_chunks"),
+);
 
 const { data: penawaran, pending, error } = useDocument(penawaranRef);
+const { data: pengeluaranFileChunks } = useCollection(pengeluaranFileChunksRef);
 
 const detailPenawaran = computed(
   () => penawaran.value as penawaranM | undefined,
 );
 
-const pengeluaran = computed(() => detailPenawaran.value?.pengeluaran ?? []);
+const getTanggalPengeluaranTimestamp = (tanggal: string) => {
+  const timestamp = new Date(tanggal).getTime();
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+};
+
+const fileDataUrls = computed(() => {
+  const groupedChunks = new Map<string, { index: number; data: string }[]>();
+  for (const chunk of pengeluaranFileChunks.value ?? []) {
+    const fileId = chunk.fileId as string | undefined;
+    if (!fileId) continue;
+    const fileChunks = groupedChunks.get(fileId) ?? [];
+    fileChunks.push({
+      index: Number(chunk.index) || 0,
+      data: String(chunk.data || ""),
+    });
+    groupedChunks.set(fileId, fileChunks);
+  }
+
+  const dataUrls = new Map<string, string>();
+  for (const [fileId, chunks] of groupedChunks) {
+    dataUrls.set(
+      fileId,
+      chunks
+        .sort((a, b) => a.index - b.index)
+        .map((chunk) => chunk.data)
+        .join(""),
+    );
+  }
+  return dataUrls;
+});
+
+const pengeluaran = computed(() => {
+  return (detailPenawaran.value?.pengeluaran ?? [])
+    .map((expense) => ({
+      ...expense,
+      doc_pengeluaran: (expense.doc_pengeluaran ?? []).map((document) => ({
+        ...document,
+        dataUrl:
+          document.dataUrl ||
+          (document.fileId ? fileDataUrls.value.get(document.fileId) : "") ||
+          "",
+      })),
+    }))
+    .sort((a, b) => {
+      const timestampA = getTanggalPengeluaranTimestamp(a.tanggal_pengeluaran);
+      const timestampB = getTanggalPengeluaranTimestamp(b.tanggal_pengeluaran);
+      const invalidTimestamp = Number.NEGATIVE_INFINITY;
+
+      if (timestampA === invalidTimestamp) {
+        return timestampB === invalidTimestamp ? 0 : 1;
+      }
+      if (timestampB === invalidTimestamp) return -1;
+
+      return timestampA - timestampB;
+    });
+});
 
 /* =====================================================
    EDIT
@@ -32,9 +94,9 @@ const pengeluaran = computed(() => detailPenawaran.value?.pengeluaran ?? []);
 
 const editDialog = ref(false);
 const savingEdit = ref(false);
+const deletingPengeluaranId = ref<string | null>(null);
 const editIndex = ref<number | null>(null);
 const editFiles = ref<File[]>([]);
-const MAX_INVOICE_BYTES = 900_000;
 const notificationStore = useNotificationStore();
 
 const editForm = reactive<pengeluaranM>({
@@ -49,6 +111,7 @@ const editForm = reactive<pengeluaranM>({
   lokasi_vendor: "",
   dikeluarkan_oleh: "",
   doc_pengeluaran: [],
+  status_pengeluaran: "",
 });
 
 /* =====================================================
@@ -73,6 +136,11 @@ const headers = [
     minWidth: "220px",
   },
   {
+    title: "Dikeluarkan oleh",
+    key: "dikeluarkan_oleh",
+    maxWidth: "100px",
+  },
+  {
     title: "NOMINAL",
     key: "nominal",
     align: "end",
@@ -86,27 +154,24 @@ const headers = [
   {
     title: "VENDOR",
     key: "nama_vendor",
-    minWidth: "160px",
+    minWidth: "180px",
   },
+
   {
-    title: "TELEPON",
-    key: "no_telp_vendor",
-    minWidth: "140px",
+    title: "Lampiran",
+    key: "bukti",
+    minWidth: "100px",
   },
+
   {
-    title: "LOKASI",
-    key: "lokasi_vendor",
-    minWidth: "170px",
-  },
-  {
-    title: "Dikeluarkan oleh",
-    key: "dikeluarkan_oleh",
-    minWidth: "150px",
+    title: "Status",
+    key: "status_pengeluaran",
+    minWidth: "50px",
   },
   {
     title: "AKSI",
     key: "actions",
-    width: "80px",
+    width: "110px",
     sortable: false,
     align: "center",
   },
@@ -129,6 +194,125 @@ const totalPengeluaran = computed(() => {
   );
 });
 
+const savingPdf = ref(false);
+
+const savePengeluaranPdf = async () => {
+  if (savingPdf.value) return;
+  savingPdf.value = true;
+
+  try {
+    const { jsPDF } = await import("jspdf");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 15;
+    const tableWidth = pageWidth - margin * 2;
+    const columns = [
+      { title: "No.", width: 13 },
+      { title: "Tanggal", width: 28 },
+      { title: "Keterangan", width: tableWidth - 13 - 28 - 40 },
+      { title: "Nominal", width: 40 },
+    ];
+    const columnStarts = columns.map((_, index) =>
+      margin + columns.slice(0, index).reduce((width, column) => width + column.width, 0),
+    );
+    let y = 20;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(16);
+    pdf.text("Daftar Pengeluaran", margin, y);
+    y += 8;
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+    pdf.text(String(detailPenawaran.value?.perihal || "Project"), margin, y);
+    y += 5;
+    pdf.text(`No. Penawaran: ${detailPenawaran.value?.no_penawaran || idPenawaran.value}`, margin, y);
+    y += 9;
+
+    const drawHeader = () => {
+      pdf.setFillColor(245, 247, 250);
+      pdf.setDrawColor(210, 215, 222);
+      pdf.rect(margin, y, tableWidth, 9, "FD");
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(10);
+      pdf.text(columns[0].title, columnStarts[0] + 2, y + 6);
+      pdf.text(columns[1].title, columnStarts[1] + 2, y + 6);
+      pdf.text(columns[2].title, columnStarts[2] + 2, y + 6);
+      pdf.text(columns[3].title, columnStarts[3] + columns[3].width - 2, y + 6, {
+        align: "right",
+      });
+      let dividerX = margin;
+      for (const column of columns.slice(0, -1)) {
+        dividerX += column.width;
+        pdf.line(dividerX, y, dividerX, y + 9);
+      }
+      y += 9;
+    };
+
+    drawHeader();
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+
+    pengeluaran.value.forEach((item, index) => {
+      const descriptionLines = pdf.splitTextToSize(
+        String(item.keterangan || "-"),
+        columns[2].width - 4,
+      ) as string[];
+      const rowHeight = Math.max(8, descriptionLines.length * 4.5 + 3);
+
+      if (y + rowHeight > 275) {
+        pdf.addPage();
+        y = 15;
+        drawHeader();
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(9);
+      }
+
+      pdf.setDrawColor(220, 224, 230);
+      pdf.rect(margin, y, tableWidth, rowHeight);
+      let dividerX = margin;
+      for (const column of columns.slice(0, -1)) {
+        dividerX += column.width;
+        pdf.line(dividerX, y, dividerX, y + rowHeight);
+      }
+      pdf.text(String(index + 1), margin + 2, y + 5.5);
+      pdf.text(formatTanggal(item.tanggal_pengeluaran), margin + columns[0].width + 2, y + 5.5);
+      pdf.text(
+        descriptionLines,
+        margin + columns[0].width + columns[1].width + 2,
+        y + 5.5,
+      );
+      pdf.text(
+        rupiah.format(Number(item.nominal || 0)),
+        columnStarts[3] + columns[3].width - 2,
+        y + 5.5,
+        { align: "right" },
+      );
+      y += rowHeight;
+    });
+
+    if (y + 10 > 285) {
+      pdf.addPage();
+      y = 20;
+    }
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.text("Total Pengeluaran", margin + tableWidth - 70, y + 7);
+    pdf.text(rupiah.format(totalPengeluaran.value), margin + tableWidth, y + 7, {
+      align: "right",
+    });
+
+    const safeName = String(detailPenawaran.value?.perihal || idPenawaran.value)
+      // .replace(/[^a-z0-9-_]/gi, "-")
+      // .replace(/-+/g, "-");
+    pdf.save(`Pengeluaran - ${safeName}.pdf`);
+  } catch (error) {
+    console.error("Gagal membuat PDF pengeluaran:", error);
+    notificationStore.showError("Gagal membuat PDF pengeluaran.");
+  } finally {
+    savingPdf.value = false;
+  }
+};
+
 const formatTanggal = (tanggal: string) => {
   if (!tanggal) return "-";
 
@@ -149,8 +333,13 @@ const formatTanggal = (tanggal: string) => {
    OPEN EDIT
 ===================================================== */
 
-const openEdit = (item: any, index: number) => {
-  editIndex.value = index;
+const openEdit = (item: any) => {
+  const originalIndex = (detailPenawaran.value?.pengeluaran ?? []).findIndex(
+    (expense) => expense.id_pengeluaran === item.id_pengeluaran,
+  );
+  if (originalIndex < 0) return;
+
+  editIndex.value = originalIndex;
 
   editForm.id_pengeluaran = item.id_pengeluaran || "";
   editForm.tanggal_pengeluaran = item.tanggal_pengeluaran || "";
@@ -163,6 +352,7 @@ const openEdit = (item: any, index: number) => {
   editForm.lokasi_vendor = item.lokasi_vendor || "";
   editForm.dikeluarkan_oleh = item.dikeluarkan_oleh || "";
   editForm.doc_pengeluaran = [...(item.doc_pengeluaran || [])];
+  editForm.status_pengeluaran = item.status_pengeluaran || "";
   editFiles.value = [];
 
   editDialog.value = true;
@@ -244,17 +434,6 @@ const saveEdit = async () => {
       return;
     }
 
-    const estimatedFileBytes = editFiles.value.reduce(
-      (total, file) => total + 4 * Math.ceil(file.size / 3),
-      0,
-    );
-    if (estimatedFileBytes > MAX_INVOICE_BYTES) {
-      notificationStore.showError(
-        "Total file bukti terlalu besar. Kurangi ukuran atau jumlah file.",
-      );
-      return;
-    }
-
     const newDocuments: buktiPengeluaranM[] = [];
     for (const file of editFiles.value) {
       newDocuments.push({
@@ -264,7 +443,11 @@ const saveEdit = async () => {
         contentType: file.type || "application/octet-stream",
       });
     }
-    const doc_pengeluaran = [...editForm.doc_pengeluaran, ...newDocuments];
+    const doc_pengeluaran = await persistPengeluaranDocuments(
+      idPenawaran.value,
+      dataLama.id_pengeluaran,
+      [...editForm.doc_pengeluaran, ...newDocuments],
+    );
 
     pengeluaranBaru[index] = {
       ...dataLama,
@@ -280,6 +463,7 @@ const saveEdit = async () => {
       no_telp_vendor: editForm.no_telp_vendor,
       lokasi_vendor: editForm.lokasi_vendor,
       dikeluarkan_oleh: editForm.dikeluarkan_oleh,
+      status_pengeluaran: editForm.status_pengeluaran,
       doc_pengeluaran,
     };
 
@@ -295,16 +479,96 @@ const saveEdit = async () => {
     savingEdit.value = false;
   }
 };
+
+const deletePengeluaran = async (item: any) => {
+  const idPengeluaran = item.id_pengeluaran;
+  if (!idPengeluaran || !detailPenawaran.value) return;
+  if (
+    !window.confirm(
+      `Hapus pengeluaran "${item.keterangan || "ini"}"? Tindakan ini tidak dapat dibatalkan.`,
+    )
+  ) {
+    return;
+  }
+
+  try {
+    deletingPengeluaranId.value = idPengeluaran;
+    const pengeluaranBaru = (detailPenawaran.value.pengeluaran ?? []).filter(
+      (expense) => expense.id_pengeluaran !== idPengeluaran,
+    );
+    const grandtotalPengeluaran = pengeluaranBaru.reduce(
+      (total, expense) => total + (Number(expense.nominal) || 0),
+      0,
+    );
+
+    await updateDoc(doc(db, "penawaran", idPenawaran.value), {
+      pengeluaran: pengeluaranBaru,
+      grandtotal_pengeluaran: grandtotalPengeluaran,
+    });
+    try {
+      await persistPengeluaranDocuments(idPenawaran.value, idPengeluaran, []);
+    } catch (cleanupError) {
+      console.error("Gagal membersihkan lampiran pengeluaran:", cleanupError);
+    }
+    notificationStore.showSuccess("Pengeluaran berhasil dihapus");
+  } catch (err) {
+    console.error("Gagal menghapus pengeluaran:", err);
+    notificationStore.showError("Gagal menghapus pengeluaran");
+  } finally {
+    deletingPengeluaranId.value = null;
+  }
+};
+
+const imagePreviewDialog = ref(false);
+const imagePreviewUrl = ref("");
+
+const previewImage = (dataUrl: string) => {
+  if (!dataUrl) return;
+
+  imagePreviewUrl.value = dataUrl;
+  imagePreviewDialog.value = true;
+};
 </script>
 
 <template>
+  <dialog-buat-pengeluaran
+    v-if="detailPenawaran"
+    v-model="addPengeluaranDialog"
+    :id-penawaran="idPenawaran"
+    :penawaran="detailPenawaran"
+  />
+
   <v-container fluid class="expense-page pa-4 pa-md-5">
+    <v-dialog v-model="imagePreviewDialog" max-width="900">
+      <v-card>
+        <v-card-title class="d-flex align-center justify-space-between">
+          Pratinjau Bukti
+
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="imagePreviewDialog = false"
+          />
+        </v-card-title>
+
+        <v-card-text class="pa-2">
+          <img
+            v-if="imagePreviewUrl"
+            :src="imagePreviewUrl"
+            alt="Bukti Pengeluaran"
+            class="w-100"
+            style="max-height: 75vh; object-fit: contain"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <!-- =================================================
          HEADER
     ================================================== -->
 
     <div class="page-header mb-4">
-      <div class="d-flex align-center mb-3">
+      <div class="d-flex align-center justify-space-between mb-3">
+        <div class="d-flex align-center">
         <v-btn
           icon="mdi-arrow-left"
           variant="tonal"
@@ -315,10 +579,20 @@ const saveEdit = async () => {
         />
 
         <div>
-          <div class="page-eyebrow">PROJECT EXPENSE</div>
-
           <h1 class="page-title">Pengeluaran Project</h1>
         </div>
+        </div>
+        <v-btn
+          color="primary"
+          variant="tonal"
+          prepend-icon="mdi-file-pdf-box"
+          size="small"
+          :loading="savingPdf"
+          :disabled="pending || !detailPenawaran"
+          @click="savePengeluaranPdf"
+        >
+          Save PDF
+        </v-btn>
       </div>
 
       <!-- PROJECT INFORMATION -->
@@ -340,7 +614,7 @@ const saveEdit = async () => {
           </div>
 
           <div class="project-reference">
-            <div class="reference-label">NO. REFERENSI</div>
+            <div class="reference-label">QUOTATION NO.</div>
 
             <div class="reference-number">
               {{ detailPenawaran?.no_penawaran || idPenawaran }}
@@ -432,14 +706,25 @@ const saveEdit = async () => {
           </div>
         </div>
 
-        <v-chip
-          variant="tonal"
-          size="small"
-          prepend-icon="mdi-format-list-bulleted"
-          class="transaction-chip"
-        >
-          {{ pengeluaran.length }} transaksi
-        </v-chip>
+        <div class="d-flex align-center ga-2">
+          <v-chip
+            variant="tonal"
+            size="small"
+            prepend-icon="mdi-format-list-bulleted"
+            class="transaction-chip"
+          >
+            {{ pengeluaran.length }} transaksi
+          </v-chip>
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            size="small"
+            :disabled="!detailPenawaran"
+            @click="addPengeluaranDialog = true"
+          >
+            Tambah Pengeluaran
+          </v-btn>
+        </div>
       </div>
 
       <v-divider />
@@ -525,7 +810,7 @@ const saveEdit = async () => {
           <!-- VENDOR -->
 
           <template #item.nama_vendor="{ item }">
-            <div class="vendor-cell">
+            <div class="vendor-cell mt-2">
               <div class="vendor-icon">
                 <v-icon icon="mdi-store-outline" size="15" />
               </div>
@@ -534,29 +819,20 @@ const saveEdit = async () => {
                 {{ item.nama_vendor || "-" }}
               </span>
             </div>
-          </template>
+            <div class="vendor-cell mt-2 ml-1">
+              <div>
+                <v-icon icon="mdi-phone-outline" size="15" />
+              </div>
 
-          <!-- TELEPON -->
+              <span>
+                {{ item.no_telp_vendor || "-" }}
+              </span>
+            </div>
 
-          <template #item.no_telp_vendor="{ item }">
-            <a
-              v-if="item.no_telp_vendor"
-              :href="`tel:${item.no_telp_vendor}`"
-              class="phone-link"
-            >
-              <v-icon icon="mdi-phone-outline" size="14" class="mr-1" />
-
-              {{ item.no_telp_vendor }}
-            </a>
-
-            <span v-else class="text-disabled"> - </span>
-          </template>
-
-          <!-- LOKASI -->
-
-          <template #item.lokasi_vendor="{ item }">
-            <div class="location-cell">
-              <v-icon icon="mdi-map-marker-outline" size="15" class="mr-1" />
+            <div class="vendor-cell mt-2 mb-4 ml-1">
+              <div>
+                <v-icon icon="mdi-store-outline" size="15" />
+              </div>
 
               <span>
                 {{ item.lokasi_vendor || "-" }}
@@ -564,30 +840,94 @@ const saveEdit = async () => {
             </div>
           </template>
 
+          <template #item.bukti="{ item }">
+            <v-tooltip
+              v-if="item.doc_pengeluaran?.length"
+              text="Pratinjau Gambar"
+              location="top"
+            >
+              <template #activator="{ props }">
+                <button
+                  v-bind="props"
+                  type="button"
+                  class="btn-image-preview"
+                  @click="previewImage(item.doc_pengeluaran[0].dataUrl)"
+                >
+                  <v-icon size="20">mdi-image-outline</v-icon>
+                </button>
+              </template>
+            </v-tooltip>
+
+            <span v-else class="text-disabled">-</span>
+          </template>
+
           <!-- DIKELUARKAN OLEH -->
 
           <template #item.dikeluarkan_oleh="{ item }">
-            <div class="issued-by-cell">
+            <div>
               {{ item.dikeluarkan_oleh || "-" }}
+            </div>
+          </template>
+
+          <template #item.status_pengeluaran="{ item }">
+            <div
+              class="issued-by-cell"
+              :style="{
+                color:
+                  item.status_pengeluaran === 'Hutang'
+                    ? '#f44336'
+                    : item.status_pengeluaran === 'Lunas'
+                      ? '#4caf50'
+                      : '',
+                backgroundColor:
+                  item.status_pengeluaran === 'Hutang'
+                    ? '#ffebee'
+                    : item.status_pengeluaran === 'Lunas'
+                      ? '#e8f5e9'
+                      : '',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                display: 'inline-block',
+                fontWeight: '500',
+              }"
+            >
+              {{ item.status_pengeluaran || "-" }}
             </div>
           </template>
 
           <!-- AKSI -->
 
           <template #item.actions="{ item, index }">
-            <v-btn
-              icon="mdi-pencil-outline"
-              variant="text"
-              size="small"
-              color="grey-darken-1"
-              @click="openEdit(item, index)"
-            >
-              <v-icon size="18"> mdi-pencil-outline </v-icon>
+            <div class="d-flex align-center justify-center">
+              <v-btn
+                icon="mdi-pencil-outline"
+                variant="text"
+                size="small"
+                color="grey-darken-1"
+                :disabled="deletingPengeluaranId !== null"
+                @click="openEdit(item)"
+              >
+                <v-icon size="18">mdi-pencil-outline</v-icon>
+                <v-tooltip activator="parent" location="top">
+                  Edit Pengeluaran
+                </v-tooltip>
+              </v-btn>
 
-              <v-tooltip activator="parent" location="top">
-                Edit Pengeluaran
-              </v-tooltip>
-            </v-btn>
+              <v-btn
+                icon="mdi-delete-outline"
+                variant="text"
+                size="small"
+                color="error"
+                :loading="deletingPengeluaranId === item.id_pengeluaran"
+                :disabled="deletingPengeluaranId !== null"
+                @click="deletePengeluaran(item)"
+              >
+                <v-icon size="18">mdi-delete-outline</v-icon>
+                <v-tooltip activator="parent" location="top">
+                  Hapus Pengeluaran
+                </v-tooltip>
+              </v-btn>
+            </div>
           </template>
         </v-data-table>
       </div>
@@ -613,58 +953,160 @@ const saveEdit = async () => {
       <div class="edit-modal-card">
         <div class="edit-modal-header">
           <div class="edit-title-group">
-            <v-icon color="primary" size="18">mdi-file-document-edit-outline</v-icon>
+            <v-icon color="primary" size="18"
+              >mdi-file-document-edit-outline</v-icon
+            >
             <span class="edit-modal-title">Edit Pengeluaran</span>
           </div>
-          <button class="edit-btn-close" :disabled="savingEdit" @click="closeEdit">&times;</button>
+          <button
+            class="edit-btn-close"
+            :disabled="savingEdit"
+            @click="closeEdit"
+          >
+            &times;
+          </button>
         </div>
 
         <div class="edit-modal-body">
-          <a-date-picker-new v-model="editForm.tanggal_pengeluaran" label="Tanggal Pengeluaran" :disabled="savingEdit" class="mb-2" />
-          <a-text-field-new v-model="editForm.dikeluarkan_oleh" label="Dikeluarkan Oleh" placeholder="Nama" :disabled="savingEdit" class="my-2" />
-          <a-textarea-new v-model="editForm.keterangan" label="Keterangan" :disabled="savingEdit" />
+          <a-date-picker-new
+            v-model="editForm.tanggal_pengeluaran"
+            label="Tanggal Pengeluaran"
+            :disabled="savingEdit"
+            class="mb-2"
+          />
+          <a-text-field-new
+            v-model="editForm.dikeluarkan_oleh"
+            label="Dikeluarkan Oleh"
+            placeholder="Nama"
+            :disabled="savingEdit"
+            class="my-2"
+          />
+          <a-textarea-new
+            v-model="editForm.keterangan"
+            label="Keterangan"
+            :disabled="savingEdit"
+          />
           <div class="edit-form-grid">
-            <a-text-field-new v-model="editForm.qty" label="Qty" :disabled="savingEdit" />
-            <a-select-new v-model="editForm.satuan" label="Satuan" :disabled="savingEdit" :items="['Unit', 'Pcs', 'Kg']" />
-            <a-field-number-new v-model="editForm.nominal" label="Nominal" :disabled="savingEdit" />
+            <a-text-field-new
+              v-model="editForm.qty"
+              label="Qty"
+              :disabled="savingEdit"
+            />
+            <a-select-new
+              v-model="editForm.satuan"
+              label="Satuan"
+              :disabled="savingEdit"
+              :items="['Unit', 'Pcs', 'Kg']"
+            />
+            <a-field-number-new
+              v-model="editForm.nominal"
+              label="Nominal"
+              :disabled="savingEdit"
+            />
           </div>
 
           <div class="edit-section-title mt-3">Informasi Vendor</div>
           <div class="edit-form-grid">
-            <a-text-field-new v-model="editForm.nama_vendor" label="Nama Vendor" :disabled="savingEdit" />
-            <a-text-field-new v-model="editForm.no_telp_vendor" label="No. Telepon Vendor" :disabled="savingEdit" />
-            <a-text-field-new v-model="editForm.lokasi_vendor" label="Lokasi Vendor" :disabled="savingEdit" />
+            <a-text-field-new
+              v-model="editForm.nama_vendor"
+              label="Nama Vendor"
+              :disabled="savingEdit"
+            />
+            <a-text-field-new
+              v-model="editForm.no_telp_vendor"
+              label="No. Telepon Vendor"
+              :disabled="savingEdit"
+            />
+            <a-text-field-new
+              v-model="editForm.lokasi_vendor"
+              label="Lokasi Vendor"
+              :disabled="savingEdit"
+            />
           </div>
 
           <v-divider class="my-2" />
           <div class="edit-upload-row">
             <div class="edit-upload-wrapper">
-              <label for="edit-upload-bukti" class="edit-upload-label">Bill Upload</label>
+              <label for="edit-upload-bukti" class="edit-upload-label"
+                >Bill Upload</label
+              >
               <div class="edit-upload-box">
-                <input id="edit-upload-bukti" type="file" multiple class="edit-file-input" :disabled="savingEdit" @change="addEditFile" />
+                <input
+                  id="edit-upload-bukti"
+                  type="file"
+                  multiple
+                  class="edit-file-input"
+                  :disabled="savingEdit"
+                  @change="addEditFile"
+                />
                 <div class="edit-upload-icon">↑</div>
-                <div><div class="edit-upload-title">Pilih File</div><div class="edit-upload-info">Maks. 650 KB</div></div>
+                <div>
+                  <div class="edit-upload-title">Pilih File</div>
+                  <div class="edit-upload-info">Ukuran file bebas</div>
+                </div>
               </div>
             </div>
-            <div v-if="editForm.doc_pengeluaran.length || editFiles.length" class="edit-files-wrapper">
+            <div
+              v-if="editForm.doc_pengeluaran.length || editFiles.length"
+              class="edit-files-wrapper"
+            >
               <div class="edit-upload-label">File Terpilih</div>
               <div class="edit-file-list">
-                <div v-for="(file, index) in editForm.doc_pengeluaran" :key="`${file.name}-${index}`" class="edit-file-item">
+                <div
+                  v-for="(file, index) in editForm.doc_pengeluaran"
+                  :key="`${file.name}-${index}`"
+                  class="edit-file-item"
+                >
                   <div class="edit-file-name">📄 {{ file.name }}</div>
-                  <button type="button" class="edit-file-remove" :disabled="savingEdit" @click="editForm.doc_pengeluaran.splice(index, 1)">&times;</button>
+                  <button
+                    type="button"
+                    class="edit-file-remove"
+                    :disabled="savingEdit"
+                    @click="editForm.doc_pengeluaran.splice(index, 1)"
+                  >
+                    &times;
+                  </button>
                 </div>
-                <div v-for="(file, index) in editFiles" :key="`${file.name}-${file.lastModified}-${index}`" class="edit-file-item">
+                <div
+                  v-for="(file, index) in editFiles"
+                  :key="`${file.name}-${file.lastModified}-${index}`"
+                  class="edit-file-item"
+                >
                   <div class="edit-file-name">📄 {{ file.name }}</div>
-                  <button type="button" class="edit-file-remove" :disabled="savingEdit" @click="editFiles.splice(index, 1)">&times;</button>
+                  <button
+                    type="button"
+                    class="edit-file-remove"
+                    :disabled="savingEdit"
+                    @click="editFiles.splice(index, 1)"
+                  >
+                    &times;
+                  </button>
                 </div>
               </div>
             </div>
           </div>
+          <a-select-new
+            v-model="editForm.status_pengeluaran"
+            :items="['Hutang', 'Lunas']"
+            label="Status"
+            :disabled="savingEdit"
+            class="mt-2"
+          />
         </div>
 
         <div class="edit-modal-footer">
-          <button class="edit-btn edit-btn-secondary" :disabled="savingEdit" @click="closeEdit">Batal</button>
-          <button class="edit-btn edit-btn-primary" :disabled="savingEdit" @click="saveEdit">
+          <button
+            class="edit-btn edit-btn-secondary"
+            :disabled="savingEdit"
+            @click="closeEdit"
+          >
+            Batal
+          </button>
+          <button
+            class="edit-btn edit-btn-primary"
+            :disabled="savingEdit"
+            @click="saveEdit"
+          >
             {{ savingEdit ? "Memproses..." : "Simpan Pengeluaran" }}
           </button>
         </div>
@@ -1121,9 +1563,19 @@ const saveEdit = async () => {
   background: #f8f9fa;
 }
 
-.edit-modal-header { border-bottom: 1px solid #e9ecef; }
-.edit-modal-footer { justify-content: flex-end; gap: 8px; border-top: 1px solid #e9ecef; }
-.edit-title-group { display: flex; align-items: center; gap: 8px; }
+.edit-modal-header {
+  border-bottom: 1px solid #e9ecef;
+}
+.edit-modal-footer {
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #e9ecef;
+}
+.edit-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .edit-modal-title {
   font-size: 14px;
   font-weight: 700;
@@ -1136,33 +1588,160 @@ const saveEdit = async () => {
   background: transparent;
   cursor: pointer;
 }
-.edit-btn-close { color: #6c757d; font-size: 20px; line-height: 1; }
-.edit-modal-body { padding: 12px 16px; overflow-y: auto; }
-.edit-section-title { margin-bottom: 6px; color: #6c757d; font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
-.edit-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.edit-upload-row { display: flex; align-items: flex-start; gap: 24px; width: 100%; }
-.edit-upload-wrapper { flex-shrink: 0; }
-.edit-files-wrapper { flex: 1; min-width: 0; }
-.edit-upload-label { display: block; margin-bottom: 6px; color: #334155; font-size: 13px; font-weight: 600; }
-.edit-upload-box { position: relative; display: flex; align-items: center; justify-content: center; gap: 9px; width: 150px; height: 82px; border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: pointer; }
-.edit-file-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.edit-upload-icon { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; color: #475569; font-size: 17px; }
-.edit-upload-title { color: #334155; font-size: 12px; font-weight: 600; }
-.edit-upload-info { margin-top: 2px; color: #94a3b8; font-size: 10px; }
-.edit-file-list { display: flex; flex-direction: column; gap: 6px; }
-.edit-file-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 38px; padding: 6px 9px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; }
-.edit-file-name { min-width: 0; overflow: hidden; color: #475569; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-.edit-file-remove { flex-shrink: 0; color: #94a3b8; font-size: 18px; line-height: 1; }
-.edit-file-remove:hover:not(:disabled) { color: #dc2626; }
-.edit-btn { padding: 5px 14px; border: 1px solid transparent; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
-.edit-btn-secondary { border-color: #ced4da; background: #fff; color: #495057; }
-.edit-btn-primary { background: #1976d2; color: #fff; }
-.edit-btn:disabled, .edit-btn-close:disabled, .edit-file-remove:disabled { opacity: .65; cursor: not-allowed; }
+.edit-btn-close {
+  color: #6c757d;
+  font-size: 20px;
+  line-height: 1;
+}
+.edit-modal-body {
+  padding: 12px 16px;
+  overflow-y: auto;
+}
+.edit-section-title {
+  margin-bottom: 6px;
+  color: #6c757d;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.edit-upload-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+.edit-upload-wrapper {
+  flex-shrink: 0;
+}
+.edit-files-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+.edit-upload-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+.edit-upload-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 150px;
+  height: 82px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+.edit-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.edit-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  color: #475569;
+  font-size: 17px;
+}
+.edit-upload-title {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+}
+.edit-upload-info {
+  margin-top: 2px;
+  color: #94a3b8;
+  font-size: 10px;
+}
+.edit-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.edit-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+}
+.edit-file-name {
+  min-width: 0;
+  overflow: hidden;
+  color: #475569;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.edit-file-remove {
+  flex-shrink: 0;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+}
+.edit-file-remove:hover:not(:disabled) {
+  color: #dc2626;
+}
+.edit-btn {
+  padding: 5px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.edit-btn-secondary {
+  border-color: #ced4da;
+  background: #fff;
+  color: #495057;
+}
+.edit-btn-primary {
+  background: #1976d2;
+  color: #fff;
+}
+.edit-btn:disabled,
+.edit-btn-close:disabled,
+.edit-file-remove:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
 
 @media (max-width: 600px) {
-  .edit-modal-card { max-height: 100vh; border-radius: 0; }
-  .edit-form-grid { grid-template-columns: 1fr; }
-  .edit-upload-row { flex-direction: column; gap: 12px; }
+  .edit-modal-card {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .edit-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .edit-upload-row {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 /* =====================================================

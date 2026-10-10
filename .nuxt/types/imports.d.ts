@@ -143,6 +143,7 @@ declare global {
   const setToken: typeof import('../../composables/useFirestore').setToken
   const setberitaacara: typeof import('../../composables/useFireinv').setberitaacara
   const setdatabase: typeof import('../../composables/useFirestore').setdatabase
+  const setinvoice: typeof import('../../composables/useFireinv').setinvoice
   const setrevisiinvoice: typeof import('../../composables/useFireinv').setrevisiinvoice
   const setrevisipenawaran: typeof import('../../composables/useFireinv').setrevisipenawaran
   const setrevisitoinvoice: typeof import('../../composables/useFireinv').setrevisitoinvoice
@@ -182,45 +183,45 @@ declare global {
   const useAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useAsyncData
   const useAttrs: typeof import('vue').useAttrs
   const useBeritaAcaraStore: typeof import('../../stores/beritaAcaraStore').useBeritaAcaraStore
-  const useCollection: typeof import('../../node_modules/vuefire/dist/index').useCollection
+  const useCollection: typeof import('../../node_modules/vuefire').useCollection
   const useCookie: typeof import('../../node_modules/nuxt/dist/app/composables/cookie').useCookie
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
-  const useDatabase: typeof import('../../node_modules/vuefire/dist/index').useDatabase
-  const useDatabaseList: typeof import('../../node_modules/vuefire/dist/index').useDatabaseList
-  const useDatabaseObject: typeof import('../../node_modules/vuefire/dist/index').useDatabaseObject
-  const useDate: typeof import('../../node_modules/vuetify/lib/framework').useDate
-  const useDefaults: typeof import('../../node_modules/vuetify/lib/framework').useDefaults
-  const useDisplay: typeof import('../../node_modules/vuetify/lib/framework').useDisplay
-  const useDocument: typeof import('../../node_modules/vuefire/dist/index').useDocument
+  const useDatabase: typeof import('../../node_modules/vuefire').useDatabase
+  const useDatabaseList: typeof import('../../node_modules/vuefire').useDatabaseList
+  const useDatabaseObject: typeof import('../../node_modules/vuefire').useDatabaseObject
+  const useDate: typeof import('../../node_modules/vuetify').useDate
+  const useDefaults: typeof import('../../node_modules/vuetify').useDefaults
+  const useDisplay: typeof import('../../node_modules/vuetify').useDisplay
+  const useDocument: typeof import('../../node_modules/vuefire').useDocument
   const useError: typeof import('../../node_modules/nuxt/dist/app/composables/error').useError
   const useFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch').useFetch
   const useFirebaseApp: typeof import('../../node_modules/nuxt-vuefire/dist/runtime/app/composables').useFirebaseApp
-  const useFirebaseStorage: typeof import('../../node_modules/vuefire/dist/index').useFirebaseStorage
-  const useFirestore: typeof import('../../node_modules/vuefire/dist/index').useFirestore
+  const useFirebaseStorage: typeof import('../../node_modules/vuefire').useFirebaseStorage
+  const useFirestore: typeof import('../../node_modules/vuefire').useFirestore
   const useFirestoreCompanyCrud: typeof import('../../composables/useFIrestoreCompanyCrud').useFirestoreCompanyCrud
-  const useGoTo: typeof import('../../node_modules/vuetify/lib/framework').useGoTo
+  const useGoTo: typeof import('../../node_modules/vuetify').useGoTo
   const useHead: typeof import('../../node_modules/nuxt/dist/app/composables/head').useHead
   const useHeadSafe: typeof import('../../node_modules/nuxt/dist/app/composables/head').useHeadSafe
   const useHydration: typeof import('../../node_modules/nuxt/dist/app/composables/hydrate').useHydration
   const useId: typeof import('vue').useId
-  const useLayout: typeof import('../../node_modules/vuetify/lib/framework').useLayout
+  const useLayout: typeof import('../../node_modules/vuetify').useLayout
   const useLazyAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useLazyAsyncData
   const useLazyFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch').useLazyFetch
   const useLeadsStore: typeof import('../../stores/leadsStore').useLeadsStore
   const useLink: typeof import('vue-router').useLink
   const useLoadingIndicator: typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator').useLoadingIndicator
-  const useLocale: typeof import('../../node_modules/vuetify/lib/framework').useLocale
+  const useLocale: typeof import('../../node_modules/vuetify').useLocale
   const useLogout: typeof import('../../composables/useLogout').useLogout
   const useModel: typeof import('vue').useModel
   const useNotificationStore: typeof import('../../stores/notificationStore').useNotificationStore
   const useNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt').useNuxtApp
   const useNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useNuxtData
-  const useNuxtDevTools: typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools').useNuxtDevTools
   const usePenawaranStore: typeof import('../../stores/penawaranStore').usePenawaranStore
   const usePictureStore: typeof import('../../stores/pictureStore').usePictureStore
   const usePinia: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables').usePinia
   const usePreviewMode: typeof import('../../node_modules/nuxt/dist/app/composables/preview').usePreviewMode
+  const useProjectRealTimeStore: typeof import('../../stores/projectRealTimeStore').useProjectRealTimeStore
   const useRequestEvent: typeof import('../../node_modules/nuxt/dist/app/composables/ssr').useRequestEvent
   const useRequestFetch: typeof import('../../node_modules/nuxt/dist/app/composables/ssr').useRequestFetch
   const useRequestHeader: typeof import('../../node_modules/nuxt/dist/app/composables/ssr').useRequestHeader
@@ -230,13 +231,10 @@ declare global {
   const useRoute: typeof import('../../node_modules/nuxt/dist/app/composables/router').useRoute
   const useRouteAnnouncer: typeof import('../../node_modules/nuxt/dist/app/composables/route-announcer').useRouteAnnouncer
   const useRouter: typeof import('../../node_modules/nuxt/dist/app/composables/router').useRouter
-  const useRtl: typeof import('../../node_modules/vuetify/lib/framework').useRtl
+  const useRtl: typeof import('../../node_modules/vuetify').useRtl
   const useRuntimeConfig: typeof import('../../node_modules/nuxt/dist/app/nuxt').useRuntimeConfig
   const useRuntimeHook: typeof import('../../node_modules/nuxt/dist/app/composables/runtime-hook').useRuntimeHook
   const useScript: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScript
-  const useScriptAhrefsAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptAhrefsAnalytics
-  const useScriptBingUet: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptBingUet
-  const useScriptCalendly: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptCalendly
   const useScriptClarity: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptClarity
   const useScriptCloudflareWebAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptCloudflareWebAnalytics
   const useScriptCrisp: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptCrisp
@@ -246,33 +244,23 @@ declare global {
   const useScriptGoogleAdsense: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleAdsense
   const useScriptGoogleAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleAnalytics
   const useScriptGoogleMaps: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleMaps
-  const useScriptGoogleRecaptcha: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleRecaptcha
-  const useScriptGoogleSignIn: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleSignIn
   const useScriptGoogleTagManager: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGoogleTagManager
-  const useScriptGravatar: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptGravatar
   const useScriptHotjar: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptHotjar
   const useScriptIntercom: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptIntercom
   const useScriptLemonSqueezy: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptLemonSqueezy
-  const useScriptLinkedInInsight: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptLinkedInInsight
   const useScriptMatomoAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptMatomoAnalytics
   const useScriptMetaPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptMetaPixel
-  const useScriptMixpanelAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptMixpanelAnalytics
   const useScriptNpm: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptNpm
   const useScriptPayPal: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptPayPal
   const useScriptPlausibleAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptPlausibleAnalytics
-  const useScriptPostHog: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptPostHog
   const useScriptRedditPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptRedditPixel
   const useScriptRybbitAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptRybbitAnalytics
   const useScriptSegment: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptSegment
   const useScriptSnapchatPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptSnapchatPixel
-  const useScriptSpeedCurve: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptSpeedCurve
   const useScriptStripe: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptStripe
-  const useScriptTikTokPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptTikTokPixel
   const useScriptTriggerConsent: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptTriggerConsent
   const useScriptTriggerElement: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptTriggerElement
   const useScriptUmamiAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptUmamiAnalytics
-  const useScriptUsercentrics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptUsercentrics
-  const useScriptVercelAnalytics: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptVercelAnalytics
   const useScriptVimeoPlayer: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptVimeoPlayer
   const useScriptXPixel: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptXPixel
   const useScriptYouTubePlayer: typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs').useScriptYouTubePlayer
@@ -283,11 +271,11 @@ declare global {
   const useShadowRoot: typeof import('vue').useShadowRoot
   const useSlots: typeof import('vue').useSlots
   const useState: typeof import('../../node_modules/nuxt/dist/app/composables/state').useState
-  const useStorageFile: typeof import('../../node_modules/vuefire/dist/index').useStorageFile
-  const useStorageFileMetadata: typeof import('../../node_modules/vuefire/dist/index').useStorageFileMetadata
-  const useStorageFileUrl: typeof import('../../node_modules/vuefire/dist/index').useStorageFileUrl
+  const useStorageFile: typeof import('../../node_modules/vuefire').useStorageFile
+  const useStorageFileMetadata: typeof import('../../node_modules/vuefire').useStorageFileMetadata
+  const useStorageFileUrl: typeof import('../../node_modules/vuefire').useStorageFileUrl
   const useTemplateRef: typeof import('vue').useTemplateRef
-  const useTheme: typeof import('../../node_modules/vuetify/lib/framework').useTheme
+  const useTheme: typeof import('../../node_modules/vuetify').useTheme
   const useTransitionState: typeof import('vue').useTransitionState
   const useUserStore: typeof import('../../stores/userStore').useUserStore
   const usebarangStore: typeof import('../../stores/barangStore').usebarangStore
@@ -296,6 +284,7 @@ declare global {
   const useloadingStore: typeof import('../../stores/loadingStore').useloadingStore
   const usepettyCashStore: typeof import('../../stores/pettyCashStore').usepettyCashStore
   const usetermconditionStore: typeof import('../../stores/termconditionStore').usetermconditionStore
+  const useunmanageStore: typeof import('../../stores/unmanageStore').useunmanageStore
   const usevendorStore: typeof import('../../stores/vendorStore').usevendorStore
   const waktuServer: typeof import('../../composables/useFirestore').waktuServer
   const watch: typeof import('vue').watch
@@ -461,6 +450,7 @@ declare module 'vue' {
     readonly setToken: UnwrapRef<typeof import('../../composables/useFirestore')['setToken']>
     readonly setberitaacara: UnwrapRef<typeof import('../../composables/useFireinv')['setberitaacara']>
     readonly setdatabase: UnwrapRef<typeof import('../../composables/useFirestore')['setdatabase']>
+    readonly setinvoice: UnwrapRef<typeof import('../../composables/useFireinv')['setinvoice']>
     readonly setrevisiinvoice: UnwrapRef<typeof import('../../composables/useFireinv')['setrevisiinvoice']>
     readonly setrevisipenawaran: UnwrapRef<typeof import('../../composables/useFireinv')['setrevisipenawaran']>
     readonly setrevisitoinvoice: UnwrapRef<typeof import('../../composables/useFireinv')['setrevisitoinvoice']>
@@ -500,45 +490,45 @@ declare module 'vue' {
     readonly useAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
     readonly useBeritaAcaraStore: UnwrapRef<typeof import('../../stores/beritaAcaraStore')['useBeritaAcaraStore']>
-    readonly useCollection: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useCollection']>
+    readonly useCollection: UnwrapRef<typeof import('../../node_modules/vuefire')['useCollection']>
     readonly useCookie: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/cookie')['useCookie']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
-    readonly useDatabase: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useDatabase']>
-    readonly useDatabaseList: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useDatabaseList']>
-    readonly useDatabaseObject: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useDatabaseObject']>
-    readonly useDate: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useDate']>
-    readonly useDefaults: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useDefaults']>
-    readonly useDisplay: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useDisplay']>
-    readonly useDocument: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useDocument']>
+    readonly useDatabase: UnwrapRef<typeof import('../../node_modules/vuefire')['useDatabase']>
+    readonly useDatabaseList: UnwrapRef<typeof import('../../node_modules/vuefire')['useDatabaseList']>
+    readonly useDatabaseObject: UnwrapRef<typeof import('../../node_modules/vuefire')['useDatabaseObject']>
+    readonly useDate: UnwrapRef<typeof import('../../node_modules/vuetify')['useDate']>
+    readonly useDefaults: UnwrapRef<typeof import('../../node_modules/vuetify')['useDefaults']>
+    readonly useDisplay: UnwrapRef<typeof import('../../node_modules/vuetify')['useDisplay']>
+    readonly useDocument: UnwrapRef<typeof import('../../node_modules/vuefire')['useDocument']>
     readonly useError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['useError']>
     readonly useFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useFetch']>
     readonly useFirebaseApp: UnwrapRef<typeof import('../../node_modules/nuxt-vuefire/dist/runtime/app/composables')['useFirebaseApp']>
-    readonly useFirebaseStorage: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useFirebaseStorage']>
-    readonly useFirestore: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useFirestore']>
+    readonly useFirebaseStorage: UnwrapRef<typeof import('../../node_modules/vuefire')['useFirebaseStorage']>
+    readonly useFirestore: UnwrapRef<typeof import('../../node_modules/vuefire')['useFirestore']>
     readonly useFirestoreCompanyCrud: UnwrapRef<typeof import('../../composables/useFIrestoreCompanyCrud')['useFirestoreCompanyCrud']>
-    readonly useGoTo: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useGoTo']>
+    readonly useGoTo: UnwrapRef<typeof import('../../node_modules/vuetify')['useGoTo']>
     readonly useHead: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHead']>
     readonly useHeadSafe: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHeadSafe']>
     readonly useHydration: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/hydrate')['useHydration']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
-    readonly useLayout: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useLayout']>
+    readonly useLayout: UnwrapRef<typeof import('../../node_modules/vuetify')['useLayout']>
     readonly useLazyAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useLazyAsyncData']>
     readonly useLazyFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useLazyFetch']>
     readonly useLeadsStore: UnwrapRef<typeof import('../../stores/leadsStore')['useLeadsStore']>
     readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
     readonly useLoadingIndicator: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator')['useLoadingIndicator']>
-    readonly useLocale: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useLocale']>
+    readonly useLocale: UnwrapRef<typeof import('../../node_modules/vuetify')['useLocale']>
     readonly useLogout: UnwrapRef<typeof import('../../composables/useLogout')['useLogout']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
     readonly useNotificationStore: UnwrapRef<typeof import('../../stores/notificationStore')['useNotificationStore']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
-    readonly useNuxtDevTools: UnwrapRef<typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']>
     readonly usePenawaranStore: UnwrapRef<typeof import('../../stores/penawaranStore')['usePenawaranStore']>
     readonly usePictureStore: UnwrapRef<typeof import('../../stores/pictureStore')['usePictureStore']>
     readonly usePinia: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']>
     readonly usePreviewMode: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preview')['usePreviewMode']>
+    readonly useProjectRealTimeStore: UnwrapRef<typeof import('../../stores/projectRealTimeStore')['useProjectRealTimeStore']>
     readonly useRequestEvent: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestEvent']>
     readonly useRequestFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestFetch']>
     readonly useRequestHeader: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestHeader']>
@@ -548,13 +538,10 @@ declare module 'vue' {
     readonly useRoute: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['useRoute']>
     readonly useRouteAnnouncer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/route-announcer')['useRouteAnnouncer']>
     readonly useRouter: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['useRouter']>
-    readonly useRtl: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useRtl']>
+    readonly useRtl: UnwrapRef<typeof import('../../node_modules/vuetify')['useRtl']>
     readonly useRuntimeConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useRuntimeConfig']>
     readonly useRuntimeHook: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/runtime-hook')['useRuntimeHook']>
     readonly useScript: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScript']>
-    readonly useScriptAhrefsAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptAhrefsAnalytics']>
-    readonly useScriptBingUet: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptBingUet']>
-    readonly useScriptCalendly: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptCalendly']>
     readonly useScriptClarity: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptClarity']>
     readonly useScriptCloudflareWebAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptCloudflareWebAnalytics']>
     readonly useScriptCrisp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptCrisp']>
@@ -564,33 +551,23 @@ declare module 'vue' {
     readonly useScriptGoogleAdsense: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleAdsense']>
     readonly useScriptGoogleAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleAnalytics']>
     readonly useScriptGoogleMaps: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleMaps']>
-    readonly useScriptGoogleRecaptcha: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleRecaptcha']>
-    readonly useScriptGoogleSignIn: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleSignIn']>
     readonly useScriptGoogleTagManager: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGoogleTagManager']>
-    readonly useScriptGravatar: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptGravatar']>
     readonly useScriptHotjar: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptHotjar']>
     readonly useScriptIntercom: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptIntercom']>
     readonly useScriptLemonSqueezy: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptLemonSqueezy']>
-    readonly useScriptLinkedInInsight: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptLinkedInInsight']>
     readonly useScriptMatomoAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptMatomoAnalytics']>
     readonly useScriptMetaPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptMetaPixel']>
-    readonly useScriptMixpanelAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptMixpanelAnalytics']>
     readonly useScriptNpm: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptNpm']>
     readonly useScriptPayPal: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptPayPal']>
     readonly useScriptPlausibleAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptPlausibleAnalytics']>
-    readonly useScriptPostHog: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptPostHog']>
     readonly useScriptRedditPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptRedditPixel']>
     readonly useScriptRybbitAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptRybbitAnalytics']>
     readonly useScriptSegment: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptSegment']>
     readonly useScriptSnapchatPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptSnapchatPixel']>
-    readonly useScriptSpeedCurve: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptSpeedCurve']>
     readonly useScriptStripe: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptStripe']>
-    readonly useScriptTikTokPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptTikTokPixel']>
     readonly useScriptTriggerConsent: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptTriggerConsent']>
     readonly useScriptTriggerElement: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptTriggerElement']>
     readonly useScriptUmamiAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptUmamiAnalytics']>
-    readonly useScriptUsercentrics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptUsercentrics']>
-    readonly useScriptVercelAnalytics: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptVercelAnalytics']>
     readonly useScriptVimeoPlayer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptVimeoPlayer']>
     readonly useScriptXPixel: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptXPixel']>
     readonly useScriptYouTubePlayer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/script-stubs')['useScriptYouTubePlayer']>
@@ -601,11 +578,11 @@ declare module 'vue' {
     readonly useShadowRoot: UnwrapRef<typeof import('vue')['useShadowRoot']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']>
-    readonly useStorageFile: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useStorageFile']>
-    readonly useStorageFileMetadata: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useStorageFileMetadata']>
-    readonly useStorageFileUrl: UnwrapRef<typeof import('../../node_modules/vuefire/dist/index')['useStorageFileUrl']>
+    readonly useStorageFile: UnwrapRef<typeof import('../../node_modules/vuefire')['useStorageFile']>
+    readonly useStorageFileMetadata: UnwrapRef<typeof import('../../node_modules/vuefire')['useStorageFileMetadata']>
+    readonly useStorageFileUrl: UnwrapRef<typeof import('../../node_modules/vuefire')['useStorageFileUrl']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
-    readonly useTheme: UnwrapRef<typeof import('../../node_modules/vuetify/lib/framework')['useTheme']>
+    readonly useTheme: UnwrapRef<typeof import('../../node_modules/vuetify')['useTheme']>
     readonly useTransitionState: UnwrapRef<typeof import('vue')['useTransitionState']>
     readonly useUserStore: UnwrapRef<typeof import('../../stores/userStore')['useUserStore']>
     readonly usebarangStore: UnwrapRef<typeof import('../../stores/barangStore')['usebarangStore']>
@@ -614,6 +591,7 @@ declare module 'vue' {
     readonly useloadingStore: UnwrapRef<typeof import('../../stores/loadingStore')['useloadingStore']>
     readonly usepettyCashStore: UnwrapRef<typeof import('../../stores/pettyCashStore')['usepettyCashStore']>
     readonly usetermconditionStore: UnwrapRef<typeof import('../../stores/termconditionStore')['usetermconditionStore']>
+    readonly useunmanageStore: UnwrapRef<typeof import('../../stores/unmanageStore')['useunmanageStore']>
     readonly usevendorStore: UnwrapRef<typeof import('../../stores/vendorStore')['usevendorStore']>
     readonly waktuServer: UnwrapRef<typeof import('../../composables/useFirestore')['waktuServer']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>

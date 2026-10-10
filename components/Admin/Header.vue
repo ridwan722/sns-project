@@ -404,12 +404,8 @@ const logout = async () => {
         <span class="nav-title-flyout">Invoice Success</span>
       </v-list-item>
 
-<<<<<<< HEAD
-      <!-- <v-list-item
-=======
       <!-- Berita Acara -->
       <v-list-item
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
         to="/admin/berita-acara"
         class="side-nav-item"
         active-class="side-nav-item--active"
@@ -418,10 +414,6 @@ const logout = async () => {
           <v-icon size="20">mdi-file-certificate-outline</v-icon>
         </div>
         <span class="nav-title-flyout">Berita Acara</span>
-<<<<<<< HEAD
-      </v-list-item> -->
-
-=======
       </v-list-item>
 
       <!-- Master User -->
@@ -437,7 +429,6 @@ const logout = async () => {
       </v-list-item> -->
 
       <!-- Master Client -->
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
       <v-list-item
         to="/admin/master/client"
         class="side-nav-item"

@@ -1,16 +1,6 @@
 import type { ComputedRef, MaybeRef } from 'vue'
-
-type ComponentProps<T> = T extends new(...args: any) => { $props: infer P } ? NonNullable<P>
-  : T extends (props: infer P, ...args: any) => any ? P
-  : {}
-
+export type LayoutKey = "admin" | "blank" | "default"
 declare module 'nuxt/app' {
-  interface NuxtLayouts {
-    admin: ComponentProps<typeof import("/Users/ridwan/Documents/Github/dutarayamarine-erp/layouts/admin.vue").default>,
-    blank: ComponentProps<typeof import("/Users/ridwan/Documents/Github/dutarayamarine-erp/layouts/blank.vue").default>,
-    default: ComponentProps<typeof import("/Users/ridwan/Documents/Github/dutarayamarine-erp/layouts/default.vue").default>,
-}
-  export type LayoutKey = keyof NuxtLayouts extends never ? string : keyof NuxtLayouts
   interface PageMeta {
     layout?: MaybeRef<LayoutKey | false> | ComputedRef<LayoutKey | false>
   }

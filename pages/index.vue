@@ -50,12 +50,8 @@ async function verifyPin() {
         <div class="logo-wrapper">
           <div class="logo-badge">
             <img
-<<<<<<< HEAD
-              src="/public/Logo-DRM.png"
-=======
-              src="/public/Logo-SNS.png"
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
-              alt="SNS Logo"
+              src="/Logo-DRM.png"
+              alt="PT. Duta Raya Marine Logo"
               class="logo-img"
             />
           </div>
@@ -64,11 +60,7 @@ async function verifyPin() {
         <div class="text-group">
           <h1 class="hero-title">
             Selamat Datang di <br />
-<<<<<<< HEAD
             <span class="brand-gradient">DUTA RAYA MARINE</span>
-=======
-            <span class="brand-gradient">SOLUSI NUSA SEGARA</span>
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
           </h1>
           <p class="hero-subtitle">
             Platform administrasi terpadu untuk mengelola operasional, performa, dan data bisnis Anda.
@@ -99,11 +91,7 @@ async function verifyPin() {
             <v-icon size="26">mdi-shield-key-outline</v-icon>
           </div>
           <div class="text-h6 font-weight-bold text-slate mb-2">Masukkan PIN</div>
-<<<<<<< HEAD
           <p class="pin-description mb-5">Masukkan 6 digit PIN untuk mengakses DRM Admin.</p>
-=======
-          <p class="pin-description mb-5">Masukkan 6 digit PIN untuk mengakses SNS Admin.</p>
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
           <v-text-field
             v-model="pin"
             :error-messages="pinError"
@@ -129,11 +117,7 @@ async function verifyPin() {
     </v-dialog>
 
     <footer class="footer-bar">
-<<<<<<< HEAD
       <span>DRM &copy; 2026 Enterprise System</span>
-=======
-      <span>SNS &copy; 2026 Enterprise System</span>
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
       <span class="version-tag">v1.0.0</span>
     </footer>
   </div>
@@ -224,15 +208,9 @@ async function verifyPin() {
 }
 
 .logo-badge {
-<<<<<<< HEAD
   background: rgba(250, 250, 250, 0.988);
   border: 1px solid rgb(252, 252, 252);
   padding: 1px 4px;
-=======
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 14px 24px;
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
   border-radius: 20px;
   display: inline-flex;
   align-items: center;
@@ -241,11 +219,7 @@ async function verifyPin() {
 }
 
 .logo-img {
-<<<<<<< HEAD
   height: 88px;
-=======
-  height: 38px;
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
   width: auto;
   object-fit: contain;
 }
@@ -286,11 +260,7 @@ async function verifyPin() {
 }
 
 .brand-gradient {
-<<<<<<< HEAD
   background: linear-gradient(135deg, #fa6060 0%, #f63b3b 50%, #d40606 100%);
-=======
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #06b6d4 100%);
->>>>>>> 717d304032bc7ebad99f749429671328a324848a
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;

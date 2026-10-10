@@ -138,7 +138,6 @@ declare global {
   const setInterval: typeof import('../../node_modules/nuxt/dist/app/compat/interval').setInterval
   const setPageLayout: typeof import('../../node_modules/nuxt/dist/app/composables/router').setPageLayout
   const setPenawaran: typeof import('../../composables/useFireinv').setPenawaran
-  const setPurchaseOrder: typeof import('../../composables/useFireinv').setPurchaseOrder
   const setResponseStatus: typeof import('../../node_modules/nuxt/dist/app/composables/ssr').setResponseStatus
   const setToken: typeof import('../../composables/useFirestore').setToken
   const setberitaacara: typeof import('../../composables/useFireinv').setberitaacara
@@ -216,6 +215,7 @@ declare global {
   const useNotificationStore: typeof import('../../stores/notificationStore').useNotificationStore
   const useNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt').useNuxtApp
   const useNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useNuxtData
+  const useNuxtDevTools: typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools').useNuxtDevTools
   const usePenawaranStore: typeof import('../../stores/penawaranStore').usePenawaranStore
   const usePictureStore: typeof import('../../stores/pictureStore').usePictureStore
   const usePinia: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables').usePinia
@@ -284,7 +284,6 @@ declare global {
   const usepettyCashStore: typeof import('../../stores/pettyCashStore').usepettyCashStore
   const usetermconditionStore: typeof import('../../stores/termconditionStore').usetermconditionStore
   const useunmanageStore: typeof import('../../stores/unmanageStore').useunmanageStore
-  const usevendorStore: typeof import('../../stores/vendorStore').usevendorStore
   const waktuServer: typeof import('../../composables/useFirestore').waktuServer
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
@@ -444,7 +443,6 @@ declare module 'vue' {
     readonly setInterval: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/interval')['setInterval']>
     readonly setPageLayout: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['setPageLayout']>
     readonly setPenawaran: UnwrapRef<typeof import('../../composables/useFireinv')['setPenawaran']>
-    readonly setPurchaseOrder: UnwrapRef<typeof import('../../composables/useFireinv')['setPurchaseOrder']>
     readonly setResponseStatus: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['setResponseStatus']>
     readonly setToken: UnwrapRef<typeof import('../../composables/useFirestore')['setToken']>
     readonly setberitaacara: UnwrapRef<typeof import('../../composables/useFireinv')['setberitaacara']>
@@ -522,6 +520,7 @@ declare module 'vue' {
     readonly useNotificationStore: UnwrapRef<typeof import('../../stores/notificationStore')['useNotificationStore']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
+    readonly useNuxtDevTools: UnwrapRef<typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']>
     readonly usePenawaranStore: UnwrapRef<typeof import('../../stores/penawaranStore')['usePenawaranStore']>
     readonly usePictureStore: UnwrapRef<typeof import('../../stores/pictureStore')['usePictureStore']>
     readonly usePinia: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']>
@@ -590,7 +589,6 @@ declare module 'vue' {
     readonly usepettyCashStore: UnwrapRef<typeof import('../../stores/pettyCashStore')['usepettyCashStore']>
     readonly usetermconditionStore: UnwrapRef<typeof import('../../stores/termconditionStore')['usetermconditionStore']>
     readonly useunmanageStore: UnwrapRef<typeof import('../../stores/unmanageStore')['useunmanageStore']>
-    readonly usevendorStore: UnwrapRef<typeof import('../../stores/vendorStore')['usevendorStore']>
     readonly waktuServer: UnwrapRef<typeof import('../../composables/useFirestore')['waktuServer']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>

@@ -205,7 +205,7 @@ defineExpose({
 }
 
 .textarea-field {
-  min-height: 48px;
+  min-height: 70px;
   line-height: 1.5;
 
   /* Jangan pakai resize vertical */

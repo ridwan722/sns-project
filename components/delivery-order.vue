@@ -367,7 +367,7 @@ const handleSavePdf = async () => {
     // invoiceDetail adalah props, JANGAN pakai .value
     const invoiceId = props.invoiceDetail?.id || "DO";
 
-    pdf.save(`Delivery-Order-DRM-${year}.pdf`);
+    pdf.save(`Delivery-Order-SNS-${year}.pdf`);
   } catch (error) {
     console.error("Gagal menyimpan PDF Delivery Order:", error);
 
@@ -457,7 +457,7 @@ const handleSavePdf = async () => {
 
                 <td>:</td>
 
-                <td>INV/DRM/2026/{{ invoiceDetail.no_inv }}</td>
+                <td>INV/SNS/2026/{{ invoiceDetail.no_inv }}</td>
               </tr>
 
               <tr>

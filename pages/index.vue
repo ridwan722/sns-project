@@ -91,7 +91,7 @@ async function verifyPin() {
             <v-icon size="26">mdi-shield-key-outline</v-icon>
           </div>
           <div class="text-h6 font-weight-bold text-slate mb-2">Masukkan PIN</div>
-          <p class="pin-description mb-5">Masukkan 6 digit PIN untuk mengakses DRM Admin.</p>
+          <p class="pin-description mb-5">Masukkan 6 digit PIN untuk mengakses SNS Admin.</p>
           <v-text-field
             v-model="pin"
             :error-messages="pinError"
@@ -117,7 +117,7 @@ async function verifyPin() {
     </v-dialog>
 
     <footer class="footer-bar">
-      <span>DRM &copy; 2026 Enterprise System</span>
+      <span>SNS &copy; 2026 Enterprise System</span>
       <span class="version-tag">v1.0.0</span>
     </footer>
   </div>
@@ -208,9 +208,9 @@ async function verifyPin() {
 }
 
 .logo-badge {
-  background: rgba(250, 250, 250, 0.988);
-  border: 1px solid rgb(252, 252, 252);
-  padding: 1px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 24px;
   border-radius: 20px;
   display: inline-flex;
   align-items: center;
@@ -219,7 +219,7 @@ async function verifyPin() {
 }
 
 .logo-img {
-  height: 88px;
+  height: 38px;
   width: auto;
   object-fit: contain;
 }
@@ -260,7 +260,7 @@ async function verifyPin() {
 }
 
 .brand-gradient {
-  background: linear-gradient(135deg, #fa6060 0%, #f63b3b 50%, #d40606 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #06b6d4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;

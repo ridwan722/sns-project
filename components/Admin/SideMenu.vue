@@ -34,13 +34,13 @@
 
     <!-- <v-list-item
       class="nav-item mb-1"
-      title="Kas (new)"
+      title="Petty Cash (new)"
       prepend-icon="mdi-cash-multiple"
       @click="openPinDialog"
     /> -->
     <v-list-item
       class="nav-item mb-1"
-      title="Kas"
+      title="Petty Cash"
       prepend-icon="mdi-cash-multiple"
       to="/admin/petty-cash"
     />
@@ -58,7 +58,7 @@
           v-bind="props"
           class="nav-item"
           prepend-icon="mdi-receipt-text-outline"
-          title="INV Duta Raya Marine"
+          title="INV Solusi Nusa Segara"
         />
       </template>
 
@@ -89,7 +89,7 @@
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
         </div>
-        <h3>PIN Akses Kas</h3>
+        <h3>PIN Akses Petty Cash</h3>
         <p>Silakan masukkan PIN keamanan Anda untuk melanjutkan</p>
       </div>
 

@@ -23,7 +23,7 @@
           {{ data.invoiceAddEdit === "add" ? "Create" : "Edit" }} Invoice
         </h4>
         <span class="text-body-2 text-grey"
-          >{{ newInvoice.id }}</span
+          ># tarik data penomoran invoice + 1</span
         >
       </v-card-item>
 
@@ -207,7 +207,7 @@
             </v-col>
             <v-col cols="3">
               <a-select-new
-                v-model="item.kategori_item"
+                v-model="item.nama"
                 label="Kategori"
                 :items="[
                   'Unit',
@@ -449,16 +449,16 @@
             style="max-width: 280px"
           />
         </v-col>
-        <!-- <v-col>
+        <v-col>
           <a-select-new
             v-model="data.filterStatus"
             label=""
             placeholder="Semua Status"
             :items="filterStatusOptions"
           />
-        </v-col> -->
+        </v-col>
         <v-col class="text-right">
-          <!-- <v-btn
+          <v-btn
             color="primary"
             variant="flat"
             size="small"
@@ -467,7 +467,7 @@
             @click="openDialogTambahInvoice"
           >
             Create Invoice
-          </v-btn> -->
+          </v-btn>
 
           <v-btn
             color="green"
@@ -477,7 +477,7 @@
             prepend-icon="mdi-database-export"
             @click="getallinvoice()"
           >
-            Tarik Semua Status Invoice
+            Get All Invoice
           </v-btn>
 
           <v-btn
@@ -511,22 +511,13 @@
         rubahtanggallengkap(item.tanggal)
       }}</template>
 
-      <!-- <template v-slot:item.no_inv="{ item }">
+      <template v-slot:item.no_inv="{ item }">
         <NuxtLink
           :to="'/admin/invoice/' + item.no_inv"
           class="penawaran-link font-weight-medium"
         >
-          #INV/DRM/2026/{{ item.no_inv }}
+          #INV/SNS/2026/{{ item.no_inv }}
         </NuxtLink>
-      </template> -->
-      <template v-slot:item.no_inv="{ item }">
-        <div class="text-center">
-          <NuxtLink :to="'/admin/invoice/' + item.no_inv" class="quotation-link">
-            <span class="quotation-badge">
-              #INV/DRM/2026/{{ item.no_inv }}
-            </span>
-          </NuxtLink>
-        </div>
       </template>
 
       <template v-slot:item.nama_customer="{ item }">
@@ -661,12 +652,12 @@ const data = reactive({
   showAllInvoice: false,
   headInvoice: [
     { title: "No", value: "no", width: "10px" },
-    { title: "Tanggal", value: "tanggal", sortable: true, width: "150px" },
+    { title: "Tanggal", value: "tanggal", sortable: true },
     { title: "Based On Quotation", value: "no_penawaran", sortable: true },
     { title: "No. Invoice", value: "no_inv", sortable: true },
-    { title: "Client", value: "nama_customer", sortable: true },
     { title: "Subject", value: "perihal", sortable: true },
-    { title: "Total", value: "grandtotal_invoice", sortable: true, width: "140px" },
+    { title: "Client", value: "nama_customer", sortable: true },
+    { title: "Total", value: "grandtotal_invoice", sortable: true },
     { title: "Status Inv", value: "status", sortable: true },
     { title: "Aksi", align: "center" as const, value: "aksi", width: "100px" },
   ],
@@ -682,7 +673,6 @@ function emptyInvoice(): invoiceM {
     doc_preorder: [],
     vessel: "",
     no_telp: "",
-    sign_by: "",
     email: "",
     pic: "",
     tanggal: moment().format("YYYY-MM-DD"),
@@ -714,16 +704,24 @@ const sortedTermConditions = computed(() => {
   const terms = [...termconditionStore.getDataTermcondition];
   const selected = newInvoice.value.termCondition || [];
 
-  // Yang dipilih mengikuti urutan saat dipilih
+  // Gunakan snapshot yang tersimpan di invoice untuk term yang dipilih.
+  // Dengan begitu isi invoice tidak berubah bila master T&C diedit/dihapus.
   const selectedTerms = selected
     .map((selectedItem: any) => {
-      return terms.find((term: any) =>
+      const masterTerm = terms.find((term: any) =>
         term.id
           ? term.id === selectedItem.id
           : term.nama_term === selectedItem.nama_term,
       );
+
+      return {
+        ...masterTerm,
+        ...selectedItem,
+        id: selectedItem.id ?? masterTerm?.id,
+        nama_term: selectedItem.nama_term || masterTerm?.nama_term || "",
+      };
     })
-    .filter(Boolean);
+    .filter((term) => term.nama_term);
 
   // Yang belum dipilih tetap mengikuti urutan asli
   const unselectedTerms = terms.filter(
@@ -871,7 +869,7 @@ async function getallinvoice() {
     sessionStorage.removeItem("invoice");
     await invoiceStore.tarikDataInvoiceAct();
     data.showAllInvoice = true;
-    notificationStore.showSuccess("Semua invoice (all status) berhasil dimuat");
+    notificationStore.showSuccess("Semua invoice berhasil dimuat");
   } catch (error) {
     console.error("Gagal memuat semua invoice:", error);
     notificationStore.showError("Gagal memuat semua invoice");
@@ -904,6 +902,14 @@ function openDialogEditInvoice(item: invoiceM) {
   );
 
   const invoice = JSON.parse(JSON.stringify(item)) as invoiceM;
+  // Data invoice lama dapat belum memiliki field ini atau tersimpan dengan
+  // bentuk yang tidak lengkap. Pastikan v-model checkbox selalu menerima array.
+  invoice.termCondition = Array.isArray(invoice.termCondition)
+    ? invoice.termCondition.filter(
+        (term): term is invoiceM["termCondition"][number] =>
+          !!term && typeof term.nama_term === "string",
+      )
+    : [];
   if (customer?.id) {
     invoice.id_customer = customer.id;
     invoice.nama_customer = customer.nama;
@@ -1028,29 +1034,6 @@ async function refreshData() {
 </script>
 
 <style scoped>
-.quotation-link {
-  text-decoration: none;
-}
-.quotation-badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 6px;
-  background: #f1f5f9;
-  color: #2563eb;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  border: 1px solid #dbeafe;
-  transition: all 0.1s ease;
-}
-
-.quotation-badge:hover {
-  background: #2563eb;
-  color: #ffffff;
-  border-color: #2563eb;
-  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.2);
-  transform: translateY(-1px);
-}
 .penawaran-link {
   color: rgb(11, 66, 194);
   transition: color 0.2s ease;

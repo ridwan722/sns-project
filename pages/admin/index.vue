@@ -30,14 +30,14 @@ onErrorCaptured((err: unknown) => {
           <div class="header-tag">ENTERPRISE SYSTEM</div>
           <h1 class="header-title">Ringkasan Sistem & Directory Menu</h1>
         </div>
-        <!-- <div class="header-metrics">
+        <div class="header-metrics">
           <div class="metric-pill">
             <span class="metric-label">Server</span>
             <span class="metric-value status-online">
               <span class="dot"></span> 
             </span>
           </div>
-        </div> -->
+        </div>
       </header>
 
       <!-- Main Bento Grid -->
@@ -180,15 +180,15 @@ onErrorCaptured((err: unknown) => {
                 </NuxtLink>
               </div>
 
-               <div class="action-grid-1 mt-2">
-                <NuxtLink to="/admin/master/vendor" class="compact-action-card">
+              <div class="action-grid-1 mt-2">
+                <NuxtLink to="/admin/master/barang" class="compact-action-card">
                   <div class="action-icon">
-                    <v-icon icon="mdi-human-dolly" size="18" />
+                    <v-icon icon="mdi-package-variant-closed" size="18" />
                   </div>
                   <div class="action-text">
-                    <span class="title">Master Vendor</span>
+                    <span class="title">Master Barang / Service</span>
                     <span class="sub"
-                      >Master Vendor / Supplyer</span
+                      >Master Barang dan Harga Modal</span
                     >
                   </div>
                   <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
@@ -204,21 +204,6 @@ onErrorCaptured((err: unknown) => {
                     <span class="title">Master T&C</span>
                     <span class="sub"
                       >Master Term & Condition</span
-                    >
-                  </div>
-                  <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />
-                </NuxtLink>
-              </div>
-
-              <div class="action-grid-1 mt-2">
-                <NuxtLink to="/admin/master/barang" class="compact-action-card">
-                  <div class="action-icon">
-                    <v-icon icon="mdi-package-variant-closed" size="18" />
-                  </div>
-                  <div class="action-text">
-                    <span class="title">Master Barang / Service</span>
-                    <span class="sub"
-                      >Master Barang dan Harga Modal</span
                     >
                   </div>
                   <v-icon icon="mdi-arrow-top-right" size="16" class="arrow" />

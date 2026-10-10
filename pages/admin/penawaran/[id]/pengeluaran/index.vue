@@ -579,7 +579,6 @@ const previewImage = (dataUrl: string) => {
         />
 
         <div>
-
           <h1 class="page-title">Pengeluaran Project</h1>
         </div>
         </div>
@@ -819,17 +818,15 @@ const previewImage = (dataUrl: string) => {
               <span>
                 {{ item.nama_vendor || "-" }}
               </span>
-              
             </div>
-             <div class="vendor-cell mt-2 ml-1">
-              <div >
+            <div class="vendor-cell mt-2 ml-1">
+              <div>
                 <v-icon icon="mdi-phone-outline" size="15" />
               </div>
 
               <span>
                 {{ item.no_telp_vendor || "-" }}
               </span>
-              
             </div>
 
             <div class="vendor-cell mt-2 mb-4 ml-1">
@@ -840,7 +837,6 @@ const previewImage = (dataUrl: string) => {
               <span>
                 {{ item.lokasi_vendor || "-" }}
               </span>
-              
             </div>
           </template>
 
@@ -868,11 +864,11 @@ const previewImage = (dataUrl: string) => {
           <!-- DIKELUARKAN OLEH -->
 
           <template #item.dikeluarkan_oleh="{ item }">
-            <div >
+            <div>
               {{ item.dikeluarkan_oleh || "-" }}
             </div>
           </template>
-          
+
           <template #item.status_pengeluaran="{ item }">
             <div
               class="issued-by-cell"

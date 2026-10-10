@@ -17,7 +17,6 @@ interface _GlobalComponents {
   'AdminHeader': typeof import("../../components/Admin/Header.vue").default
   'AdminPenawaranDialogBuatInvoice': typeof import("../../components/Admin/Penawaran/dialog-buat-invoice.vue").default
   'AdminPenawaranDialogBuatPengeluaran': typeof import("../../components/Admin/Penawaran/dialog-buat-pengeluaran.vue").default
-  'AdminPenawaranDialogPurchaseorder': typeof import("../../components/Admin/Penawaran/dialog-purchaseorder.vue").default
   'AdminSideMenu': typeof import("../../components/Admin/SideMenu.vue").default
   'AppNotification': typeof import("../../components/AppNotification.vue").default
   'ConfirmationDialog': typeof import("../../components/ConfirmationDialog.vue").default
@@ -44,7 +43,6 @@ interface _GlobalComponents {
   'ATimePicker': typeof import("../../components/a/time-picker.vue").default
   'CanvasPenawaranPt': typeof import("../../components/canvas-penawaran-pt.vue").default
   'CanvasPenawaran': typeof import("../../components/canvas-penawaran.vue").default
-  'CanvasPurchaseorder': typeof import("../../components/canvas-purchaseorder.vue").default
   'DeliveryOrder': typeof import("../../components/delivery-order.vue").default
   'DialogTambahBeritaAcara': typeof import("../../components/dialog-tambah-berita-acara.vue").default
   'LoadingApp': typeof import("../../components/loadingApp.vue").default
@@ -77,7 +75,6 @@ interface _GlobalComponents {
   'LazyAdminHeader': LazyComponent<typeof import("../../components/Admin/Header.vue").default>
   'LazyAdminPenawaranDialogBuatInvoice': LazyComponent<typeof import("../../components/Admin/Penawaran/dialog-buat-invoice.vue").default>
   'LazyAdminPenawaranDialogBuatPengeluaran': LazyComponent<typeof import("../../components/Admin/Penawaran/dialog-buat-pengeluaran.vue").default>
-  'LazyAdminPenawaranDialogPurchaseorder': LazyComponent<typeof import("../../components/Admin/Penawaran/dialog-purchaseorder.vue").default>
   'LazyAdminSideMenu': LazyComponent<typeof import("../../components/Admin/SideMenu.vue").default>
   'LazyAppNotification': LazyComponent<typeof import("../../components/AppNotification.vue").default>
   'LazyConfirmationDialog': LazyComponent<typeof import("../../components/ConfirmationDialog.vue").default>
@@ -104,7 +101,6 @@ interface _GlobalComponents {
   'LazyATimePicker': LazyComponent<typeof import("../../components/a/time-picker.vue").default>
   'LazyCanvasPenawaranPt': LazyComponent<typeof import("../../components/canvas-penawaran-pt.vue").default>
   'LazyCanvasPenawaran': LazyComponent<typeof import("../../components/canvas-penawaran.vue").default>
-  'LazyCanvasPurchaseorder': LazyComponent<typeof import("../../components/canvas-purchaseorder.vue").default>
   'LazyDeliveryOrder': LazyComponent<typeof import("../../components/delivery-order.vue").default>
   'LazyDialogTambahBeritaAcara': LazyComponent<typeof import("../../components/dialog-tambah-berita-acara.vue").default>
   'LazyLoadingApp': LazyComponent<typeof import("../../components/loadingApp.vue").default>

@@ -264,8 +264,8 @@ export const createPurchaseorder = async (data: purchaseorderM) => {
     const newnumber = datanomor!.no_penawaran;
     const stringnewnumber = _.toString(newnumber).padStart(5, "0");
     const year = moment().format("YYYY");
-    const no_purchaseorder = `PO/DRM/${year}/${stringnewnumber}`;;
-    const id_purchaseorder = `PO-DRM-${year}-${stringnewnumber}`;
+    const no_purchaseorder = `PO/SNS/${year}/${stringnewnumber}`;;
+    const id_purchaseorder = `PO-SNS-${year}-${stringnewnumber}`;
     const setdata: purchaseorderM = {
       ...data,
       no_purchaseorder, 

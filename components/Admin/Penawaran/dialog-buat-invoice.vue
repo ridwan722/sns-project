@@ -2,8 +2,8 @@
   <div
     v-if="modelValue"
     class="modal-overlay"
+    @click.self="emit('update:modelValue', false)"
   >
-  <!-- @click.self="emit('update:modelValue', false)" -->
     <div class="modal-card">
       <!-- Header -->
       <div class="modal-header">
@@ -19,9 +19,9 @@
             />
           </svg>
           <span class="modal-title">Create Invoice</span>
-          <!-- <span class="text-body-2 text-grey"
+          <span class="text-body-2 text-grey"
             ># tarik data penomoran invoice + 1</span
-          > -->
+          >
         </div>
         <button class="btn-close" @click="emit('update:modelValue', false)">
           &times;
@@ -38,32 +38,25 @@
           <a-text-field-new type="text" v-model="form.no_telp" disabled />
           <a-text-field-new type="text" v-model="form.email" disabled />
         </div>
-
-        <a-textarea-new v-model="form.alamat_customer" disabled />
-
-        <v-divider class="my-3" />
-
-        <a-date-picker-new v-model="form.tanggal" label="Invoice Date" />
+        <a-textarea-new
+          v-model="form.alamat_customer"
+          disabled
+        ></a-textarea-new>
 
         <v-divider class="my-3" />
 
-        <v-row no-gutters>
-          <v-col class="pa-1">
-            <a-text-field-new
-              label="No. Pre Order (PO)"
-              v-model="form.no_preorder"
-              placeholder="No Preorder"
-            />
-          </v-col>
-          <v-col class="pa-1">
-            <a-date-picker-new
-              v-model="form.tanggal_preorder"
-              label="Tanggal Pre Order (PO)"
-            />
-          </v-col>
-        </v-row>
-
-        <div class="po-upload-row mt-2">
+        <a-date-picker-new
+          v-model="form.tanggal"
+          label="Invoice Date"
+        ></a-date-picker-new>
+        <a-text-field-new
+          class="mt-2"
+          label="No. Pre Order (PO)"
+          v-model="form.no_preorder"
+          placeholder="No PO"
+        ></a-text-field-new>
+        <v-divider class="my-2" />
+        <div class="po-upload-row">
           <!-- Upload -->
           <div class="po-upload-wrapper">
             <label for="upload-po" class="po-upload-label"> Upload PO </label>
@@ -112,7 +105,11 @@
           </div>
         </div>
         <v-divider class="my-2" />
-        <a-textarea-new class="mt-2" label="Subject" v-model="form.perihal" />
+        <a-text-field-new
+          class="mt-2"
+          label="Subject"
+          v-model="form.perihal"
+        ></a-text-field-new>
 
         <!-- Items Table Section -->
         <div class="section-title mt-3">Description</div>
@@ -149,151 +146,27 @@
           </table>
         </div>
 
-        <!-- Summary and signer cards -->
-        <div class="summary-sign-row">
-          <v-card class="sign-card" elevation="0">
-            <!-- Content -->
-            <v-card-text class="sign-card-content">
-              <a-select-new
-                v-model="form.sign_by"
-                :items="[
-                  'Seilla Maryana',
-                  'Leo Adiatmaja Sembiring',
-                  'Muhammad Ridwan',
-                  'Lilis Trisnawati',
-                ]"
-                class="sign-select"
-                label="Sign By / Yang Bertanda Tangan ?"
-              />
-              <!-- Signature -->
-              <div v-if="form.sign_by" class="signature-box">
-                <div
-                  v-if="form.sign_by == 'Leo Adiatmaja Sembiring'"
-                  class="signature-content"
-                >
-                  <v-img width="130" height="65" contain src="/ttd_leo.png" />
+        <!-- Summary Section -->
+        <div class="summary-wrapper">
+          <div class="summary-box">
+            <div class="summary-row">
+              <span class="text-muted">Subtotal</span>
+              <span class="font-medium">Rp {{ rupiah(subtotal) }}</span>
+            </div>
 
-                  <div class="signature-line"></div>
+            <div class="summary-row align-center">
+              <label class="checkbox-label">
+                <input type="checkbox" v-model="form.pakai_ppn" />
+                <span>PPN 11%</span>
+              </label>
+              <span class="font-medium">Rp {{ rupiah(ppn) }}</span>
+            </div>
 
-                  <div class="signature-name">Leo Adiatmaja Sembiring</div>
-                </div>
+            <div class="divider"></div>
 
-                <div
-                  v-if="form.sign_by == 'Seilla Maryana'"
-                  class="signature-content"
-                >
-                  <v-img
-                    width="130"
-                    height="65"
-                    contain
-                    src="/ttd_seilla.png"
-                  />
-
-                  <div class="signature-line"></div>
-
-                  <div class="signature-name">Seilla Maryana</div>
-                </div>
-
-                <div
-                  v-if="form.sign_by == 'Muhammad Ridwan'"
-                  class="signature-content"
-                >
-                  <v-img
-                    width="130"
-                    height="65"
-                    contain
-                    src="/ttd_ridwan.png"
-                  />
-
-                  <div class="signature-line"></div>
-
-                  <div class="signature-name">Muhammad Ridwan</div>
-                </div>
-
-                <div
-                  v-if="form.sign_by == 'Lilis Trisnawati'"
-                  class="signature-content"
-                >
-                  <v-img
-                    width="130"
-                    height="65"
-                    contain
-                    src="/ttd_ridwan.png"
-                  />
-
-                  <div class="signature-line"></div>
-
-                  <div class="signature-name">Lilis Trisnawati</div>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
-
-          <div class="summary-wrapper">
-            <div class="summary-box">
-              <div class="summary-row">
-                <span class="text-muted">Subtotal</span>
-                <span class="font-medium">Rp {{ rupiah(subtotal) }}</span>
-              </div>
-
-              <div
-                class="summary-row align-center"
-                style="display: flex; align-items: center; gap: 12px"
-              >
-                <label
-                  class="checkbox-label"
-                  style="
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                  "
-                >
-                  <input
-                    type="checkbox"
-                    v-model="form.down_payment"
-                    style="cursor: pointer"
-                  />
-                  <span style="cursor: pointer">DP</span>
-                </label>
-
-                <div
-                  v-if="form.down_payment"
-                  style="display: flex; align-items: center; gap: 4px"
-                >
-                  <a-text-field-new
-                    v-model="form.dp_persen"
-                    type="number"
-                    placeholder="50"
-                    suffix="%"
-                    class="text-right"
-                    style="width: 70px"
-                  />
-                </div>
-
-                <span
-                  v-if="form.down_payment"
-                  class="font-medium"
-                  style="white-space: nowrap"
-                >
-                  Rp {{ rupiah(dpNominal) }}
-                </span>
-              </div>
-
-              <div class="summary-row align-center">
-                <label class="checkbox-label">
-                  <input type="checkbox" v-model="form.pakai_ppn" />
-                  <span>PPN 11%</span>
-                </label>
-                <span class="font-medium">Rp {{ rupiah(ppn) }}</span>
-              </div>
-
-              <div class="divider"></div>
-
-              <div class="summary-row total-row">
-                <span class="font-bold">Grand Total</span>
-                <span class="grand-total-val">Rp {{ rupiah(grandTotal) }}</span>
-              </div>
+            <div class="summary-row total-row">
+              <span class="font-bold">Grand Total</span>
+              <span class="grand-total-val">Rp {{ rupiah(grandTotal) }}</span>
             </div>
           </div>
         </div>
@@ -423,7 +296,6 @@ const emptyForm = (): invoiceM => ({
   pic: "",
   tanggal: "",
   perihal: "",
-  sign_by: "",
   item_pekerjaan: [],
   pakai_ppn: false,
   subtotal_invoice: 0,
@@ -434,12 +306,9 @@ const emptyForm = (): invoiceM => ({
   createdBy: "",
   termCondition: [],
   no_preorder: "",
-  tanggal_preorder: "",
   doc_preorder: [],
   tanggal_bayar: "",
   doc_bukti_bayar: [],
-  down_payment: false,
-  dp_persen: 0,
 });
 
 onMounted(async () => {
@@ -455,13 +324,8 @@ const subtotal = computed(() =>
 const ppn = computed(() =>
   form.value.pakai_ppn ? Math.round(subtotal.value * 0.11) : 0,
 );
-const grandTotal = computed(() => {
-  if (form.value.down_payment) {
-    return dpNominal.value + ppn.value;
-  }
+const grandTotal = computed(() => subtotal.value + ppn.value);
 
-  return subtotal.value + ppn.value;
-});
 watch(
   () => props.modelValue,
   (open) => {
@@ -479,7 +343,6 @@ watch(
       email: props.penawaran.email || "",
       vessel: props.penawaran.vessel || "",
       perihal: props.penawaran.perihal || "",
-      sign_by: props.penawaran.sign_by || "",
       pic: props.penawaran.pic,
       tanggal: moment().format("YYYY-MM-DD"),
       item_pekerjaan: (props.penawaran.penawaran_item || []).map((item) => ({
@@ -500,14 +363,6 @@ watch(
     };
   },
 );
-
-const dpNominal = computed(() => {
-  if (!form.value.down_payment) return 0;
-
-  const persen = Number(form.value.dp_persen || 0);
-
-  return Math.round(subtotal.value * (persen / 100));
-});
 
 const sortedTermConditions = computed(() => {
   const terms = [...termconditionStore.getDataTermcondition];
@@ -569,8 +424,6 @@ async function save() {
     grandtotal_invoice: grandTotal.value,
     id_penawaran: props.penawaran.id,
     no_penawaran: props.penawaran.no_penawaran,
-    tanggal_preorder: form.value.tanggal_preorder,
-    tanggal_penawaran: props.penawaran.tanggal_penawaran,
     createdAt: moment().unix(),
     createdBy: userStore.getEmail,
   };
@@ -690,7 +543,7 @@ function addfile(event: Event) {
 /* Header */
 .modal-header {
   padding: 10px 16px;
-  background-color: #f59e0b;
+  background: #f8f9fa;
   border-bottom: 1px solid #e9ecef;
   display: flex;
   justify-content: space-between;
@@ -848,7 +701,7 @@ function addfile(event: Event) {
   font-weight: 500;
 }
 .text-muted {
-  color: #000000;
+  color: #6c757d;
 }
 .text-subtotal {
   padding-right: 8px;
@@ -859,32 +712,12 @@ function addfile(event: Event) {
 .summary-wrapper {
   display: flex;
   justify-content: flex-end;
-  flex: 0 0 auto;
-}
-
-.summary-sign-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
   margin-top: 10px;
 }
 
-@media (max-width: 700px) {
-  .summary-sign-row {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .sign-card,
-  .summary-box {
-    width: 100%;
-    max-width: none;
-  }
-}
-
 .summary-box {
-  width: 300px;
-  background: #f59e0b;
+  width: 260px;
+  background: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 4px;
   padding: 8px 12px;
@@ -921,6 +754,7 @@ function addfile(event: Event) {
 
 .grand-total-val {
   font-weight: 700;
+  color: #1976d2;
 }
 
 /* Footer & Buttons */
@@ -1085,91 +919,5 @@ function addfile(event: Event) {
 
 .po-file-remove:hover:not(:disabled) {
   color: #dc2626;
-}
-
-.sign-card {
-  width: 100%;
-  max-width: 380px;
-  flex: 0 1 380px;
-  margin: 0;
-  background: #ffffff;
-  border: 1px solid #e1e5ea;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.sign-card-header {
-  min-height: 62px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sign-card-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1f2937;
-  letter-spacing: 0.2px;
-}
-
-.sign-card-subtitle {
-  margin-top: 2px;
-  font-size: 11px;
-  color: #8a929d;
-}
-
-.sign-card-content {
-  padding: 18px;
-}
-
-.field-label {
-  margin-bottom: 7px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #5f6874;
-  letter-spacing: 0.2px;
-}
-
-.sign-select {
-  margin-bottom: 14px;
-}
-
-/* Signature area */
-.signature-box {
-  margin-top: 8px;
-  padding: 16px 14px 14px;
-  background: #fafbfc;
-  border: 1px solid #e5e8ec;
-  border-radius: 8px;
-}
-
-.signature-label {
-  margin-bottom: 8px;
-  font-size: 9px;
-  font-weight: 700;
-  color: #9aa1aa;
-  letter-spacing: 1px;
-  text-align: center;
-}
-
-.signature-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.signature-line {
-  width: 180px;
-  border-bottom: 1px solid #737b86;
-  margin-top: -2px;
-}
-
-.signature-name {
-  margin-top: 7px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #303740;
-  text-align: center;
 }
 </style>

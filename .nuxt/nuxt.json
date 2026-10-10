@@ -1,9 +1,9 @@
 {
-  "_hash": "d-BzWB3jIYYew3QHZd-Axivwg1LSRzsWcKtcr4qbk3Y",
+  "_hash": "gO5MqiY5PFF5guk9v63z0EKaqbfwYAFaxhtReCynv0k",
   "project": {
-    "rootDir": "/Users/ridwan/Documents/Github/dutarayamarine-erp"
+    "rootDir": "/Users/ridwan/Documents/Github/sns-project"
   },
   "versions": {
-    "nuxt": "3.21.11"
+    "nuxt": "3.20.2"
   }
 }

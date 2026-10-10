@@ -33,7 +33,7 @@
         :value="formattedValue"
         :placeholder="placeholder"
         :disabled="disabled"
-        :inputmode="allowDecimal ? 'decimal' : 'numeric'"
+        inputmode="numeric"
         autocomplete="off"
         @input="onInput"
         @blur="onBlur"
@@ -170,11 +170,6 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
-
-  allowDecimal: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 /* =========================
@@ -193,7 +188,6 @@ const errorMessages = ref([]);
 const showError = ref(false);
 
 const rawValue = ref(props.modelValue);
-const editingValue = ref(null);
 
 /* =========================
    FORMAT NUMBER
@@ -204,9 +198,7 @@ function formatNumber(value) {
     return "";
   }
 
-  return Number(value).toLocaleString("id-ID", {
-    maximumFractionDigits: props.allowDecimal ? 2 : 0,
-  });
+  return Number(value).toLocaleString("id-ID");
 }
 
 /* =========================
@@ -224,18 +216,7 @@ function parseFormattedNumber(value) {
    * 1.500 -> 1500
    * 10.000 -> 10000
    */
-  const input = String(value);
-  if (!props.allowDecimal) {
-    return Number(input.replace(/\D/g, ""));
-  }
-
-  const normalized = input
-    .replace(/\s/g, "")
-    .replace(/\./g, "")
-    .replace(",", ".")
-    .replace(/[^\d.-]/g, "");
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : 0;
+  return Number(String(value).replace(/\D/g, ""));
 }
 
 /* =========================
@@ -243,7 +224,6 @@ function parseFormattedNumber(value) {
 ========================= */
 
 const formattedValue = computed(() => {
-  if (editingValue.value !== null) return editingValue.value;
   return formatNumber(rawValue.value);
 });
 
@@ -253,10 +233,6 @@ const formattedValue = computed(() => {
 
 function onInput(event) {
   if (props.disabled) return;
-
-  if (props.allowDecimal) {
-    editingValue.value = event.target.value;
-  }
 
   const numericValue = parseFormattedNumber(event.target.value);
 
@@ -308,7 +284,7 @@ function onKeyDown(event) {
   /*
    * Hanya angka
    */
-  if (!/^[0-9]$/.test(event.key) && !(props.allowDecimal && event.key === ",")) {
+  if (!/^[0-9]$/.test(event.key)) {
     event.preventDefault();
   }
 }
@@ -318,7 +294,6 @@ function onKeyDown(event) {
 ========================= */
 
 function onBlur() {
-  editingValue.value = null;
   validate();
 }
 
@@ -328,8 +303,6 @@ function onBlur() {
 
 function increment() {
   if (props.disabled) return;
-
-  editingValue.value = null;
 
   let value = Number(rawValue.value || 0) + props.step;
 
@@ -353,8 +326,6 @@ function increment() {
 
 function decrement() {
   if (props.disabled) return;
-
-  editingValue.value = null;
 
   let value = Number(rawValue.value || 0) - props.step;
 

@@ -473,7 +473,7 @@
         </v-btn>
       </div>
 
-      <v-divider class="my-4" color="#e2e8f0" />
+      <v-divider class="my-1" color="#e2e8f0" />
 
       <div
         class="d-flex align-center justify-space-between flex-wrap ga-3 pa-3 rounded-lg"
@@ -628,7 +628,7 @@
                 </td>
 
                 <td class="desc-cell">
-                  <div class="font-weight-bold">
+                  <div>
                     <span style="white-space: pre-line">
                       {{ item.nama }}
                     </span>
@@ -792,17 +792,6 @@
 
     <!-- ACTIONS -->
     <div class="d-flex justify-center gap-3 mt-4">
-      <v-btn
-        prepend-icon="mdi-file-pdf-box"
-        color="red-darken-1"
-        variant="elevated"
-        :loading="isSavingPdf"
-        @click="handleSavePdf"
-
-        class="mr-2"
-      >
-        Save PDF Invoice
-      </v-btn>
 
       <v-btn
         prepend-icon="mdi-printer"
@@ -812,6 +801,18 @@
 
       >
         Print Invoice
+      </v-btn>
+
+       <v-btn
+        prepend-icon="mdi-file-pdf-box"
+        color="red-darken-1"
+        variant="elevated"
+        :loading="isSavingPdf"
+        @click="handleSavePdf"
+
+        class="ml-2"
+      >
+        Save PDF Invoice
       </v-btn>
     </div>
 

@@ -819,7 +819,7 @@ async function simpanPenawaranDialog() {
     data.dialogTambahPenawaran = false;
     newPenawaran.value = emptyPenawaran();
     useloadingStore().setLoading(false);
-    await penawaranStore.tarikDataPenawaranAct();
+    await penawaranStore.tarikdatapenawaranbystatusarray(["Draft", "INVOICE"]);
     return;
   }
 

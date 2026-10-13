@@ -1,6 +1,7 @@
 export interface penawaranM {
   id?: string;
   id_penawaran?: string;
+  id_invoice?: string;
   no_penawaran?: string;
 
   id_perusahaan: string;
@@ -20,13 +21,17 @@ export interface penawaranM {
 
   tanggal_kirim_penawaran?: string;
 
+  sign_by?: string;
+
   terkirim_at?: number;
   terkirim_by?: string;
   grandtotal_pengeluaran?: number;
   perihal: string; 
+  currency: string;
   pengeluaran?: pengeluaranM[];
   penawaran_item: penawaranItemM[]; 
   subtotal_penawaran: number;
+  discount_penawaran: number;
   grand_total_penawaran: number;
   terbilang: string;
 
@@ -70,6 +75,6 @@ export interface buktiPengeluaranM {
   dataUrl: string;
   size: number;
   contentType: string;
+  fileId?: string;
 }
-
 

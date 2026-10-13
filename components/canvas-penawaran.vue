@@ -71,22 +71,29 @@
       </div>
 
       <div class="header-section">
-        <div class="header-brand">
-          <div class="logo-wrapper">
-            <img src="/Logo-SNS.png" alt="Logo Header" />
+        <div class="header-company">
+          <div class="header-brand">
+            <div class="logo-wrapper">
+              <img src="/Logo-SNS.png" alt="Logo Header" />
+            </div>
           </div>
-          <div class="company-titles">
+          <div class="header-contact">
             <h1 class="company-name">CV. SOLUSI NUSA SEGARA</h1>
+            <p class="address-line">
+              Ruko Dream Land Blok A No.05,<br />
+              Dreamland Square, Marina City Tanjung Riau,<br />
+              Kec. Sekupang, Kota Batam 29425
+            </p>
+            <p class="phone-line">Hp. +62821 9998 8670</p>
           </div>
         </div>
 
-        <div class="header-contact">
-          <p class="address-line">
-            Ruko Dream Land Blok A No.05,<br />
-            Dreamland Square, Marina City Tanjung Riau, <br />Kec. Sekupang,
-            Kota Batam 29425
-          </p>
-          <p class="phone-line">Hp. +62821 9998 8670</p>
+        <div class="header-document">
+          <div class="header-document-meta">
+            <div><span>{{ t.refNo }}</span><strong>{{ props.detailpenawaran.no_penawaran }}</strong></div>
+            <div><span>{{ t.date }}</span><strong>{{ rubahtanggalpenawaran(props.detailpenawaran.tanggal_penawaran) }}</strong></div>
+          </div>
+          <h2 class="document-title">QUOTATION</h2>
         </div>
       </div>
 
@@ -99,28 +106,9 @@
       </div>
 
       <div class="content-body">
-        <div class="doc-meta-header">
-          <div
-            class="doc-badge"
-            :style="{ borderColor: warnaBackgroundCustom }"
-          ></div>
-          <div class="doc-date">
-            <span>Batam, </span>
-            <strong>{{
-              rubahtanggalpenawaran(props.detailpenawaran.tanggal_penawaran)
-            }}</strong>
-          </div>
-        </div>
-
-        <div class="info-grid-card">
-          <div class="grid-col">
-            <div class="meta-row">
-              <span class="lbl">{{ t.refNo }}</span>
-              <span class="sep">:</span>
-              <span class="val bold">{{
-                props.detailpenawaran.no_penawaran
-              }}</span>
-            </div>
+        <section class="quotation-parties">
+          <div class="customer-details">
+            <h2 class="section-heading">{{ t.quotationFor }}</h2>
             <div class="meta-row">
               <span class="lbl">{{ t.to }}</span>
               <span class="sep">:</span>
@@ -156,7 +144,7 @@
               <span class="val">{{ props.detailpenawaran.email || "-" }}</span>
             </div>
           </div>
-          <div class="grid-col">
+          <div class="quotation-details">
             <div class="meta-row">
               <span class="lbl">{{ t.subject }}</span>
               <span class="sep">:</span>
@@ -176,7 +164,7 @@
               <span class="val">Batam</span>
             </div>
           </div>
-        </div>
+        </section>
 
         <div class="text-salutation">
           <p class="salutation-title">{{ t.salutationTitle }}</p>
@@ -206,7 +194,7 @@
                 }"
               >
                 <th
-                  width="36"
+                  width="5%"
                   class="text-center no-print-cell"
                   :style="{ color: warnaTeksHeader }"
                 >
@@ -226,7 +214,7 @@
                   </v-tooltip>
                 </th>
                 <th
-                  width="32"
+                  width="5%"
                   class="text-center print-only-cell"
                   :style="{ color: warnaTeksHeader }"
                 >
@@ -234,14 +222,14 @@
                 </th>
 
                 <th
-                  width="500"
+                  width="43%"
                   class="text-left"
                   :style="{ color: warnaTeksHeader }"
                 >
                   {{ t.thDescription }}
                 </th>
                  <!-- <th
-                  width="60"
+                  width="9%"
                   class="text-center no-print"
 
                 >
@@ -255,21 +243,21 @@
                   {{ t.thQty }}
                 </th>
                 <th
-                  width="65"
+                  width="9%"
                   class="text-center"
                   :style="{ color: warnaTeksHeader }"
                 >
                   {{ t.thUom }}
                 </th>
                 <th
-                  width="125"
+                  width="15%"
                   class="text-right"
                   :style="{ color: warnaTeksHeader }"
                 >
                   {{ t.thUnitPrice }}
                 </th>
                 <th
-                  width="165"
+                  width="19%"
                   class="text-right"
                   :style="{ color: warnaTeksHeader }"
                 >
@@ -311,7 +299,7 @@
             </tbody>
 
             <tfoot v-if="showTotal">
-              <tr class="summary-row subtotal-row">
+              <tr class="summary-row subtotal-row" v-if="Number(props.detailpenawaran.discount_penawaran) > 0">
                 <td colspan="5" class="text-right text-slate-600">
                   {{ t.subtotal }}
                 </td>
@@ -321,6 +309,24 @@
                     rupiah(
                       props.detailpenawaran.subtotal_penawaran ||
                         props.detailpenawaran.grand_total_penawaran,
+                    )
+                  }}
+                </td>
+              </tr>
+
+              <tr class="summary-row subtotal-row" v-if="Number(props.detailpenawaran.discount_penawaran) > 0">
+                <td colspan="5" class="text-right text-slate-600">
+                  Discount {{ props.detailpenawaran.discount_penawaran }} %
+                </td>
+                <td class="text-right text-slate-800">
+                  Rp
+                  {{
+                    rupiah(
+                      Math.round(
+                        ((props.detailpenawaran.subtotal_penawaran || 0) *
+                          (props.detailpenawaran.discount_penawaran || 0)) /
+                          100,
+                      ),
                     )
                   }}
                 </td>
@@ -370,17 +376,19 @@
           {{ t.closingText }}
         </p>
 
-        <div class="closing-paragraph" v-if="showTable">
-          <p><strong>TERMS &amp; CONDITIONS:</strong></p>
-          <ul class="ml-3" style="list-style: none; padding-left: 0">
+        <section class="terms-block" v-if="showTable">
+          <h3 class="terms-heading">TERMS &amp; CONDITIONS</h3>
+          <ol class="terms-list">
             <li
+              class="term-item"
               v-for="(item, index) in detailpenawaran.termCondition"
               :key="index"
             >
-              {{ index + 1 }}. {{ item.nama_term }}
+              <span class="term-number">{{ index + 1 }}.</span>
+              <span class="term-text">{{ item.nama_term }}</span>
             </li>
-          </ul>
-        </div>
+          </ol>
+        </section>
 
         <div class="signatures-wrapper">
           <div class="sig-block">
@@ -467,6 +475,8 @@ const t = computed(() => {
   if (lang.value === "id") {
     return {
       refNo: "No. Penawaran",
+      date: "Tanggal",
+      quotationFor: "Quotation Untuk",
       to: "Kepada",
       attn: "Up.",
       phone: "No. Telp",
@@ -492,6 +502,8 @@ const t = computed(() => {
   }
   return {
     refNo: "Quotation Ref No",
+    date: "Date",
+    quotationFor: "Quotation For",
     to: "To",
     attn: "Attn",
     phone: "Phone",
@@ -673,8 +685,8 @@ const formatTanggal = (tanggal: string) => {
 const rubahtanggalpenawaran = (tgl: any) => formatTanggal(tgl);
 const rupiah = (val: number) => new Intl.NumberFormat("id-ID").format(val || 0);
 
-const handlePrint = () => {
-  const printContents = document.getElementById("offer-to-print")?.innerHTML;
+const handlePrint = async () => {
+  const printContents = document.getElementById("offer-to-print")?.outerHTML;
   if (!printContents) return;
 
   const iframe = document.createElement("iframe");
@@ -721,15 +733,16 @@ const handlePrint = () => {
               print-color-adjust: exact !important;
             }
 
-            .offer-card {
+            #offer-to-print.offer-card {
               box-shadow: none !important;
               width: 210mm !important;
-              height: 297mm !important;
+              min-height: 297mm !important;
+              height: auto !important;
               margin: 0 !important;
-              padding: 12mm 16mm 20mm 16mm !important;
+              padding: 12mm 15mm 14mm !important;
               box-sizing: border-box !important;
               position: relative !important;
-              overflow: hidden !important;
+              overflow: visible !important;
               page-break-after: avoid;
               page-break-before: avoid;
             }
@@ -763,7 +776,6 @@ const handlePrint = () => {
 
   doc.close();
 
-  const images = doc.getElementsByTagName("img");
   const printAction = () => {
     setTimeout(() => {
       iframe.contentWindow?.focus();
@@ -774,22 +786,10 @@ const handlePrint = () => {
     }, 600);
   };
 
-  if (images.length > 0) {
-    let loaded = 0;
-    for (let i = 0; i < images.length; i++) {
-      images[i].onload = () => {
-        loaded++;
-        if (loaded === images.length) printAction();
-      };
-      images[i].onerror = () => {
-        loaded++;
-        if (loaded === images.length) printAction();
-      };
-    }
-  } else {
-    iframe.onload = printAction;
-    printAction();
-  }
+  await Promise.all(
+    Array.from(doc.images, (image) => image.decode().catch(() => undefined)),
+  );
+  printAction();
 };
 
 const handleSavePdf = async () => {
@@ -859,11 +859,11 @@ const handleSavePdf = async () => {
 .offer-card {
   width: 210mm;
   min-height: 297mm;
-  padding: 14mm 18mm 25mm 18mm;
+  padding: 12mm 15mm 14mm;
   margin: 0 auto;
   background: #ffffff;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 12px 35px rgba(15, 23, 42, 0.1);
   font-family:
     "Segoe UI",
@@ -877,11 +877,11 @@ const handleSavePdf = async () => {
 
 .watermark {
   position: absolute;
-  top: 67%;
+  top: 58%;
   left: 50%;
   transform: translate(-50%, -50%);
-  opacity: 0.105;
-  width: 440px;
+  opacity: 0.055;
+  width: 390px;
   z-index: 0;
   pointer-events: none;
 }
@@ -892,36 +892,82 @@ const handleSavePdf = async () => {
 .header-section {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   position: relative;
   z-index: 1;
-  padding-bottom: 8px;
+  gap: 6mm;
+  min-height: 35mm;
+  padding-bottom: 10px;
+}
+
+.header-company {
+  display: grid;
+  grid-template-columns: 28mm minmax(0, 1fr);
+  align-items: start;
+  gap: 4mm;
+  width: 62%;
+  flex: 0 0 62%;
+}
+
+.header-document {
+  min-width: 0;
+  flex: 1;
+  text-align: right;
+}
+
+.header-document-meta {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 7px;
+  color: #475569;
+  font-size: 9px;
+}
+
+.header-document-meta div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 6px;
+  text-align: left;
+}
+
+.header-document-meta strong {
+  color: #263746;
+  font-weight: 600;
+}
+
+.document-title {
+  margin: 0;
+  color: #263746;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -1.3px;
+  line-height: 1;
 }
 
 .header-brand {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  min-width: 0;
 }
 
 .logo-wrapper img {
-  width: 105px;
+  width: 28mm;
   height: auto;
   display: block;
 }
 
 .company-name {
-  font-size: 17px;
+  font-size: 12px;
   font-weight: 800;
   color: #0f2b48;
   letter-spacing: 0.3px;
-  margin: 0;
+  margin: 0 0 3px;
   line-height: 1.2;
 }
 
 .header-contact {
-  text-align: right;
+  min-width: 0;
+  text-align: left;
   line-height: 1.4;
+  padding-top: 0;
 }
 
 .address-line,
@@ -929,29 +975,27 @@ const handleSavePdf = async () => {
   font-size: 9.5px;
   color: #475569;
   margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  max-width: 250px;
+  display: block;
+  max-width: 100%;
 }
 
 .header-divider {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-top: 6px;
-  margin-bottom: 16px;
+  margin-top: 0;
+  margin-bottom: 15px;
 }
 
 .accent-bar {
-  height: 4px;
+  height: 2px;
   width: 100%;
   border-radius: 2px;
   transition: background-color 0.2s ease;
 }
 
 .secondary-bar {
-  height: 1px;
+  height: 2px;
   width: 100%;
   background-color: #cbd5e1;
 }
@@ -965,18 +1009,42 @@ const handleSavePdf = async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
+}
+
+.quotation-parties {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.8fr);
+  gap: 24px;
+  padding: 0 0 13px;
   margin-bottom: 12px;
+  border-bottom: 1px solid #d1d5d8;
+}
+
+.section-heading {
+  margin: 0 0 7px;
+  color: #263746;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.quotation-details {
+  padding-top: 28px;
+}
+
+.quotation-details .meta-row {
+  margin-bottom: 2px;
 }
 
 .doc-badge {
-  font-size: 11px;
-  font-weight: 800;
-  color: #0f2b48;
-  letter-spacing: 0.8px;
-  padding: 3px 10px;
-
-  background: #f8fafc;
-  text-transform: uppercase;
+  font-size: 27px;
+  font-weight: 700;
+  color: #263746;
+  letter-spacing: -1.2px;
+  padding: 0;
+  background: transparent;
+  border: 0 !important;
+  text-transform: none;
 }
 
 .doc-date {
@@ -986,27 +1054,28 @@ const handleSavePdf = async () => {
 
 .info-grid-card {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-bottom: 14px;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 22px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid #d4d4d4;
+  padding: 12px 0 10px;
+  margin-bottom: 12px;
 }
 
 .meta-row {
   display: flex;
   align-items: center;
-  font-size: 10.5px;
-  margin-bottom: 3px;
+  font-size: 9.5px;
+  margin-bottom: 2px;
 }
 .meta-row:last-child {
   margin-bottom: 0;
 }
 
 .meta-row .lbl {
-  width: 105px;
+  width: 88px;
   color: #64748b;
   font-weight: 600;
   flex-shrink: 0;
@@ -1056,38 +1125,41 @@ const handleSavePdf = async () => {
 }
 
 .table-container {
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #aeb5bb;
   margin-bottom: 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: none;
 }
 
 .modern-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 10.5px;
+  table-layout: fixed;
 }
 
 .modern-table th {
-  padding: 7px 10px;
+  padding: 1px 4px;
+  line-height: 1.15;
   font-weight: 700;
   font-size: 9.5px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  border-bottom: 1px solid #cbd5e1;
+  border: 1px solid #aeb5bb;
   transition: color 0.3s ease;
 }
 
 .modern-table td {
-  padding: 7px 10px;
+  padding: 1px 4px;
+  line-height: 1.2;
   color: #334155;
   vertical-align: middle;
-  border-bottom: 1px solid #f1f5f9;
+  border: 1px solid #d5d8da;
 }
 
 .modern-table tbody tr.zebra-row {
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 .modern-table tbody tr:last-child td {
@@ -1095,18 +1167,18 @@ const handleSavePdf = async () => {
 }
 
 .modern-table tfoot .summary-row td {
-  padding: 6px 10px;
+  padding: 2px 6px;
   font-size: 10px;
   letter-spacing: 0.3px;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .modern-table tfoot .subtotal-row {
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 .modern-table tfoot .grand-total-row {
-  background-color: #f1f5f9;
+  background-color: #ffffff;
 }
 
 .gt-text {
@@ -1114,8 +1186,8 @@ const handleSavePdf = async () => {
 }
 
 .terbilang-row td {
-  background-color: #f8fafc;
-  padding: 8px 10px !important;
+  background-color: #ffffff;
+  padding: 4px 6px !important;
   border-bottom: none !important;
 }
 
@@ -1165,7 +1237,50 @@ const handleSavePdf = async () => {
   font-size: 10.5px;
   color: #475569;
   line-height: 1.4;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+}
+
+.closing-paragraph ul {
+  margin-top: 5px;
+}
+
+.terms-block {
+  margin: 10px 0 18px;
+  padding: 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.terms-heading {
+  margin: 0 0 6px;
+  padding: 0 0 4px;
+  border-bottom: 1px solid #64748b;
+  color: #1e293b;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.25px;
+}
+
+.terms-list {
+  display: block;
+  margin: 0;
+  padding-left: 17px;
+  list-style: none;
+}
+
+.term-item {
+  display: flex;
+  gap: 5px;
+  margin: 0 0 3px;
+  color: #475569;
+  font-size: 9.5px;
+  line-height: 1.3;
+}
+
+.term-number {
+  min-width: 12px;
+  color: #334155;
+  font-weight: 600;
 }
 
 .signatures-wrapper {
@@ -1232,7 +1347,7 @@ const handleSavePdf = async () => {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 130px;
+  height: 0;
   z-index: 0;
   pointer-events: none;
 }
@@ -1284,6 +1399,18 @@ const handleSavePdf = async () => {
 }
 
 @media print {
+  .offer-card {
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    min-height: 297mm !important;
+  }
+
+  .modern-table tr,
+  .signatures-wrapper {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   .no-print {
     display: none !important;
   }
@@ -1294,6 +1421,37 @@ const handleSavePdf = async () => {
 }
 
 @media (max-width: 600px) {
+  .offer-card {
+    width: 100%;
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .header-section,
+  .header-company,
+  .quotation-parties {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .header-company {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .header-document {
+    width: 100%;
+    text-align: left;
+  }
+
+  .header-document-meta div {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
+  .quotation-details {
+    padding-top: 0;
+  }
+
   .document-actions {
     padding: 0 16px;
   }

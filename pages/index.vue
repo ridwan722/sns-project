@@ -124,13 +124,13 @@ async function verifyPin() {
 </template>
 
 <style scoped>
-
 .welcome-page {
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
-  background-color: #0b0f19; 
-  color: #f8fafc;
+  /* Latar belakang biru-abu terang (bukan putih polos) */
+  background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 50%, #e0f2fe 100%);
+  color: #1e293b;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -139,28 +139,27 @@ async function verifyPin() {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-
 .bg-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
+  filter: blur(80px);
   pointer-events: none;
   z-index: 0;
 }
 
 .glow-top {
-  width: 280px;
-  height: 280px;
-  background: rgba(37, 99, 235, 0.35); 
-  top: -60px;
-  right: -40px;
+  width: 320px;
+  height: 320px;
+  background: rgba(99, 102, 241, 0.25); /* Glow indigo */
+  top: -80px;
+  right: -60px;
 }
 
 .glow-bottom {
-  width: 300px;
-  height: 300px;
-  background: rgba(14, 165, 233, 0.2); 
-  bottom: 40px;
+  width: 340px;
+  height: 340px;
+  background: rgba(14, 165, 233, 0.25); /* Glow cyan */
+  bottom: 20px;
   left: -80px;
 }
 
@@ -168,12 +167,11 @@ async function verifyPin() {
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(30, 41, 59, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   z-index: 1;
 }
-
 
 .main-container {
   position: relative;
@@ -186,36 +184,35 @@ async function verifyPin() {
   justify-content: center;
 }
 
-
 .glass-card {
   width: 100%;
-  background: rgba(18, 24, 38, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Kartu transparan bernuansa frost biru muda */
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 28px;
   padding: 36px 24px 32px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 40px rgba(30, 58, 138, 0.08);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-
 .logo-wrapper {
   margin-bottom: 24px;
 }
 
 .logo-badge {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   padding: 14px 24px;
   border-radius: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .logo-img {
@@ -224,16 +221,15 @@ async function verifyPin() {
   object-fit: contain;
 }
 
-
 .badge-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 4px 12px;
   border-radius: 99px;
-  background: rgba(37, 99, 235, 0.15);
+  background: rgba(37, 99, 235, 0.12);
   border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
+  color: #1d4ed8;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -244,23 +240,22 @@ async function verifyPin() {
 .pulse-dot {
   width: 6px;
   height: 6px;
-  background-color: #3b82f6;
+  background-color: #2563eb;
   border-radius: 50%;
-  box-shadow: 0 0 8px #3b82f6;
+  box-shadow: 0 0 8px #2563eb;
 }
-
 
 .hero-title {
   font-size: 24px;
   font-weight: 800;
   line-height: 1.25;
-  color: #ffffff;
+  color: #0f172a;
   letter-spacing: -0.02em;
   margin-bottom: 12px;
 }
 
 .brand-gradient {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -269,26 +264,25 @@ async function verifyPin() {
 .hero-subtitle {
   font-size: 13.5px;
   line-height: 1.6;
-  color: #94a3b8;
+  color: #475569;
   margin-bottom: 32px;
   font-weight: 400;
   padding: 0 4px;
 }
-
 
 .action-wrapper {
   width: 100%;
 }
 
 .btn-login {
-  background: linear-gradient(135deg, #eb2525 0%, #d81d1d 100%) !important;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
   font-size: 15px !important;
   letter-spacing: 0.2px;
   height: 52px !important;
   text-transform: none !important;
-  box-shadow: 0 8px 20px rgba(235, 37, 37, 0.35) !important;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.28) !important;
   transition: all 0.3s ease !important;
 }
 
@@ -304,7 +298,6 @@ async function verifyPin() {
   transform: translateX(4px);
 }
 
-
 .footer-bar {
   position: relative;
   z-index: 2;
@@ -315,14 +308,14 @@ async function verifyPin() {
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  color: #64748b;
+  color: #475569;
 }
 
 .version-tag {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.5);
   padding: 2px 6px;
   border-radius: 4px;
-  color: #475569;
+  color: #334155;
 }
 
 .pin-dialog { border-radius: 20px !important; }

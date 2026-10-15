@@ -46,6 +46,7 @@ export interface invoiceM {
   item_pekerjaan: invoiceItemM[];
   pakai_ppn: boolean;
   subtotal_invoice: number;
+  discount_invoice?: number;
   ppn: number;
   grandtotal_invoice: number;
 sign_by: string,

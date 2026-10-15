@@ -42,7 +42,6 @@ export const ATextField: typeof import("../components/a/text-field.vue").default
 export const ATextareaNew: typeof import("../components/a/textarea-new.vue").default
 export const ATextarea: typeof import("../components/a/textarea.vue").default
 export const ATimePicker: typeof import("../components/a/time-picker.vue").default
-export const CanvasPenawaranPt: typeof import("../components/canvas-penawaran-pt.vue").default
 export const CanvasPenawaran: typeof import("../components/canvas-penawaran.vue").default
 export const CanvasPurchaseorder: typeof import("../components/canvas-purchaseorder.vue").default
 export const DeliveryOrder: typeof import("../components/delivery-order.vue").default
@@ -103,7 +102,6 @@ export const LazyATextField: LazyComponent<typeof import("../components/a/text-f
 export const LazyATextareaNew: LazyComponent<typeof import("../components/a/textarea-new.vue").default>
 export const LazyATextarea: LazyComponent<typeof import("../components/a/textarea.vue").default>
 export const LazyATimePicker: LazyComponent<typeof import("../components/a/time-picker.vue").default>
-export const LazyCanvasPenawaranPt: LazyComponent<typeof import("../components/canvas-penawaran-pt.vue").default>
 export const LazyCanvasPenawaran: LazyComponent<typeof import("../components/canvas-penawaran.vue").default>
 export const LazyCanvasPurchaseorder: LazyComponent<typeof import("../components/canvas-purchaseorder.vue").default>
 export const LazyDeliveryOrder: LazyComponent<typeof import("../components/delivery-order.vue").default>

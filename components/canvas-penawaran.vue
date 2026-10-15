@@ -66,10 +66,6 @@
 
   <div>
     <div id="offer-to-print" class="offer-card">
-      <div class="watermark">
-        <img src="/Logo-SNS.png" alt="Logo Watermark" />
-      </div>
-
       <div class="header-section">
         <div class="header-company">
           <div class="header-brand">
@@ -89,11 +85,11 @@
         </div>
 
         <div class="header-document">
+          <h2 class="document-title">QUOTATION</h2>
           <div class="header-document-meta">
             <div><span>{{ t.refNo }}</span><strong>{{ props.detailpenawaran.no_penawaran }}</strong></div>
             <div><span>{{ t.date }}</span><strong>{{ rubahtanggalpenawaran(props.detailpenawaran.tanggal_penawaran) }}</strong></div>
           </div>
-          <h2 class="document-title">QUOTATION</h2>
         </div>
       </div>
 
@@ -316,7 +312,8 @@
 
               <tr class="summary-row subtotal-row" v-if="Number(props.detailpenawaran.discount_penawaran) > 0">
                 <td colspan="5" class="text-right text-slate-600">
-                  Discount {{ props.detailpenawaran.discount_penawaran }} %
+                  Discount 
+                  <!-- {{ props.detailpenawaran.discount_penawaran }} % -->
                 </td>
                 <td class="text-right text-slate-800">
                   Rp
@@ -407,9 +404,9 @@
             </p>
             <div class="sig-placeholder"></div>
             <p class="sig-person-name">
-              ( .................................... )
+              
             </p>
-            <p class="sig-person-role">{{ t.sigRoleRight }}</p>
+            <!-- <p class="sig-person-role">{{ t.sigRoleRight }}</p> -->
           </div>
         </div>
       </div>
@@ -875,20 +872,6 @@ const handleSavePdf = async () => {
   box-sizing: border-box;
 }
 
-.watermark {
-  position: absolute;
-  top: 58%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.055;
-  width: 390px;
-  z-index: 0;
-  pointer-events: none;
-}
-.watermark img {
-  width: 100%;
-}
-
 .header-section {
   display: flex;
   justify-content: space-between;
@@ -918,7 +901,7 @@ const handleSavePdf = async () => {
 .header-document-meta {
   display: grid;
   gap: 4px;
-  margin-bottom: 7px;
+  margin-top: 8px;
   color: #475569;
   font-size: 9px;
 }
@@ -1332,7 +1315,7 @@ const handleSavePdf = async () => {
   font-weight: 700;
   color: #0f2b48;
   margin: 0;
-  border-bottom: 1px solid #94a3b8;
+  border-bottom: 1px solid #b7b7b7;
   padding-bottom: 2px;
 }
 

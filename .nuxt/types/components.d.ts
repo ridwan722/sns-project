@@ -42,7 +42,6 @@ interface _GlobalComponents {
   'ATextareaNew': typeof import("../../components/a/textarea-new.vue").default
   'ATextarea': typeof import("../../components/a/textarea.vue").default
   'ATimePicker': typeof import("../../components/a/time-picker.vue").default
-  'CanvasPenawaranPt': typeof import("../../components/canvas-penawaran-pt.vue").default
   'CanvasPenawaran': typeof import("../../components/canvas-penawaran.vue").default
   'CanvasPurchaseorder': typeof import("../../components/canvas-purchaseorder.vue").default
   'DeliveryOrder': typeof import("../../components/delivery-order.vue").default
@@ -103,7 +102,6 @@ interface _GlobalComponents {
   'LazyATextareaNew': LazyComponent<typeof import("../../components/a/textarea-new.vue").default>
   'LazyATextarea': LazyComponent<typeof import("../../components/a/textarea.vue").default>
   'LazyATimePicker': LazyComponent<typeof import("../../components/a/time-picker.vue").default>
-  'LazyCanvasPenawaranPt': LazyComponent<typeof import("../../components/canvas-penawaran-pt.vue").default>
   'LazyCanvasPenawaran': LazyComponent<typeof import("../../components/canvas-penawaran.vue").default>
   'LazyCanvasPurchaseorder': LazyComponent<typeof import("../../components/canvas-purchaseorder.vue").default>
   'LazyDeliveryOrder': LazyComponent<typeof import("../../components/delivery-order.vue").default>

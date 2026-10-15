@@ -581,6 +581,21 @@
             <div class="info-box-right">
               <table class="w-100">
                 <tbody>
+                  <!-- <tr>
+                    <td width="110">PO No</td>
+                    <td width="10">:</td>
+                    <td>
+                      {{ invoiceDetail.no_preorder }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="110">PO Date</td>
+                    <td width="10">:</td>
+                    <td>
+                      {{ formatTanggal(invoiceDetail.tanggal_preorder) }}
+                    </td>
+                  </tr> -->
+
                   <tr>
                     <td width="110">Invoice No</td>
                     <td width="10">:</td>
@@ -650,7 +665,7 @@
                 <td class="amount-cell v-align-middle">
                   <div class="d-flex justify-space-between align-center">
                     <span>Rp</span>
-                    <span>{{ rupiah(item.amount) }}</span>
+                    <span>{{ formatInvoiceAmount(item.amount) }}</span>
                   </div>
                 </td>
               </tr>
@@ -668,6 +683,23 @@
                   <div class="d-flex justify-space-between">
                     <span>Rp</span>
                     <span>{{ rupiah(invoiceDetail.subtotal_invoice) }}</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr v-if="Number(invoiceDetail.discount_invoice) > 0">
+                <td></td>
+                <td></td>
+                <td></td>
+
+                <td class="footer-label">
+                  <strong>DISCOUNT</strong>
+                </td>
+
+                <td class="footer-value">
+                  <div class="d-flex justify-space-between">
+                    <span>Rp</span>
+                    <span>- {{ rupiah(invoiceDetail.discount_invoice) }}</span>
                   </div>
                 </td>
               </tr>
@@ -717,7 +749,7 @@
             </strong>
           </div>
 
-          <table class="w-100">
+          <table class="w-100" v-if="invoiceDetail.termCondition?.length > 0">
             <tbody>
               <tr>
                 <td class="remark-cell">
@@ -873,6 +905,11 @@ const formatTanggal = (tanggal: string) => {
     .format(date)
     .replace(/\//g, "-");
 };
+
+const formatInvoiceAmount = (amount: number) =>
+  new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(
+    Number(amount) || 0,
+  );
 
 function openDialogSelesai() {
   data.dialogSelesai = true;

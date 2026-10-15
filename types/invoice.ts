@@ -24,6 +24,13 @@ export interface invoiceBuktiBayarM {
   contentType: string;
 }
 
+export interface invoiceDoWrM {
+  name: string;
+  dataUrl: string;
+  size: number;
+  contentType: string;
+}
+
 export interface invoiceM {
   id?: string;
   id_invoice?: string;
@@ -45,8 +52,8 @@ export interface invoiceM {
   perihal: string;
   item_pekerjaan: invoiceItemM[];
   pakai_ppn: boolean;
+  discount_invoice: number;
   subtotal_invoice: number;
-  discount_invoice?: number;
   ppn: number;
   grandtotal_invoice: number;
 sign_by: string,
@@ -67,8 +74,9 @@ sign_by: string,
   // BUKTI BAYAR
   tanggal_bayar: string,
   doc_bukti_bayar: invoiceBuktiBayarM[]
-  down_payment: false,
-  dp_persen: 0,
+  doc_do_wr: invoiceDoWrM[]
+  down_payment: boolean;
+  dp_persen: number;
   pengeluaran?: pengeluaranM[];
   grandtotal_pengeluaran?: number;
 }

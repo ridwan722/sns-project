@@ -232,7 +232,7 @@ const logout = async () => {
           variant="outlined"
           class="version-chip"
         >
-          v1.1
+          V 1.2
         </v-chip>
 
         <v-btn

@@ -13,36 +13,6 @@
       Kembali
     </v-btn>
 
-
-    <v-dialog v-model="dialogDikirim" max-width="500" persistent>
-      <v-card class="rounded-lg">
-        <v-card-title class="bg-primary text-white pa-4">
-          Kirim Invoice
-        </v-card-title>
-
-        <v-card-actions class="pa-4 bg-grey-lighten-4">
-          <v-spacer />
-
-          <v-btn
-            variant="outlined"
-            color="grey-darken-1"
-            @click="tutupDialogDikirim"
-          >
-            Batal
-          </v-btn>
-
-          <v-btn
-            color="primary"
-            variant="flat"
-            prepend-icon="mdi-send"
-            @click="ubahStatusDikirim"
-          >
-            Simpan & Kirim
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
    <v-dialog
   v-model="data.dialogSelesai"
   max-width="700"
@@ -225,6 +195,148 @@
   </v-card>
 </v-dialog>
 
+ <!-- // DIALOG TAMBAH DO/WR \\ -->
+    <v-dialog
+      v-model="data.dialogTambahDoWr"
+      max-width="700"
+      scrollable
+      :persistent="readingDoWr"
+    >
+      <v-card class="finish-invoice-dialog" rounded="xl">
+        <!-- HEADER -->
+        <div class="finish-dialog-header">
+          <div class="finish-header-icon">
+            <v-icon icon="mdi-file-document-plus-outline" size="28" />
+          </div>
+
+          <div>
+            <div class="finish-header-title">Tambah Dokumen DO/WR</div>
+            <div class="finish-header-subtitle">
+              Upload Delivery Order atau Work Completion Report
+            </div>
+          </div>
+        </div>
+
+        <v-divider />
+
+        <v-card-text class="pa-6">
+          <!-- UPLOAD DO/WR -->
+          <div class="form-section mt-6">
+            <div class="section-title">
+              <v-icon icon="mdi-file-document-outline" size="19" class="mr-2" />
+              Dokumen DO/WR
+            </div>
+
+            <div class="upload-card">
+              <label for="upload-do-wr" class="upload-area">
+                <input
+                  id="upload-do-wr"
+                  type="file"
+                  multiple
+                  class="po-file-input"
+                  :disabled="readingDoWr"
+                  @change="addDoWrFiles"
+                />
+
+                <div class="upload-icon-wrapper">
+                  <v-icon icon="mdi-cloud-upload-outline" size="30" />
+                </div>
+
+                <div class="upload-content">
+                  <div class="upload-title">Klik untuk memilih file</div>
+
+                  <div class="upload-description">
+                    Upload dokumen Delivery Order / Work Completion Report
+                  </div>
+
+                  <div class="upload-limit">Ukuran file bebas</div>
+                </div>
+              </label>
+
+              <!-- LOADING -->
+              <div v-if="readingDoWr" class="upload-loading">
+                <v-progress-circular
+                  indeterminate
+                  size="20"
+                  width="2"
+                  class="mr-2"
+                />
+                Mengunggah file...
+              </div>
+            </div>
+
+            <!-- FILE TERPILIH -->
+            <div v-if="doWrFiles.length" class="selected-files mt-4">
+              <div class="selected-files-header">
+                <div class="selected-files-title">File Terpilih</div>
+
+                <div class="file-count">{{ doWrFiles.length }} file</div>
+              </div>
+
+              <div class="po-file-list">
+                <div
+                  v-for="(file, index) in doWrFiles"
+                  :key="index"
+                  class="po-file-item"
+                >
+                  <div class="file-left">
+                    <div class="file-icon">
+                      <v-icon icon="mdi-file-check-outline" size="20" />
+                    </div>
+
+                    <div class="file-info">
+                      <div class="po-file-name">
+                        {{ file.name }}
+                      </div>
+
+                      <div class="file-size">
+                        {{ Math.ceil(file.size / 1024) }} KB
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="po-file-remove"
+                    :disabled="readingDoWr"
+                    @click="doWrFiles.splice(index, 1)"
+                  >
+                    <v-icon icon="mdi-close" size="18" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </v-card-text>
+
+        <!-- FOOTER -->
+        <v-divider />
+
+        <v-card-actions class="dialog-footer">
+          <v-btn
+            variant="text"
+            color="grey-darken-1"
+            :disabled="readingDoWr || savingInvoice"
+            @click="tutupDialogDoWr"
+          >
+            Batal
+          </v-btn>
+
+          <v-btn
+            color="primary"
+            variant="flat"
+            rounded="lg"
+            prepend-icon="mdi-check-circle-outline"
+            :loading="savingInvoice"
+            :disabled="readingDoWr || savingInvoice"
+            @click="simpanDoWr"
+          >
+            Simpan Dokumen DO/WR
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <a-icon-success v-if="invoiceDetail.status == 'Selesai'" />
 
     <!-- ========================================================= -->
@@ -247,13 +359,7 @@
             </div>
 
             <div class="invoice-heading">
-              <div class="invoice-eyebrow">
-                INVOICE
-              </div>
-
-              <div class="invoice-number">
-                #INV/SNS/2026/{{ invoiceDetail.id }}
-              </div>
+              <div class="invoice-number">INVOICE - {{ invoiceDetail.id }}</div>
 
               <NuxtLink
                 :to="'/admin/penawaran/' + invoiceDetail.id_penawaran"
@@ -265,11 +371,13 @@
               </NuxtLink>
               <v-divider class="my-2"></v-divider>
 
+              <div class="text-caption mt-2" style="display: flex">
+                <v-icon color="#1e3a5f" class="mr-1">mdi-domain</v-icon
+                >{{ invoiceDetail.nama_customer }}
+              </div>
+              <v-divider class="my-2"></v-divider>
               <div class="text-caption">
                 {{ invoiceDetail.perihal }}
-              </div>
-              <div class="text-caption font-weight-bold" style="display: flex;">
-                <v-icon color="#1e3a5f" class="mr-1">mdi-domain</v-icon>{{ invoiceDetail.nama_customer }}
               </div>
             </div>
           </div>
@@ -277,18 +385,13 @@
           <!-- RIGHT -->
           <div class="invoice-meta">
             <div class="invoice-status-row">
-              <v-chip
-                size="small"
-                variant="flat"
-                class="invoice-status"
-                label
-              >
+              <v-chip size="small" variant="flat" class="invoice-status" label>
                 {{ invoiceDetail.status }}
               </v-chip>
 
               <v-chip
                 v-if="invoiceDetail.status == 'Draft'"
-                prepend-icon="mdi-check-circle-outline"
+                append-icon="mdi-check-circle-outline"
                 color="primary"
                 size="small"
                 class="invoice-complete-btn"
@@ -301,14 +404,7 @@
 
             <div class="invoice-created">
               <div class="created-item">
-                <v-icon size="15">mdi-account-circle-outline</v-icon>
-                <span>{{ invoiceDetail.createdBy }}</span>
-              </div>
-
-              <span class="created-separator">•</span>
-
-              <div class="created-item">
-                <v-icon size="15">mdi-clock-outline</v-icon>
+                <v-icon size="12">mdi-pencil-outline</v-icon>
                 <span>{{ rubahtanggalunix(invoiceDetail.createdAt) }}</span>
               </div>
             </div>
@@ -316,10 +412,6 @@
         </div>
       </v-card>
     </div>
-
-    <!-- ========================================================= -->
-    <!-- REFERENCE CARD - COMPACT -->
-    <!-- ========================================================= -->
 
     <div class="preview-container d-flex justify-center">
       <v-card
@@ -330,9 +422,7 @@
         <div class="reference-grid">
           <!-- INVOICE BASED ON -->
           <div class="reference-block reference-left">
-            <div class="reference-label">
-              PO BASED ON
-            </div>
+            <div class="reference-label">INVOICE BASED ON</div>
 
             <div class="reference-value">
               {{ invoiceDetail.no_preorder || "-" }}
@@ -341,14 +431,9 @@
 
           <!-- PURCHASE ORDER -->
           <div class="reference-block reference-right">
-            <div class="reference-label">
-              PURCHASE ORDER DOCUMENT
-            </div>
+            <div class="reference-label">PURCHASE ORDER DOCUMENT</div>
 
-            <div
-              v-if="invoiceDetail.doc_preorder?.length"
-              class="po-list"
-            >
+            <div v-if="invoiceDetail.doc_preorder?.length" class="po-list">
               <v-chip
                 v-for="(item, index) in invoiceDetail.doc_preorder"
                 :key="index"
@@ -357,7 +442,7 @@
                 class="po-chip font-weight-medium"
                 label
                 :href="item.dataUrl"
-                @click.prevent="bukaDokumenPo(item)"
+                @click.prevent="bukaDokumenLampiran(item)"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -369,12 +454,7 @@
               </v-chip>
             </div>
 
-            <div
-              v-else
-              class="reference-empty"
-            >
-              No document attached
-            </div>
+            <div v-else class="reference-empty">No document attached</div>
           </div>
 
           <!-- DIVIDER -->
@@ -382,9 +462,7 @@
 
           <!-- TANGGAL BAYAR -->
           <div class="reference-block reference-left payment-block">
-            <div class="reference-label">
-              TANGGAL BAYAR
-            </div>
+            <div class="reference-label">TANGGAL BAYAR</div>
 
             <div class="reference-value">
               {{ invoiceDetail.tanggal_bayar || "-" }}
@@ -393,14 +471,9 @@
 
           <!-- BUKTI BAYAR -->
           <div class="reference-block reference-right payment-block">
-            <div class="reference-label">
-              DOC. BUKTI BAYAR
-            </div>
+            <div class="reference-label">DOC. BUKTI BAYAR</div>
 
-            <div
-              v-if="invoiceDetail.doc_bukti_bayar?.length"
-              class="po-list"
-            >
+            <div v-if="invoiceDetail.doc_bukti_bayar?.length" class="po-list">
               <v-chip
                 v-for="(item, index) in invoiceDetail.doc_bukti_bayar"
                 :key="index"
@@ -409,7 +482,7 @@
                 class="po-chip font-weight-medium"
                 label
                 :href="item.dataUrl"
-                @click.prevent="bukaDokumenPo(item)"
+                @click.prevent="bukaDokumenLampiran(item)"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -421,11 +494,145 @@
               </v-chip>
             </div>
 
-            <div
-              v-else
-              class="reference-empty"
+            <div v-else class="reference-empty">No document attached</div>
+          </div>
+        </div>
+      </v-card>
+    </div>
+
+     <div class="preview-container d-flex justify-center">
+      <v-card
+        flat
+        class="invoice-reference-card border rounded-lg mb-3 elevation-1"
+        width="850"
+      >
+        <div class="reference-grid">
+          <!-- DO / WCR -->
+          <div class="reference-block reference-left">
+
+            <div class="reference-value">
+              Delivery Order / Work Completion Report
+            </div>
+          </div>
+
+          <!-- DO / WCR -->
+          <div class="reference-block reference-right">
+            <div class="reference-label">DOCUMENT DO / WCR</div>
+
+            <v-chip
+                append-icon="mdi-upload"
+                color="primary"
+                size="small"
+                class="invoice-complete-btn"
+                label
+                @click="openDialogDoWr"
+              >
+               Upload Doc DO/WCR
+              </v-chip>
+
+            <div v-if="invoiceDetail.doc_do_wr?.length" class="po-list mt-1">
+              <v-chip
+                v-for="(item, index) in invoiceDetail.doc_do_wr"
+                :key="index"
+                size="small"
+                variant="outlined"
+                class="po-chip font-weight-medium"
+                label
+                :href="item.dataUrl"
+                @click.prevent="bukaDokumenLampiran(item)"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <v-icon size="14" class="mr-1">
+                  mdi-wrench-cog
+                </v-icon>
+
+                {{ item.name }}
+              </v-chip>
+            </div>
+
+            <div v-else class="reference-empty">No document attached</div>
+          </div>
+
+        </div>
+      </v-card>
+    </div>
+
+    <div class="preview-container d-flex justify-center">
+      <v-card
+        flat
+        width="850"
+        rounded="lg"
+        class="mb-3"
+        style="border: 1px solid #dfe4ea; background: #ffffff"
+      >
+        <div class="pa-4">
+          <div class="d-flex align-center justify-space-between flex-wrap ga-3">
+            <div>
+              <div
+                class="text-caption font-weight-medium mb-1"
+                style="color: #64748b; letter-spacing: 0.8px"
+              >
+                TOTAL INVOICE
+              </div>
+
+              <div
+                class="text-subtitle-1 font-weight-bold"
+                style="color: #1e293b"
+              >
+                {{ rupiah(invoiceDetail.grandtotal_invoice) }}
+              </div>
+            </div>
+
+            <v-btn
+              variant="outlined"
+              color="blue-grey-darken-3"
+              rounded="md"
+              size="small"
+              prepend-icon="mdi-file-document-outline"
+              append-icon="mdi-chevron-right"
+              style="text-transform: none; letter-spacing: 0"
+              :to="`/admin/penawaran/${invoiceDetail.id_penawaran}/pengeluaran`"
             >
-              No document attached
+              Pengeluaran Project
+            </v-btn>
+          </div>
+
+          <v-divider class="my-1" color="#e2e8f0" />
+
+          <div
+            class="d-flex align-center justify-space-between flex-wrap ga-3 pa-3 rounded-lg"
+            style="background: #f8fafc; border: 1px solid #edf0f4"
+          >
+            <div>
+              <div
+                class="text-caption font-weight-medium mb-1"
+                style="color: #64748b; letter-spacing: 0.6px"
+              >
+                SISA SALDO INVOICE
+              </div>
+
+              <div class="text-h6 font-weight-bold" style="color: #243b53">
+                {{
+                  rupiah(
+                    invoiceDetail.grandtotal_invoice -
+                      invoiceDetail.grandtotal_pengeluaran,
+                  )
+                }}
+              </div>
+            </div>
+
+            <div class="text-right">
+              <div class="text-caption mb-1" style="color: #64748b">
+                Total Pengeluaran
+              </div>
+
+              <div
+                class="text-body-2 font-weight-semibold"
+                style="color: #334155"
+              >
+                {{ rupiah(invoiceDetail.grandtotal_pengeluaran) }}
+              </div>
             </div>
           </div>
         </div>
@@ -433,93 +640,8 @@
     </div>
 
 
-<div class="preview-container d-flex justify-center">
-  <v-card
-    flat
-    width="850"
-    rounded="lg"
-    class="mb-3"
-    style="border: 1px solid #dfe4ea; background: #ffffff;"
-  >
-    <div class="pa-4">
-      <div class="d-flex align-center justify-space-between flex-wrap ga-3">
-        <div>
-          <div
-            class="text-caption font-weight-medium mb-1"
-            style="color: #64748b; letter-spacing: 0.8px;"
-          >
-            TOTAL INVOICE
-          </div>
-
-          <div
-            class="text-subtitle-1 font-weight-bold"
-            style="color: #1e293b;"
-          >
-            {{ rupiah(invoiceDetail.grandtotal_invoice) }}
-          </div>
-        </div>
-
-        <v-btn
-          variant="outlined"
-          color="blue-grey-darken-3"
-          rounded="md"
-          size="small"
-          prepend-icon="mdi-file-document-outline"
-          append-icon="mdi-chevron-right"
-          style="text-transform: none; letter-spacing: 0;"
-          :to="`/admin/penawaran/${invoiceDetail.id_penawaran}/pengeluaran`"
-        >
-          Pengeluaran Project
-        </v-btn>
-      </div>
-
-      <v-divider class="my-1" color="#e2e8f0" />
-
-      <div
-        class="d-flex align-center justify-space-between flex-wrap ga-3 pa-3 rounded-lg"
-        style="background: #f8fafc; border: 1px solid #edf0f4;"
-      >
-        <div>
-          <div
-            class="text-caption font-weight-medium mb-1"
-            style="color: #64748b; letter-spacing: 0.6px;"
-          >
-            SISA SALDO INVOICE
-          </div>
-
-          <div
-            class="text-h6 font-weight-bold"
-            style="color: #243b53;"
-          >
-            {{
-              rupiah(
-                invoiceDetail.grandtotal_invoice -
-                invoiceDetail.grandtotal_pengeluaran
-              )
-            }}
-          </div>
-        </div>
-
-        <div class="text-right">
-          <div class="text-caption mb-1" style="color: #64748b;">
-            Total Pengeluaran
-          </div>
-
-          <div
-            class="text-body-2 font-weight-semibold"
-            style="color: #334155;"
-          >
-            {{ rupiah(invoiceDetail.grandtotal_pengeluaran) }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </v-card>
-</div>
-
-
     <!-- ========================================================= -->
-    <!-- INVOICE PAPER - TIDAK DIUBAH -->
+    <!-- INVOICE PAPER -->
     <!-- ========================================================= -->
 
     <div class="preview-container d-flex justify-center">
@@ -670,7 +792,7 @@
                 </td>
               </tr>
 
-              <tr>
+              <tr v-if="invoiceDetail.dp_persen > 0 || invoiceAmountLabel !== 'Down Payment' || invoiceDetail.pakai_ppn == true || invoiceDetail.discount_invoice > 0">
                 <td></td>
                 <td></td>
                 <td></td>
@@ -862,8 +984,13 @@
 <script setup lang="ts">
 import moment from "moment";
 import type { ConfirmationDialog } from "#components";
-import type { invoiceM, invoiceBuktiBayarM } from "~/types/invoice";
+import type { invoiceM, invoiceBuktiBayarM, invoiceDoWrM } from "~/types/invoice";
 import { uploadStore } from "~/stores/uploadStore";
+import {
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 definePageMeta({
   layout: "admin",
@@ -881,6 +1008,12 @@ const confirmationDialog =
 const dialogDikirim = ref(false);
 const isSavingPdf = ref(false);
 const readingBuktiBayar = ref(false);
+const readingDoWr = ref(false);
+const savingInvoice = ref(false);
+const MAX_INVOICE_BYTES = 900 * 1024;
+const invoiceLanguage = ref<"id" | "en">("en");
+const quotationGrandTotal = ref(0);
+const relatedInvoices = ref<invoiceM[]>([]);
 
 onMounted(async () => {
   useloadingStore().setLoading(true);
@@ -890,6 +1023,7 @@ onMounted(async () => {
 
 const data = reactive({
   dialogSelesai: false,
+  dialogTambahDoWr: false,
 });
 
 const formatTanggal = (tanggal: string) => {
@@ -915,7 +1049,63 @@ function openDialogSelesai() {
   data.dialogSelesai = true;
 }
 
+function openDialogDoWr() {
+  data.dialogTambahDoWr = true;
+}
+
+function tutupDialogDoWr() {
+  if (readingDoWr.value || savingInvoice.value) return;
+  doWrFiles.value = [];
+  data.dialogTambahDoWr = false;
+}
+
 const invoiceDetail = computed(() => invoiceStore.getDetailInvoice);
+
+const billedSubtotal = (invoice: invoiceM) => {
+  const subtotal = Number(invoice.subtotal_invoice || 0);
+  return invoice.down_payment
+    ? subtotal * (Number(invoice.dp_persen || 0) / 100)
+    : subtotal;
+};
+
+const invoiceAmountLabel = computed(() => {
+  const quotationTotal = quotationGrandTotal.value;
+  const currentAmount = billedSubtotal(invoiceDetail.value);
+  const invoicesInOrder = [...relatedInvoices.value].sort(
+    (a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0),
+  );
+  let billedThroughCurrentInvoice = 0;
+  let foundCurrentInvoice = false;
+  for (const invoice of invoicesInOrder) {
+    billedThroughCurrentInvoice += billedSubtotal(invoice);
+    if (invoice.id === invoiceDetail.value.id) {
+      foundCurrentInvoice = true;
+      break;
+    }
+  }
+  if (!foundCurrentInvoice) {
+    billedThroughCurrentInvoice = invoicesInOrder.reduce(
+      (total, invoice) => total + billedSubtotal(invoice),
+      0,
+    );
+  }
+  const isSingleFullInvoice =
+    relatedInvoices.value.length === 1 &&
+    quotationTotal > 0 &&
+    Math.abs(currentAmount - quotationTotal) < 1;
+
+  if (isSingleFullInvoice) return "Grand Total";
+  if (
+    invoiceDetail.value.status === "Selesai" ||
+    (relatedInvoices.value.length > 1 &&
+      quotationTotal > 0 &&
+      billedThroughCurrentInvoice >= quotationTotal - 1)
+  ) {
+    return "Final Payment";
+  }
+
+  return "Down Payment";
+});
 
 const poObjectUrls = new Map<string, string>();
 
@@ -1002,7 +1192,7 @@ async function tambahDokumenBb(event: Event) {
   }
 }
 
-function bukaDokumenPo(document: invoiceBuktiBayarM) {
+function bukaDokumenLampiran(document: invoiceBuktiBayarM) {
   try {
     let url = document.dataUrl;
 
@@ -1087,6 +1277,7 @@ async function ubahStatusDikirim() {
 }
 
 const poFiles = ref<File[]>([]);
+const doWrFiles = ref<File[]>([]);
 
 function readPoFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -1120,7 +1311,79 @@ function addfile(event: Event) {
   target.value = "";
 }
 
+function addDoWrFiles(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const files = Array.from(input.files || []);
+  input.value = "";
+
+  if (!files.length) return;
+  doWrFiles.value = [...doWrFiles.value, ...files];
+}
+
+async function simpanDoWr() {
+  if (savingInvoice.value || readingDoWr.value) return;
+  if (!doWrFiles.value.length) {
+    notificationStore.showError("Pilih minimal satu dokumen DO/WR.");
+    return;
+  }
+
+  savingInvoice.value = true;
+  readingDoWr.value = true;
+
+  try {
+    const id = route.params.id as string;
+    const storage = useFirebaseStorage();
+    const newDocuments: invoiceDoWrM[] = [];
+    for (const file of doWrFiles.value) {
+      const safeFileName = file.name.replace(/[^\w.-]/g, "_");
+      const fileRef = storageRef(
+        storage,
+        `invoice/${id}/do-wr/${crypto.randomUUID()}-${safeFileName}`,
+      );
+      const uploadTask = uploadBytesResumable(fileRef, file, {
+        contentType: file.type || "application/octet-stream",
+      });
+      const uploadedFile = await new Promise<typeof uploadTask.snapshot>(
+        (resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            undefined,
+            reject,
+            () => resolve(uploadTask.snapshot),
+          );
+        },
+      );
+
+      newDocuments.push({
+        name: file.name,
+        dataUrl: await getDownloadURL(uploadedFile.ref),
+        size: file.size,
+        contentType: file.type || "application/octet-stream",
+      });
+    }
+
+    const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
+    invoice.doc_do_wr = [
+      ...(invoiceDetail.value.doc_do_wr || []),
+      ...newDocuments,
+    ];
+
+    const updated = await invoiceStore.updateInvoiceAct(id, invoice);
+    if (!updated) return;
+
+    doWrFiles.value = [];
+    data.dialogTambahDoWr = false;
+    await invoiceStore.tarikDetailInvoiceAct(id);
+  } catch (error) {
+    notificationStore.showError("Dokumen DO/WR gagal dibaca atau disimpan.");
+  } finally {
+    readingDoWr.value = false;
+    savingInvoice.value = false;
+  }
+}
+
 async function ubahStatusSelesai() {
+  if (savingInvoice.value) return;
   if (!invoiceDetail.value.tanggal_bayar) {
     notificationStore.showError("Tanggal di Bayar wajib diisi!");
     return;
@@ -1133,6 +1396,10 @@ async function ubahStatusSelesai() {
 
   if (!confirmed) return;
 
+  savingInvoice.value = true;
+  readingBuktiBayar.value = true;
+
+  try {
   const id = route.params.id as string;
 
   const invoice = JSON.parse(
@@ -1168,6 +1435,12 @@ async function ubahStatusSelesai() {
   data.dialogSelesai = false;
 
   await invoiceStore.tarikDetailInvoiceAct(id);
+  } catch (error) {
+    notificationStore.showError("Bukti pembayaran gagal dibaca atau disimpan.");
+  } finally {
+    readingBuktiBayar.value = false;
+    savingInvoice.value = false;
+  }
 }
 
 function printInvoice() {

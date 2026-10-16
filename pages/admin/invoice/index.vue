@@ -23,7 +23,7 @@
           {{ data.invoiceAddEdit === "add" ? "Create" : "Edit" }} Invoice
         </h4>
         <span class="text-body-2 text-grey"
-          ># tarik data penomoran invoice + 1</span
+          >{{ newInvoice.id }}</span
         >
       </v-card-item>
 
@@ -33,13 +33,10 @@
         </div>
         <v-row density="comfortable">
           <v-col cols="12" sm="6">
-            <a-select-new
-              v-model="newInvoice.id_customer"
+            <a-text-field-new
+              v-model="newInvoice.nama_customer"
               label="Customer"
-              placeholder="Select"
-              item-title="nama"
-              item-value="id"
-              :items="customerStore.getDataCustomer"
+              disabled
             />
           </v-col>
           <v-col cols="12" sm="6">
@@ -52,9 +49,7 @@
         <a-textarea-new
           v-model="newInvoice.alamat_customer"
           class="mt-2"
-          label="Address"
           disabled
-          placeholder="*Auto"
         />
 
         <v-row>
@@ -62,47 +57,48 @@
             <a-text-field-new
               v-model="newInvoice.pic"
               class="mt-2"
-              label="PIC"
               disabled
-              placeholder="*Auto"
             />
           </v-col>
           <v-col>
             <a-text-field-new
               v-model="newInvoice.no_telp"
               class="mt-2"
-              label="No Telp"
               disabled
-              placeholder="*Auto"
             />
           </v-col>
           <v-col>
             <a-text-field-new
               v-model="newInvoice.email"
               class="mt-2"
-              label="Email"
               disabled
-              placeholder="@gmail.com"
             />
           </v-col>
           <v-col>
             <a-text-field-new
               v-model="newInvoice.vessel"
               class="mt-2"
-              label="Vessel"
               disabled
-              placeholder="*Auto"
             />
           </v-col>
         </v-row>
         <v-divider class="my-2 border-opacity-50" />
 
-        <a-text-field-new
-          v-model="newInvoice.no_preorder"
-          class="mt-2"
-          label="No. Pre Order (PO)"
-          placeholder="opsional"
-        />
+        <v-row no-gutters class="mt-2">
+          <v-col cols="12" sm="6" class="pa-1">
+            <a-text-field-new
+              v-model="newInvoice.no_preorder"
+              label="No. Pre Order (PO)"
+              placeholder="opsional"
+            />
+          </v-col>
+          <v-col cols="12" sm="6" class="pa-1">
+            <a-date-picker-new
+              v-model="newInvoice.tanggal_preorder"
+              label="Tanggal Pre Order (PO)"
+            />
+          </v-col>
+        </v-row>
 
         <div class="mt-3">
           <div class="po-upload-row">
@@ -207,7 +203,7 @@
             </v-col>
             <v-col cols="3">
               <a-select-new
-                v-model="item.nama"
+                v-model="item.kategori_item"
                 label="Kategori"
                 :items="[
                   'Unit',
@@ -275,6 +271,18 @@
             </v-col>
           </v-row>
         </div>
+
+        <a-select-new
+          v-model="newInvoice.sign_by"
+          :items="[
+            'Seilla Maryana',
+            'Leo Adiatmaja Sembiring',
+            'Muhammad Ridwan',
+            'Lilis',
+          ]"
+          label="Sign By / Yang Bertanda Tangan ?"
+          class="mb-4"
+        />
 
         <!-- Bagian Template: Update tabel Terms & Conditions -->
         <div class="mt-4">
@@ -374,6 +382,34 @@
                 >
               </div>
               <div
+                v-if="discountInvoice > 0"
+                class="d-flex justify-space-between text-body-2 text-grey-darken-2 mb-1"
+              >
+                <span>Discount</span>
+                <span class="font-weight-medium text-grey-darken-3"
+                  >- Rp {{ rupiah(discountInvoice) }}</span
+                >
+              </div>
+              <div class="d-flex flex-wrap align-center justify-space-between ga-2 text-body-2 text-grey-darken-2 mb-1">
+                <v-checkbox
+                  v-model="newInvoice.down_payment"
+                  label="Termin"
+                  density="compact"
+                  hide-details
+                />
+                <a-text-field-new
+                  v-if="newInvoice.down_payment"
+                  v-model="newInvoice.dp_persen"
+                  type="number"
+                  label="Persentase"
+                  suffix="%"
+                  style="max-width: 130px"
+                />
+                <span v-if="newInvoice.down_payment" class="font-weight-medium text-grey-darken-3">
+                  Rp {{ rupiah(dpNominal) }}
+                </span>
+              </div>
+              <div
                 v-if="newInvoice.pakai_ppn == true"
                 class="d-flex justify-space-between text-body-2 text-grey-darken-2 mb-2"
               >
@@ -433,7 +469,7 @@
     <v-col cols="12">
       <v-breadcrumbs>
         <v-breadcrumbs-item>
-          <span class="font-weight-medium text-h5">Invoice</span>
+          <span class="font-weight-medium text-h5 font-weight-bold">Invoice</span>
         </v-breadcrumbs-item>
       </v-breadcrumbs>
     </v-col>
@@ -449,16 +485,16 @@
             style="max-width: 280px"
           />
         </v-col>
-        <v-col>
+        <!-- <v-col>
           <a-select-new
             v-model="data.filterStatus"
             label=""
             placeholder="Semua Status"
             :items="filterStatusOptions"
           />
-        </v-col>
+        </v-col> -->
         <v-col class="text-right">
-          <v-btn
+          <!-- <v-btn
             color="primary"
             variant="flat"
             size="small"
@@ -467,7 +503,7 @@
             @click="openDialogTambahInvoice"
           >
             Create Invoice
-          </v-btn>
+          </v-btn> -->
 
           <v-btn
             color="green"
@@ -477,7 +513,7 @@
             prepend-icon="mdi-database-export"
             @click="getallinvoice()"
           >
-            Get All Invoice
+            Tarik Semua Status Invoice
           </v-btn>
 
           <v-btn
@@ -511,13 +547,22 @@
         rubahtanggallengkap(item.tanggal)
       }}</template>
 
-      <template v-slot:item.no_inv="{ item }">
+      <!-- <template v-slot:item.no_inv="{ item }">
         <NuxtLink
           :to="'/admin/invoice/' + item.no_inv"
           class="penawaran-link font-weight-medium"
         >
-          #INV/SNS/2026/{{ item.no_inv }}
+          #INV/DRM/2026/{{ item.no_inv }}
         </NuxtLink>
+      </template> -->
+      <template v-slot:item.no_inv="{ item }">
+        <div class="text-center">
+          <NuxtLink :to="'/admin/invoice/' + item.no_inv" class="quotation-link">
+            <span class="quotation-badge">
+              #INV/DRM/2026/{{ item.no_inv }}
+            </span>
+          </NuxtLink>
+        </div>
       </template>
 
       <template v-slot:item.nama_customer="{ item }">
@@ -652,12 +697,12 @@ const data = reactive({
   showAllInvoice: false,
   headInvoice: [
     { title: "No", value: "no", width: "10px" },
-    { title: "Tanggal", value: "tanggal", sortable: true },
+    { title: "Tanggal", value: "tanggal", sortable: true, width: "150px" },
     { title: "Based On Quotation", value: "no_penawaran", sortable: true },
     { title: "No. Invoice", value: "no_inv", sortable: true },
-    { title: "Subject", value: "perihal", sortable: true },
     { title: "Client", value: "nama_customer", sortable: true },
-    { title: "Total", value: "grandtotal_invoice", sortable: true },
+    { title: "Subject", value: "perihal", sortable: true },
+    { title: "Total", value: "grandtotal_invoice", sortable: true, width: "140px" },
     { title: "Status Inv", value: "status", sortable: true },
     { title: "Aksi", align: "center" as const, value: "aksi", width: "100px" },
   ],
@@ -670,9 +715,11 @@ function emptyInvoice(): invoiceM {
     nama_customer: "",
     alamat_customer: "",
     no_preorder: "",
+    tanggal_preorder: "",
     doc_preorder: [],
     vessel: "",
     no_telp: "",
+    sign_by: "",
     email: "",
     pic: "",
     tanggal: moment().format("YYYY-MM-DD"),
@@ -689,14 +736,18 @@ function emptyInvoice(): invoiceM {
     ],
     pakai_ppn: false,
     subtotal_invoice: 0,
+    discount_invoice: 0,
     ppn: 0,
     grandtotal_invoice: 0,
+    down_payment: false,
+    dp_persen: 0,
     status: "",
     createdAt: 0,
     createdBy: "",
     termCondition: [],
     tanggal_bayar: "",
     doc_bukti_bayar: [],
+    doc_do_wr: [],
   };
 }
 
@@ -704,24 +755,16 @@ const sortedTermConditions = computed(() => {
   const terms = [...termconditionStore.getDataTermcondition];
   const selected = newInvoice.value.termCondition || [];
 
-  // Gunakan snapshot yang tersimpan di invoice untuk term yang dipilih.
-  // Dengan begitu isi invoice tidak berubah bila master T&C diedit/dihapus.
+  // Yang dipilih mengikuti urutan saat dipilih
   const selectedTerms = selected
     .map((selectedItem: any) => {
-      const masterTerm = terms.find((term: any) =>
+      return terms.find((term: any) =>
         term.id
           ? term.id === selectedItem.id
           : term.nama_term === selectedItem.nama_term,
       );
-
-      return {
-        ...masterTerm,
-        ...selectedItem,
-        id: selectedItem.id ?? masterTerm?.id,
-        nama_term: selectedItem.nama_term || masterTerm?.nama_term || "",
-      };
     })
-    .filter((term) => term.nama_term);
+    .filter(Boolean);
 
   // Yang belum dipilih tetap mengikuti urutan asli
   const unselectedTerms = terms.filter(
@@ -806,15 +849,28 @@ async function tambahDokumenPo(event: Event) {
 
 const subtotal_invoice = computed(() =>
   newInvoice.value.item_pekerjaan.reduce(
-    (total, item) => total + (Number(item.amount) || 0),
+    (total, item) => total + (Number(item.qty) || 0) * (Number(item.amount) || 0),
     0,
   ),
 );
+const discountInvoice = computed(
+  () => Number(newInvoice.value.discount_invoice) || 0,
+);
+const netSubtotal = computed(
+  () => subtotal_invoice.value - discountInvoice.value,
+);
+const dpNominal = computed(() =>
+  Math.round(
+    (netSubtotal.value * (Number(newInvoice.value.dp_persen) || 0)) / 100,
+  ),
+);
 const ppnInvoice = computed(() =>
-  newInvoice.value.pakai_ppn ? Math.round(subtotal_invoice.value * 0.11) : 0,
+  newInvoice.value.pakai_ppn ? Math.round(netSubtotal.value * 0.11) : 0,
 );
 const grandtotal_invoice = computed(
-  () => subtotal_invoice.value + ppnInvoice.value,
+  () =>
+    (newInvoice.value.down_payment ? dpNominal.value : netSubtotal.value) +
+    ppnInvoice.value,
 );
 
 watch(
@@ -869,7 +925,7 @@ async function getallinvoice() {
     sessionStorage.removeItem("invoice");
     await invoiceStore.tarikDataInvoiceAct();
     data.showAllInvoice = true;
-    notificationStore.showSuccess("Semua invoice berhasil dimuat");
+    notificationStore.showSuccess("Semua invoice (all status) berhasil dimuat");
   } catch (error) {
     console.error("Gagal memuat semua invoice:", error);
     notificationStore.showError("Gagal memuat semua invoice");
@@ -901,15 +957,10 @@ function openDialogEditInvoice(item: invoiceM) {
       dataCustomer.vessel === item.vessel,
   );
 
-  const invoice = JSON.parse(JSON.stringify(item)) as invoiceM;
-  // Data invoice lama dapat belum memiliki field ini atau tersimpan dengan
-  // bentuk yang tidak lengkap. Pastikan v-model checkbox selalu menerima array.
-  invoice.termCondition = Array.isArray(invoice.termCondition)
-    ? invoice.termCondition.filter(
-        (term): term is invoiceM["termCondition"][number] =>
-          !!term && typeof term.nama_term === "string",
-      )
-    : [];
+  const invoice = {
+    ...emptyInvoice(),
+    ...JSON.parse(JSON.stringify(item)),
+  } as invoiceM;
   if (customer?.id) {
     invoice.id_customer = customer.id;
     invoice.nama_customer = customer.nama;
@@ -958,12 +1009,27 @@ async function simpanInvoiceDialog() {
     return notificationStore.showError("Customer belum dipilih");
   }
   if (
-    newInvoice.value.item_pekerjaan.some((item) => !item.nama || !item.amount)
+    !newInvoice.value.item_pekerjaan.length ||
+    newInvoice.value.item_pekerjaan.some(
+      (item) => !item.nama || Number(item.qty) <= 0 || Number(item.amount) <= 0,
+    )
   ) {
     return notificationStore.showError(
-      "Setiap baris item harus punya description dan amount",
+      "Setiap baris item harus punya description, qty, dan amount",
     );
   }
+  if (
+    newInvoice.value.down_payment &&
+    (!Number.isFinite(Number(newInvoice.value.dp_persen)) ||
+      Number(newInvoice.value.dp_persen) <= 0 ||
+      Number(newInvoice.value.dp_persen) > 100)
+  ) {
+    return notificationStore.showError("Persentase termin harus antara 1 dan 100");
+  }
+
+  newInvoice.value.item_pekerjaan.forEach((item) => {
+    item.subtotal_item = Number(item.qty) * Number(item.amount);
+  });
 
   newInvoice.value.subtotal_invoice = subtotal_invoice.value;
   newInvoice.value.ppn = ppnInvoice.value;
@@ -1016,11 +1082,11 @@ async function simpanInvoiceDialog() {
 
 async function hapusInvoice(id_penawaran: string, id: string) {
   const confirmed = await confirmationDialog.value?.show(
-    "Konfirmasi Hapus",
-    "Anda yakin ingin menghapus invoice ini?",
+    "Konfirmasi Hapus Invoice",
+    "Anda yakin ingin menghapus invoice ini? Tindakan ini tidak bisa dipulihkan",
     { variant: "danger" },
   );
-  if (!confirmed) return notificationStore.showError("Penghapusan dibatalkan");
+  if (!confirmed) return notificationStore.showInfo("Penghapusan dibatalkan");
   await invoiceStore.deleteInvoiceAct(id_penawaran, id);
 }
 
@@ -1034,6 +1100,29 @@ async function refreshData() {
 </script>
 
 <style scoped>
+.quotation-link {
+  text-decoration: none;
+}
+.quotation-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  border: 1px solid #dbeafe;
+  transition: all 0.1s ease;
+}
+
+.quotation-badge:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
+}
 .penawaran-link {
   color: rgb(11, 66, 194);
   transition: color 0.2s ease;

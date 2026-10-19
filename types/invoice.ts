@@ -42,18 +42,20 @@ export interface invoiceM {
   vessel: string;
   no_telp: string;
   email: string;
-  pic: string,
+  pic: string;
 
-  id_penawaran?: string,
-  no_penawaran?: string,
-  tanggal_penawaran?: string,
+  location: string;
+
+  id_penawaran?: string;
+  no_penawaran?: string;
+  tanggal_penawaran?: string;
 
   tanggal: string;
   perihal: string;
   item_pekerjaan: invoiceItemM[];
   pakai_ppn: boolean;
-  discount_invoice: number;
   subtotal_invoice: number;
+  discount_invoice: number;
   ppn: number;
   grandtotal_invoice: number;
 sign_by: string,

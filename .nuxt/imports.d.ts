@@ -60,3 +60,4 @@ export { useDate, useLocale, useDefaults, useDisplay, useLayout, useRtl, useThem
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useFirebaseApp } from '../node_modules/nuxt-vuefire/dist/runtime/app/composables';
 export { useFirestore, useDocument, useCollection, useDatabase, useDatabaseList, useDatabaseObject, useFirebaseStorage, useStorageFile, useStorageFileUrl, useStorageFileMetadata } from 'vuefire';
+export { useNuxtDevTools } from '../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';

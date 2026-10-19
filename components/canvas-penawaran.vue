@@ -157,7 +157,7 @@
             <div class="meta-row">
               <span class="lbl">{{ t.location }}</span>
               <span class="sep">:</span>
-              <span class="val">Batam</span>
+              <span class="val">{{ props.detailpenawaran.location }}</span>
             </div>
           </div>
         </section>

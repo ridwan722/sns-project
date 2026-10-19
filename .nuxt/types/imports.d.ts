@@ -215,7 +215,6 @@ declare global {
   const useNotificationStore: typeof import('../../stores/notificationStore').useNotificationStore
   const useNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt').useNuxtApp
   const useNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useNuxtData
-  const useNuxtDevTools: typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools').useNuxtDevTools
   const usePenawaranStore: typeof import('../../stores/penawaranStore').usePenawaranStore
   const usePictureStore: typeof import('../../stores/pictureStore').usePictureStore
   const usePinia: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables').usePinia
@@ -521,7 +520,6 @@ declare module 'vue' {
     readonly useNotificationStore: UnwrapRef<typeof import('../../stores/notificationStore')['useNotificationStore']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
-    readonly useNuxtDevTools: UnwrapRef<typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']>
     readonly usePenawaranStore: UnwrapRef<typeof import('../../stores/penawaranStore')['usePenawaranStore']>
     readonly usePictureStore: UnwrapRef<typeof import('../../stores/pictureStore')['usePictureStore']>
     readonly usePinia: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']>

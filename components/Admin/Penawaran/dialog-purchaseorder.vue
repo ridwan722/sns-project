@@ -78,24 +78,48 @@
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="isOpen" max-width="960px" scrollable persistent>
-    <v-card class="po-card">
-      <!-- HEADER -->
-      <v-card-title class="po-header">
+  <v-dialog
+    v-model="isOpen"
+    max-width="1040"
+    scrollable
+    persistent
+    class="po-dialog-overlay"
+  >
+    <v-card class="po-card" elevation="0">
+      <header class="po-header">
         <div class="po-header-content">
-          <v-icon size="30">mdi-human-dolly</v-icon>
+          <div class="po-header-icon" aria-hidden="true">
+            <v-icon icon="mdi-truck-delivery-outline" size="20" />
+          </div>
           <div>
-            <div class="po-title">
+            <h2 class="po-title">
               {{
                 isEditing
                   ? "Edit Purchase Order (PO)"
                   : "Keluarkan Purchase Order (PO)"
               }}
-            </div>
-            <div class="po-subtitle">Purchase Order (PO)</div>
+            </h2>
+            <p class="po-subtitle">
+              Nomor purchase order dibuat otomatis saat disimpan
+            </p>
           </div>
         </div>
-      </v-card-title>
+
+        <div class="po-header-actions">
+          <span class="po-status">
+            <span class="po-status-dot"></span>
+            {{ isEditing ? "Edit Mode" : "Draft" }}
+          </span>
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            size="small"
+            color="grey-darken-1"
+            aria-label="Tutup dialog purchase order"
+            @click="isOpen = false"
+          />
+        </div>
+      </header>
 
       <v-progress-linear
         v-if="isLoadingPurchaseorder"
@@ -104,62 +128,126 @@
       />
 
       <v-card-text class="po-content">
-        <a-date-picker-new
-          v-model="tgl_purchaseorder"
-          label="Tanggal PO"
-          class="mb-4"
-        />
+        <section class="po-form-section">
+          <div class="po-form-section-header">
+            <div>
+              <span class="po-form-section-index">01</span>
+              <h3>Vendor Information</h3>
+            </div>
+            <p>Pilih vendor untuk purchase order ini.</p>
+          </div>
 
-        <v-row>
-          <v-col>
-            <a-text-field-new v-model="payment" label="Payment" class="mb-2" />
-
-            <a-text-field-new
-              v-model="perihal_purchaseorder"
-              label="Subject"
-              class="mb-2"
+          <div class="po-vendor-picker">
+            <a-date-picker-new
+              v-model="tgl_purchaseorder"
+              label="Tanggal PO"
+              class="po-date-field"
             />
-          </v-col>
-          <v-col>
             <a-select-new
               v-model="selectedVendorId"
               :items="vendorOptions"
               item-title="nama_vendor"
               item-value="id_vendor"
               label="Pilih Vendor"
-              class="mb-2"
+              class="po-vendor-select"
             />
-            <a-text-field-new
-              v-model="no_quotation_from_vendor"
-              label="NO Quotation (vendor)"
-              class="mb-2"
-            />
+          </div>
+
+          <dl class="po-vendor-details">
+            <div class="po-vendor-detail">
+              <dt>Vendor</dt>
+              <dd>
+                {{
+                  selectedVendor?.nama_vendor ||
+                  editingPurchaseorder?.nama_vendor ||
+                  "—"
+                }}
+              </dd>
+            </div>
+            <div class="po-vendor-detail po-vendor-address">
+              <dt>Address</dt>
+              <dd>
+                {{
+                  selectedVendor?.alamat_vendor ||
+                  editingPurchaseorder?.alamat_vendor ||
+                  "—"
+                }}
+              </dd>
+            </div>
+            <div class="po-vendor-detail">
+              <dt>PIC</dt>
+              <dd>
+                {{
+                  selectedVendor?.pic_vendor ||
+                  editingPurchaseorder?.pic_vendor ||
+                  "—"
+                }}
+              </dd>
+            </div>
+            <div class="po-vendor-detail">
+              <dt>Phone Number</dt>
+              <dd>
+                {{
+                  selectedVendor?.no_telp_vendor ||
+                  editingPurchaseorder?.no_telp_vendor ||
+                  "—"
+                }}
+              </dd>
+            </div>
+            <div class="po-vendor-detail">
+              <dt>Email</dt>
+              <dd>
+                {{
+                  selectedVendor?.email_vendor ||
+                  editingPurchaseorder?.email_vendor ||
+                  "—"
+                }}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="po-transaction-section">
+          <div class="po-transaction-heading">
+            <div>
+              <h3>Transaction Details</h3>
+              <p>Referensi, pembayaran, currency, dan subject purchase order.</p>
+            </div>
             <a-select-new
               v-model="currency"
               :items="['IDR', 'SGD', 'USD']"
               label="Currency"
-              class="mb-2"
+              class="po-currency-field"
             />
-          </v-col>
-        </v-row>
+          </div>
 
-        <a-select-new
-          v-model="sign_po_by"
-          :items="[
-            'Seilla Maryana',
-            'Leo Adiatmaja Sembiring',
-            'Muhammad Ridwan',
-          ]"
-          label="Sign Purchase Order By ?"
-          class="mb-2"
-        />
+          <div class="po-transaction-fields">
+            <a-text-field-new v-model="payment" label="Payment" />
+            <a-text-field-new
+              v-model="no_quotation_from_vendor"
+              label="NO Quotation (vendor)"
+            />
+            <a-text-field-new
+              v-model="perihal_purchaseorder"
+              label="Subject"
+              class="po-subject-field"
+            />
+          </div>
+        </section>
 
-        <v-divider class="my-3"></v-divider>
-        <div
-          v-for="(section, sectionIndex) in form.sections"
-          :key="sectionIndex"
-          class="po-section"
-        >
+        <div class="po-items-heading">
+          <div>
+            <span class="po-form-section-index">02</span>
+            <h3>Purchase Order Items</h3>
+          </div>
+          <p>Rincian pekerjaan dan item purchase order.</p>
+        </div>
+        <div class="po-items-editor">
+          <div
+            v-for="(section, sectionIndex) in form.sections"
+            :key="sectionIndex"
+            class="po-section"
+          >
           <!-- SECTION HEADER -->
           <div class="section-header">
             <div class="section-number">{{ sectionIndex + 1 }}</div>
@@ -339,93 +427,208 @@
               Tambah Item
             </button>
           </div>
+          </div>
+
+          <!-- ADD SECTION -->
+          <button
+            type="button"
+            class="add-section-button"
+            @click="
+              form.sections.push({
+                title: '',
+                description: '',
+                diskon_purchaseorder: 0,
+                id_vendor: '',
+                nama_vendor: '',
+                items: [
+                  {
+                    description: '',
+                    type: 'price',
+                    qty: 1,
+                    uom: 'Set',
+                    price: 0,
+                  },
+                ],
+              })
+            "
+          >
+            <v-icon size="14">mdi-plus</v-icon>
+            Tambah Pekerjaan / Section Baru
+          </button>
         </div>
 
-        <!-- ADD SECTION -->
-        <button
-          type="button"
-          class="add-section-button"
-          @click="
-            form.sections.push({
-              title: '',
-              description: '',
-              diskon_purchaseorder: 0,
-              id_vendor: '',
-              nama_vendor: '',
-              items: [
-                {
-                  description: '',
-                  type: 'price',
-                  qty: 1,
-                  uom: 'Set',
-                  price: 0,
-                },
-              ],
-            })
-          "
-        >
-          <v-icon size="14">mdi-plus</v-icon>
-          Tambah Pekerjaan / Section Baru
-        </button>
-
-        <!-- SUMMARY -->
-        <div class="summary-wrapper">
-          <div class="summary">
-            <div class="summary-row">
-              <span class="summary-label">Subtotal</span>
-              <span class="summary-value">{{
-                formatCurrency(subtotal_purchaseorder)
-              }}</span>
+        <div class="po-commercial-grid">
+          <section class="po-form-section po-summary-section">
+            <div class="po-form-section-header">
+              <div>
+                <span class="po-form-section-index">03</span>
+                <h3>Commercial Summary</h3>
+              </div>
+              <p>Nilai purchase order dan diskon.</p>
             </div>
 
-            <div class="summary-row discount-row">
-              <div class="discount-label">
-                <span>Diskon</span>
-                <div class="discount-input-wrapper ml-2">
-                  <input
-                    v-model.number="form.diskon_purchaseorder"
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    class="discount-input"
-                  />
-                  <span class="discount-percent">%</span>
+            <div class="summary-wrapper">
+              <div class="summary">
+                <div class="summary-row">
+                  <span class="summary-label">Subtotal</span>
+                  <span class="summary-value">{{
+                    formatCurrency(subtotal_purchaseorder)
+                  }}</span>
+                </div>
+
+                <div class="summary-row discount-row">
+                  <div class="discount-label">
+                    <span>Diskon</span>
+                    <div class="discount-fields ml-2">
+                      <label class="discount-field">
+                        <span class="discount-field-caption">Persen</span>
+                        <span
+                          class="discount-input-wrapper"
+                          :class="{
+                            'discount-input-active':
+                              discountInputMode === 'percent',
+                          }"
+                        >
+                          <input
+                            v-model.number="discountPercentModel"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            class="discount-input"
+                          />
+                          <span class="discount-percent">%</span>
+                        </span>
+                      </label>
+
+                      <span class="discount-or">atau</span>
+
+                      <label class="discount-field discount-field-nominal">
+                        <span class="discount-field-caption">
+                          Nominal ({{ currency || "IDR" }})
+                        </span>
+                        <span
+                          class="discount-input-wrapper nominal-input-wrapper"
+                          :class="{
+                            'discount-input-active':
+                              discountInputMode === 'nominal',
+                          }"
+                        >
+                          <span class="discount-currency">
+                            {{ currency || "IDR" }}
+                          </span>
+                          <input
+                            v-model.number="discountNominalModel"
+                            type="number"
+                            min="0"
+                            :max="subtotal_purchaseorder"
+                            :step="currency === 'IDR' ? 1 : 0.01"
+                            class="discount-input nominal-discount-input"
+                          />
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                  <span class="discount-value">
+                    - {{ formatCurrency(discountAmount) }}
+                  </span>
+                </div>
+
+                <div class="grand-total-row">
+                  <span>Grand Total</span>
+                  <span class="grand-total-amount">
+                    {{ formatCurrency(grandtotal_purchaseorder) }}
+                  </span>
                 </div>
               </div>
-              <span class="discount-value"
-                >- {{ formatCurrency(discountAmount) }}</span
-              >
+            </div>
+          </section>
+
+          <section class="po-form-section po-sign-section">
+            <div class="po-form-section-header">
+              <div>
+                <span class="po-form-section-index">04</span>
+                <h3>Authorization</h3>
+              </div>
+              <p>Penandatangan purchase order.</p>
             </div>
 
-            <div class="grand-total-row text-primary">
-              <span>Grand Total</span>
-              <span class="grand-total-amount">{{
-                formatCurrency(grandtotal_purchaseorder)
-              }}</span>
+            <a-select-new
+              v-model="sign_po_by"
+              :items="[
+                'Seilla Maryana',
+                'Leo Adiatmaja Sembiring',
+                'Muhammad Ridwan',
+              ]"
+              label="Sign Purchase Order By ?"
+            />
+
+            <div v-if="sign_po_by" class="po-signature-preview">
+              <div
+                v-if="sign_po_by === 'Leo Adiatmaja Sembiring'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_leo.png" />
+                <div class="signature-line"></div>
+                <div class="signature-name">Leo Adiatmaja Sembiring</div>
+              </div>
+
+              <div
+                v-if="sign_po_by === 'Seilla Maryana'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_seilla.png" />
+                <div class="signature-line"></div>
+                <div class="signature-name">Seilla Maryana</div>
+              </div>
+
+              <div
+                v-if="sign_po_by === 'Muhammad Ridwan'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_ridwan.png" />
+                <div class="signature-line"></div>
+                <div class="signature-name">Muhammad Ridwan</div>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       </v-card-text>
 
-      <v-card-actions class="item-dialog-actions justify-end">
-        <v-btn color="grey" variant="text" size="small" @click="isOpen = false">
-          CANCEL
-        </v-btn>
+      <footer class="po-dialog-footer">
+        <p>
+          Pastikan vendor, item, dan nilai purchase order sudah sesuai sebelum
+          disimpan.
+        </p>
+        <div>
+          <v-btn
+            color="grey-darken-1"
+            variant="outlined"
+            size="small"
+            class="text-none po-cancel-btn"
+            @click="isOpen = false"
+          >
+            Cancel
+          </v-btn>
 
-        <v-btn
-          size="small"
-          color="primary"
-          variant="flat"
-          :loading="isSaving"
-          :disabled="
-            isLoadingPurchaseorder || isSaving || purchaseorderLoadFailed
-          "
-          @click="addpurchaseorder"
-        >
-          {{ isEditing ? "Simpan Perubahan PO" : "Simpan Purchase Order (PO)" }}
-        </v-btn>
-      </v-card-actions>
+          <v-btn
+            size="small"
+            color="primary"
+            variant="flat"
+            prepend-icon="mdi-content-save-outline"
+            class="text-none po-save-btn"
+            :loading="isSaving"
+            :disabled="
+              isLoadingPurchaseorder || isSaving || purchaseorderLoadFailed
+            "
+            @click="addpurchaseorder"
+          >
+            {{
+              isEditing ? "Simpan Perubahan PO" : "Simpan Purchase Order (PO)"
+            }}
+          </v-btn>
+        </div>
+      </footer>
     </v-card>
   </v-dialog>
 </template>
@@ -486,6 +689,7 @@ const purchaseorderLoadFailed = ref(false);
 const isEditing = computed(() =>
   Boolean(editingPurchaseorder.value?.id_purchaseorder),
 );
+const discountInputMode = ref<"percent" | "nominal">("percent");
 const vendorOptions = computed(() =>
   vendorStore.getDataVendor.map((vendor) => ({
     ...vendor,
@@ -514,6 +718,7 @@ const resetForm = () => {
   no_quotation_from_vendor.value = "";
   currency.value = "IDR";
   selectedVendorId.value = "";
+  discountInputMode.value = "percent";
   form.value = {
     sections: [
       {
@@ -528,6 +733,7 @@ const resetForm = () => {
       },
     ],
     diskon_purchaseorder: 0,
+    diskon_nominal_purchaseorder: 0,
   };
 };
 
@@ -563,8 +769,14 @@ const loadPurchaseorder = async () => {
       purchaseorder.no_quotation_from_vendor || "";
     currency.value = purchaseorder.currency || "IDR";
     selectedVendorId.value = purchaseorder.id_vendor || "";
+    discountInputMode.value =
+      purchaseorder.tipe_diskon_purchaseorder === "nominal"
+        ? "nominal"
+        : "percent";
     form.value = {
       diskon_purchaseorder: Number(purchaseorder.diskon_purchaseorder) || 0,
+      diskon_nominal_purchaseorder:
+        Number(purchaseorder.diskon_nominal_purchaseorder) || 0,
       sections: (purchaseorder.item_purchaseorder || []).map((section) => ({
         title: section.title || "",
         description: section.description || "",
@@ -580,6 +792,11 @@ const loadPurchaseorder = async () => {
         })),
       })),
     };
+    if (discountInputMode.value === "nominal") {
+      syncDiscountFromNominal();
+    } else {
+      syncDiscountFromPercent();
+    }
     if (!form.value.sections.length) resetForm();
   } catch (error) {
     console.error("Gagal mengambil Purchase Order:", error);
@@ -611,7 +828,11 @@ interface Section {
   id_vendor?: string;
 }
 
-const form = ref<{ sections: Section[]; diskon_purchaseorder: number }>({
+const form = ref<{
+  sections: Section[];
+  diskon_purchaseorder: number;
+  diskon_nominal_purchaseorder: number;
+}>({
   sections: [
     {
       title: "",
@@ -631,6 +852,7 @@ const form = ref<{ sections: Section[]; diskon_purchaseorder: number }>({
     },
   ],
   diskon_purchaseorder: 0,
+  diskon_nominal_purchaseorder: 0,
 });
 
 // Modal State
@@ -699,16 +921,79 @@ const subtotal_purchaseorder = computed(() => {
   }, 0);
 });
 
-const discountAmount = computed(() => {
-  const diskon_purchaseorder = Math.min(
-    Math.max(Number(form.value.diskon_purchaseorder) || 0, 0),
-    100,
+const roundCurrencyAmount = (value: number) => {
+  const fractionDigits = currency.value === "IDR" ? 0 : 2;
+  return Number((Number(value) || 0).toFixed(fractionDigits));
+};
+
+const normalizeDiscountPercent = (value: number | string) =>
+  Math.min(Math.max(Number(value) || 0, 0), 100);
+
+const normalizeDiscountNominal = (value: number | string) =>
+  roundCurrencyAmount(
+    Math.min(
+      Math.max(Number(value) || 0, 0),
+      Math.max(subtotal_purchaseorder.value, 0),
+    ),
   );
-  return subtotal_purchaseorder.value * (diskon_purchaseorder / 100);
+
+const syncDiscountFromPercent = () => {
+  const percent = normalizeDiscountPercent(form.value.diskon_purchaseorder);
+  form.value.diskon_purchaseorder = percent;
+  form.value.diskon_nominal_purchaseorder = roundCurrencyAmount(
+    subtotal_purchaseorder.value * (percent / 100),
+  );
+};
+
+const syncDiscountFromNominal = () => {
+  const nominal = normalizeDiscountNominal(
+    form.value.diskon_nominal_purchaseorder,
+  );
+  form.value.diskon_nominal_purchaseorder = nominal;
+  form.value.diskon_purchaseorder = subtotal_purchaseorder.value
+    ? Number(((nominal / subtotal_purchaseorder.value) * 100).toFixed(8))
+    : 0;
+};
+
+const discountPercentModel = computed<number>({
+  get: () => form.value.diskon_purchaseorder,
+  set: (value) => {
+    discountInputMode.value = "percent";
+    form.value.diskon_purchaseorder = normalizeDiscountPercent(value);
+    syncDiscountFromPercent();
+  },
+});
+
+const discountNominalModel = computed<number>({
+  get: () => form.value.diskon_nominal_purchaseorder,
+  set: (value) => {
+    discountInputMode.value = "nominal";
+    form.value.diskon_nominal_purchaseorder = normalizeDiscountNominal(value);
+    syncDiscountFromNominal();
+  },
+});
+
+watch([subtotal_purchaseorder, currency], () => {
+  if (discountInputMode.value === "nominal") {
+    syncDiscountFromNominal();
+  } else {
+    syncDiscountFromPercent();
+  }
+});
+
+const discountAmount = computed(() => {
+  if (discountInputMode.value === "percent") {
+    return roundCurrencyAmount(
+      subtotal_purchaseorder.value *
+        (normalizeDiscountPercent(form.value.diskon_purchaseorder) / 100),
+    );
+  }
+
+  return normalizeDiscountNominal(form.value.diskon_nominal_purchaseorder);
 });
 
 const grandtotal_purchaseorder = computed(() => {
-  return subtotal_purchaseorder.value - discountAmount.value;
+  return Math.max(0, subtotal_purchaseorder.value - discountAmount.value);
 });
 
 async function addpurchaseorder() {
@@ -737,6 +1022,12 @@ async function addpurchaseorder() {
     }),
   );
 
+  if (discountInputMode.value === "nominal") {
+    syncDiscountFromNominal();
+  } else {
+    syncDiscountFromPercent();
+  }
+
   const dataPurchaseorder: purchaseorderM = {
     id_penawaran: penawaran.id_penawaran,
     no_penawaran: penawaran.no_penawaran,
@@ -750,6 +1041,8 @@ async function addpurchaseorder() {
     item_purchaseorder,
     subtotal_purchaseorder: subtotal_purchaseorder.value,
     diskon_purchaseorder: Number(form.value.diskon_purchaseorder) || 0,
+    diskon_nominal_purchaseorder: discountAmount.value,
+    tipe_diskon_purchaseorder: discountInputMode.value,
     grandtotal_purchaseorder: grandtotal_purchaseorder.value,
     termCondition: editingPurchaseorder.value?.termCondition || [],
     id_vendor: vendor?.id_vendor || editingPurchaseorder.value!.id_vendor,
@@ -804,38 +1097,309 @@ async function addpurchaseorder() {
 }
 
 .po-card {
-  max-width: 900px;
-  margin: 0 auto;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  color: #1f2937;
+  background: #f5f6f8;
+  border: 1px solid #d9dee5;
+  border-radius: 10px !important;
   overflow: hidden;
 }
 
 .po-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 72px;
+  padding: 14px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #dfe3e8;
+}
+
+.po-header-content,
+.po-header-actions,
+.po-header-content > div:last-child {
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 
 .po-header-content {
-  display: flex;
+  gap: 12px;
+}
+
+.po-header-content > div:last-child {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.po-header-icon {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: #315f8c;
+  background: #eef3f8;
+  border: 1px solid #dce6ef;
+  border-radius: 6px;
+}
+
+.po-header-actions {
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.po-status {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  min-height: 26px;
+  padding: 0 10px;
+  color: #586474;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f7f8fa;
+  border: 1px solid #dfe3e8;
+  border-radius: 4px;
+}
+
+.po-status-dot {
+  width: 6px;
+  height: 6px;
+  background: #d8972e;
+  border-radius: 50%;
 }
 
 .po-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #111827;
+  margin: 0;
+  color: #202833;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .po-subtitle {
+  max-width: 520px;
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: #7a8491;
   font-size: 11px;
-  color: #9ca3af;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .po-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px !important;
+  background: #f5f6f8;
+}
+
+.po-form-section {
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 7px;
+}
+
+.po-form-section-header,
+.po-items-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.po-form-section-header > div,
+.po-items-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.po-form-section-header h3,
+.po-items-heading h3 {
+  margin: 0;
+  color: #27313d;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.po-form-section-header p,
+.po-items-heading p {
+  margin: 3px 0 0;
+  color: #8a939f;
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.po-form-section-index {
+  display: inline-grid;
+  width: 24px;
+  height: 22px;
+  place-items: center;
+  color: #566575;
+  font-size: 9px;
+  font-weight: 700;
+  background: #f1f3f5;
+  border: 1px solid #e0e4e8;
+  border-radius: 4px;
+}
+
+.po-vendor-picker {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.po-date-field,
+.po-vendor-select {
+  min-width: 0;
+}
+
+.po-vendor-details {
+  display: grid;
+  grid-template-columns:
+    minmax(145px, 1.2fr) minmax(190px, 1.7fr)
+    repeat(3, minmax(100px, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #dfe3e8;
+  border: 1px solid #dfe3e8;
+  border-radius: 5px;
+}
+
+.po-vendor-detail {
+  min-width: 0;
+  min-height: 52px;
+  padding: 8px 11px;
+  background: #fafbfc;
+}
+
+.po-vendor-detail dt {
+  margin-bottom: 3px;
+  color: #828c98;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.po-vendor-detail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #354150;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.po-transaction-section {
+  padding: 13px 18px;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 7px;
+}
+
+.po-transaction-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 13px;
+}
+
+.po-transaction-heading > div:first-child {
+  min-width: 0;
+}
+
+.po-transaction-heading h3 {
+  margin: 0;
+  color: #27313d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.po-transaction-heading p {
+  margin: 2px 0 0;
+  color: #8a939f;
+  font-size: 10px;
+}
+
+.po-currency-field {
+  flex: 0 0 160px;
+  width: 160px;
+}
+
+.po-transaction-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.po-subject-field {
+  grid-column: 1 / -1;
+}
+
+.po-items-heading {
+  align-items: center;
+  margin: 0;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 7px;
+}
+
+.po-commercial-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 14px;
+}
+
+.po-summary-section,
+.po-sign-section {
+  min-width: 0;
+}
+
+.po-signature-preview {
+  display: grid;
+  min-height: 112px;
+  margin-top: 12px;
   padding: 12px;
+  place-items: center;
+  background: #fafbfc;
+  border: 1px solid #e1e5ea;
+  border-radius: 5px;
+}
+
+.signature-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signature-line {
+  width: 180px;
+  margin-top: -2px;
+  border-bottom: 1px solid #737b86;
+}
+
+.signature-name {
+  margin-top: 7px;
+  color: #303740;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .po-section {
@@ -1037,25 +1601,72 @@ async function addpurchaseorder() {
 }
 
 .summary-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-  margin-top: 10px;
+  margin: 0;
 }
 
 .summary {
   width: 100%;
-  max-width: 360px;
-  padding-top: 10px;
-  border-top: 1px solid #e5e7eb;
-  font-size: 12px;
+  padding: 0;
+  color: #697585;
+  font-size: 11px;
+  border-top: 1px solid #e1e5ea;
 }
 
 .summary-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 38px;
+  margin: 0;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.summary-value {
+  color: #303a46;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.discount-row {
+  align-items: flex-end;
+  min-height: 66px;
+  padding: 8px 0;
+}
+
+.discount-label,
+.discount-fields,
+.discount-field {
+  display: flex;
+}
+
+.discount-label {
+  align-items: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+
+.discount-fields {
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.discount-field {
+  flex-direction: column;
+  gap: 3px;
+}
+
+.discount-field-caption {
+  color: #6b7280;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.discount-or {
+  padding-bottom: 6px;
+  color: #9ca3af;
+  font-size: 9px;
 }
 
 .discount-input-wrapper {
@@ -1063,11 +1674,34 @@ async function addpurchaseorder() {
   align-items: center;
   width: 65px;
   height: 26px;
+  background: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 4px;
 }
 
+.discount-input-active {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.12);
+}
+
+.nominal-input-wrapper {
+  width: 170px;
+}
+
+.discount-currency {
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  border-right: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #6b7280;
+  font-size: 9px;
+  font-weight: 700;
+}
+
 .discount-input {
+  min-width: 0;
   width: 100%;
   text-align: left;
   padding: 0 4px;
@@ -1082,18 +1716,73 @@ async function addpurchaseorder() {
   color: #9ca3af;
 }
 
+.discount-value {
+  margin-left: 12px;
+  color: #b54747;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .grand-total-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-top: 10px;
-  border-top: 1px solid #e5e7eb;
-  font-size: 14px;
-  font-weight: 600;
+  justify-content: space-between;
+  min-height: 50px;
+  color: #263443;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .grand-total-amount {
-  font-size: 15px;
+  color: #173f66;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.po-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 64px;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-top: 1px solid #dfe3e8;
+}
+
+.po-dialog-footer p {
+  margin: 0;
+  color: #7b8591;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.po-dialog-footer > div {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.po-cancel-btn,
+.po-save-btn {
+  min-width: 104px;
+  height: 34px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  border-radius: 4px !important;
+}
+
+.po-save-btn {
+  min-width: 174px;
+}
+
+.po-card :deep(.input-field),
+.po-card :deep(.date-input-wrapper) {
+  border-radius: 4px;
 }
 
 .item-dialog-card {
@@ -1148,5 +1837,150 @@ async function addpurchaseorder() {
 .item-dialog-actions {
   padding: 12px 16px;
   border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 959px) {
+  .po-dialog-overlay :deep(.v-overlay__content) {
+    width: 100%;
+    max-width: none !important;
+    height: 100%;
+    max-height: 100% !important;
+    margin: 0;
+  }
+
+  .po-card {
+    height: 100%;
+    border: 0;
+    border-radius: 0 !important;
+  }
+
+  .po-content {
+    padding: 14px !important;
+  }
+
+  .po-vendor-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .po-commercial-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .po-header {
+    min-height: 64px;
+    padding: 11px 12px;
+  }
+
+  .po-header-content {
+    gap: 9px;
+  }
+
+  .po-header-icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .po-title {
+    font-size: 14px;
+  }
+
+  .po-subtitle,
+  .po-status {
+    display: none;
+  }
+
+  .po-content {
+    gap: 10px;
+    padding: 10px !important;
+  }
+
+  .po-form-section {
+    padding: 14px;
+  }
+
+  .po-form-section-header {
+    margin-bottom: 13px;
+  }
+
+  .po-form-section-header p,
+  .po-items-heading p {
+    display: none;
+  }
+
+  .po-vendor-picker,
+  .po-vendor-details,
+  .po-transaction-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .po-transaction-section {
+    padding: 13px 14px;
+  }
+
+  .po-transaction-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .po-currency-field {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .po-subject-field {
+    grid-column: auto;
+  }
+
+  .po-items-heading {
+    padding: 13px 14px;
+  }
+
+  .discount-row,
+  .discount-label {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .discount-fields {
+    margin-left: 0 !important;
+    margin-top: 6px;
+  }
+
+  .discount-field-nominal,
+  .nominal-input-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .discount-value {
+    align-self: flex-end;
+    margin-left: 0;
+    margin-top: 7px;
+  }
+
+  .po-dialog-footer {
+    align-items: stretch;
+    padding: 10px 12px;
+  }
+
+  .po-dialog-footer p {
+    display: none;
+  }
+
+  .po-dialog-footer > div {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 1fr 1.4fr;
+  }
+
+  .po-cancel-btn,
+  .po-save-btn {
+    width: 100%;
+    min-width: 0;
+  }
 }
 </style>

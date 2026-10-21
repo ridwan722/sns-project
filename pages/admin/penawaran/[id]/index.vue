@@ -7,32 +7,122 @@ import type { ConfirmationDialog } from "#components";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import dialogBuatInvoice from "~/components/Admin/Penawaran/dialog-buat-invoice.vue";
 import dialogBuatPengeluaran from "~/components/Admin/Penawaran/dialog-buat-pengeluaran.vue";
+import { doc } from "firebase/firestore";
 import { ref } from "vue";
+import { useDocument, useFirestore } from "vuefire";
 import { queryambilid } from "~/composables/useFirestoreQuery";
+import type { invoiceM } from "~/types/invoice";
+import type { penawaranM } from "~/types/penawaranModel";
 
 const activeTab = ref(0);
 const purchaseorderPreviewKey = ref(0);
-const invoiceLinks = ref<{ id: string; no_inv?: string }[]>([]);
+const hasPurchaseOrder = ref(false);
+const invoiceLinks = ref<(invoiceM & { id: string })[]>([]);
+const invoiceLinksLoading = ref(true);
 
 definePageMeta({ layout: "admin" });
 
 const route = useRoute();
 const penawaranstore = usePenawaranStore();
-
-onMounted(async () => {
-  useloadingStore().setLoading(true);
-  try {
-    await penawaranstore.tarikDetailPenawaranAct(String(route.params.id));
-    const penawaranId = String(route.params.id);
-    invoiceLinks.value = (await queryambilid(
-      `penawaran/${penawaranId}/invoice`,
-    )) as { id: string; no_inv?: string }[];
-  } finally {
-    useloadingStore().setLoading(false);
-  }
-});
+const penawaranId = String(route.params.id);
 
 const detailpenawaran = computed(() => penawaranstore.getDetailPenawaran);
+
+// Saat masuk dari halaman daftar, dokumen lengkap sebenarnya sudah ada di
+// Pinia. Pakai data tersebut langsung agar halaman tidak menunggu Firestore.
+const cachedPenawaran = [
+  ...penawaranstore.getDataPenawaranTampil,
+  ...penawaranstore.getDataPenawaran,
+].find((item) => item.id === penawaranId);
+
+if (cachedPenawaran) {
+  penawaranstore.$patch({ detailPenawaran: cachedPenawaran });
+} else {
+  const currentDetail = penawaranstore.getDetailPenawaran;
+  const currentDetailId = currentDetail?.id || currentDetail?.id_penawaran;
+  if (currentDetailId && currentDetailId !== penawaranId) {
+    // Jangan sempat menampilkan quotation sebelumnya ketika berpindah langsung
+    // dari satu halaman detail ke halaman detail lainnya.
+    penawaranstore.$patch({ detailPenawaran: {} as penawaranM });
+  }
+}
+
+// Listener dibuat langsung di scope halaman agar bisa memakai cache lokal
+// Firestore dan otomatis dilepas ketika pengguna meninggalkan halaman. Nilai
+// cache Pinia tidak ditimpa sampai dokumen segar benar-benar tersedia.
+const livePenawaran = useDocument<penawaranM>(
+  doc(useFirestore(), "penawaran", penawaranId),
+);
+watch(
+  livePenawaran,
+  (penawaran) => {
+    if (penawaran) {
+      penawaranstore.$patch({ detailPenawaran: penawaran });
+    }
+  },
+  { immediate: true },
+);
+
+// Tautan invoice bukan data utama halaman, jadi muat independen di background
+// tanpa menahan preview quotation atau menampilkan loader global.
+void queryambilid(`penawaran/${penawaranId}/invoice`)
+  .then((invoices) => {
+    invoiceLinks.value = invoices as (invoiceM & { id: string })[];
+  })
+  .catch((error) => {
+    console.error("Gagal memuat tautan invoice:", error);
+  })
+  .finally(() => {
+    invoiceLinksLoading.value = false;
+  });
+
+void queryambilid(`penawaran/${penawaranId}/purchaseorder`)
+  .then((purchaseOrders) => {
+    hasPurchaseOrder.value = purchaseOrders.length > 0;
+  })
+  .catch((error) => {
+    console.error("Gagal memuat status Purchase Order:", error);
+  });
+
+const quotationInvoiceTarget = computed(() => {
+  const quotation = detailpenawaran.value;
+  return (
+    Number(quotation?.grand_total_penawaran) ||
+    Number(quotation?.subtotal_penawaran) ||
+    (quotation?.penawaran_item ?? []).reduce(
+      (total, item) =>
+        total +
+        Number(item.subtotal_item || Number(item.qty) * Number(item.amount)),
+      0,
+    )
+  );
+});
+
+const invoicedSubtotal = computed(() =>
+  invoiceLinks.value.reduce((total, invoice) => {
+    const netSubtotal = Math.max(
+      0,
+      Number(invoice.subtotal_invoice || 0) -
+        Number(invoice.discount_invoice || 0),
+    );
+    const billedAmount = invoice.down_payment
+      ? netSubtotal * (Number(invoice.dp_persen || 0) / 100)
+      : netSubtotal;
+
+    return total + billedAmount;
+  }, 0),
+);
+
+const remainingInvoiceAmount = computed(() =>
+  Math.max(0, quotationInvoiceTarget.value - invoicedSubtotal.value),
+);
+
+const isFullyInvoiced = computed(
+  () =>
+    invoiceLinks.value.length > 0 &&
+    quotationInvoiceTarget.value > 0 &&
+    remainingInvoiceAmount.value <= 0.5,
+);
 
 const data = reactive({
   dialogAdd: false,
@@ -68,6 +158,13 @@ const data = reactive({
 });
 
 async function opendialogaddinv() {
+  if (invoiceLinksLoading.value) return;
+  if (isFullyInvoiced.value) {
+    return useNotificationStore().showInfo(
+      "Seluruh nominal quotation sudah ditagih",
+    );
+  }
+
   data.dialogAdd = true;
 }
 
@@ -75,66 +172,21 @@ async function opendialogaddpengeluaran() {
   data.dialogAddPengeluaran = true;
 }
 
+function handlePurchaseOrderSaved() {
+  purchaseorderPreviewKey.value += 1;
+  hasPurchaseOrder.value = true;
+}
+
 const penawaranWrapper = ref<HTMLElement | null>(null);
 const penawaranContent = ref<HTMLElement | null>(null);
 
-const isMobile = ref(false);
+// Nuxt berjalan sebagai SPA, jadi viewport sudah bisa dibaca saat setup. Ini
+// mencegah render desktop sesaat sebelum berubah menjadi tampilan mobile.
+const isMobile = ref(
+  import.meta.client && window.matchMedia("(max-width: 600px)").matches,
+);
 const penawaranScale = ref(1);
 const penawaranHeight = ref(0);
-
-let penawaranObserver: ResizeObserver | null = null;
-
-const updatePenawaranScale = () => {
-  const wrapper = penawaranWrapper.value;
-  const content = penawaranContent.value;
-
-  if (!wrapper || !content) return;
-
-  isMobile.value = window.innerWidth <= 600;
-
-  if (!isMobile.value) {
-    penawaranScale.value = 1;
-    penawaranHeight.value = 0;
-    return;
-  }
-
-  const wrapperWidth = wrapper.clientWidth;
-
-  // Ukur ukuran asli tanpa pengaruh transform
-  const documentWidth = content.scrollWidth;
-  const documentHeight = content.scrollHeight;
-
-  if (!wrapperWidth || !documentWidth) return;
-
-  penawaranScale.value = Math.min(1, wrapperWidth / documentWidth);
-
-  penawaranHeight.value = documentHeight * penawaranScale.value;
-};
-
-onMounted(async () => {
-  await nextTick();
-
-  penawaranObserver = new ResizeObserver(() => {
-    updatePenawaranScale();
-  });
-
-  if (penawaranWrapper.value) {
-    penawaranObserver.observe(penawaranWrapper.value);
-  }
-
-  if (penawaranContent.value) {
-    penawaranObserver.observe(penawaranContent.value);
-  }
-
-  window.addEventListener("resize", updatePenawaranScale);
-
-  updatePenawaranScale();
-});
-
-onBeforeUnmount(() => {
-  penawaranObserver?.disconnect();
-  window.removeEventListener("resize", updatePenawaranScale);
-});
 
 const poWrapper = ref<HTMLElement | null>(null);
 const poContent = ref<HTMLElement | null>(null);
@@ -142,52 +194,88 @@ const poContent = ref<HTMLElement | null>(null);
 const poScale = ref(1);
 const poHeight = ref(0);
 
-let poObserver: ResizeObserver | null = null;
+let previewObserver: ResizeObserver | null = null;
+let previewMeasureFrame: number | null = null;
 
-const updatePoScale = () => {
-  const wrapper = poWrapper.value;
-  const content = poContent.value;
+const measurePreview = (
+  wrapper: HTMLElement | null,
+  content: HTMLElement | null,
+) => {
+  if (!wrapper || !content) return null;
 
-  if (!wrapper || !content) return;
+  const wrapperWidth = wrapper.clientWidth;
+  const documentWidth = content.scrollWidth;
+  const documentHeight = content.scrollHeight;
+  if (!wrapperWidth || !documentWidth) return null;
 
-  if (window.innerWidth > 600) {
+  const scale = Math.min(1, wrapperWidth / documentWidth);
+  return {
+    scale,
+    height: Math.ceil(documentHeight * scale),
+  };
+};
+
+const updatePreviewLayout = () => {
+  const mobile = window.matchMedia("(max-width: 600px)").matches;
+  isMobile.value = mobile;
+
+  if (!mobile) {
+    penawaranScale.value = 1;
+    penawaranHeight.value = 0;
     poScale.value = 1;
     poHeight.value = 0;
     return;
   }
 
-  // Mengukur lebar asli Purchase Order
-  const wrapperWidth = wrapper.clientWidth;
-  const documentWidth = content.scrollWidth;
-  const documentHeight = content.scrollHeight;
+  const penawaranMeasurement = measurePreview(
+    penawaranWrapper.value,
+    penawaranContent.value,
+  );
+  if (penawaranMeasurement) {
+    penawaranScale.value = penawaranMeasurement.scale;
+    penawaranHeight.value = penawaranMeasurement.height;
+  }
 
-  if (!wrapperWidth || !documentWidth) return;
-
-  poScale.value = Math.min(1, wrapperWidth / documentWidth);
-  poHeight.value = documentHeight * poScale.value;
+  const poMeasurement = measurePreview(poWrapper.value, poContent.value);
+  if (poMeasurement) {
+    poScale.value = poMeasurement.scale;
+    poHeight.value = poMeasurement.height;
+  }
 };
 
-onMounted(async () => {
-  await nextTick();
+const schedulePreviewLayout = () => {
+  if (previewMeasureFrame !== null) return;
 
-  poObserver = new ResizeObserver(updatePoScale);
+  previewMeasureFrame = window.requestAnimationFrame(() => {
+    previewMeasureFrame = null;
+    updatePreviewLayout();
+  });
+};
 
-  if (poWrapper.value) {
-    poObserver.observe(poWrapper.value);
-  }
+onMounted(() => {
+  // Ukur langsung pada mount agar skala benar sebelum browser sempat
+  // menampilkan preview A4 berukuran desktop.
+  updatePreviewLayout();
 
-  if (poContent.value) {
-    poObserver.observe(poContent.value);
-  }
+  previewObserver = new ResizeObserver(schedulePreviewLayout);
+  [
+    penawaranWrapper.value,
+    penawaranContent.value,
+    poWrapper.value,
+    poContent.value,
+  ].forEach((element) => {
+    if (element) previewObserver?.observe(element);
+  });
 
-  window.addEventListener("resize", updatePoScale);
-
-  updatePoScale();
+  window.addEventListener("resize", schedulePreviewLayout, { passive: true });
 });
 
 onBeforeUnmount(() => {
-  poObserver?.disconnect();
-  window.removeEventListener("resize", updatePoScale);
+  previewObserver?.disconnect();
+  window.removeEventListener("resize", schedulePreviewLayout);
+  if (previewMeasureFrame !== null) {
+    window.cancelAnimationFrame(previewMeasureFrame);
+  }
 });
 </script>
 
@@ -210,7 +298,7 @@ onBeforeUnmount(() => {
   <admin-penawaran-dialog-purchaseorder
     v-model="data.dialogPurchaseOrder"
     :penawaran="detailpenawaran"
-    @saved="purchaseorderPreviewKey++"
+    @saved="handlePurchaseOrderSaved"
   />
 
   <div v-if="detailpenawaran" class="quotation-page">
@@ -307,6 +395,15 @@ onBeforeUnmount(() => {
               </div>
 
               <div class="action-buttons">
+                <div
+                  v-if="isFullyInvoiced"
+                  class="invoice-fully-billed-notice"
+                  role="status"
+                >
+                  <v-icon size="16">mdi-check-circle</v-icon>
+                  <span>Seluruh nominal quotation sudah ditagih.</span>
+                </div>
+
                 <!-- Invoice -->
                 <v-btn
                   block
@@ -315,6 +412,8 @@ onBeforeUnmount(() => {
                   size="small"
                   append-icon="mdi-file-document-plus-outline"
                   class="corporate-btn btn-invoice"
+                  :disabled="invoiceLinksLoading || isFullyInvoiced"
+                  :loading="invoiceLinksLoading"
                   @click="opendialogaddinv"
                 >
                   Buat Invoice
@@ -326,11 +425,15 @@ onBeforeUnmount(() => {
                   color="primary"
                   variant="flat"
                   size="small"
-                  append-icon="mdi-clipboard-text-outline"
+                  :append-icon="
+                    hasPurchaseOrder
+                      ? 'mdi-check-circle'
+                      : 'mdi-clipboard-text-outline'
+                  "
                   class="corporate-btn btn-po"
                   @click="data.dialogPurchaseOrder = true"
                 >
-                  Buat / Edit Purchase Order (PO)
+                  Buat / Edit PO
                 </v-btn>
 
                 <!-- Pengeluaran
@@ -423,7 +526,7 @@ onBeforeUnmount(() => {
               <canvas-penawaran :detailpenawaran="detailpenawaran" />
             </div>
           </div>
-          <v-divider opacity="100" thickness="2" class="mb-5"></v-divider>
+          <v-divider opacity="100" thickness="2" class="my-4"></v-divider>
           <div
             ref="poWrapper"
             class="po-wrapper"
@@ -954,6 +1057,27 @@ onBeforeUnmount(() => {
   gap: 9px;
 }
 
+.invoice-fully-billed-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 9px 10px;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 7px;
+}
+
+.invoice-fully-billed-notice .v-icon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #16a34a;
+}
+
 .corporate-btn {
   height: 28px !important;
   min-height: 28px !important;
@@ -975,6 +1099,10 @@ onBeforeUnmount(() => {
 /* Hover */
 .corporate-btn:hover {
   transform: translateY(-1px);
+}
+
+.corporate-btn.v-btn--disabled:hover {
+  transform: none;
 }
 
 /* Invoice */

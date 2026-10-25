@@ -41,6 +41,7 @@ declare global {
   const duadigit: typeof import('../../composables/utils').duadigit
   const effect: typeof import('vue').effect
   const effectScope: typeof import('vue').effectScope
+  const fetchPurchaseOrderIndex: typeof import('../../composables/usePurchaseOrderIndex').fetchPurchaseOrderIndex
   const getAppManifest: typeof import('../../node_modules/nuxt/dist/app/composables/manifest').getAppManifest
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -301,6 +302,9 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { IndexedPurchaseOrder, PurchaseOrderIndexResult } from '../../composables/usePurchaseOrderIndex'
+  import('../../composables/usePurchaseOrderIndex')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -346,6 +350,7 @@ declare module 'vue' {
     readonly duadigit: UnwrapRef<typeof import('../../composables/utils')['duadigit']>
     readonly effect: UnwrapRef<typeof import('vue')['effect']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly fetchPurchaseOrderIndex: UnwrapRef<typeof import('../../composables/usePurchaseOrderIndex')['fetchPurchaseOrderIndex']>
     readonly getAppManifest: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>

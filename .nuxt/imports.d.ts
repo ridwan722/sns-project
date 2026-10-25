@@ -39,6 +39,7 @@ export { taridatadatabase, setdatabase, tambahdatabase, waktuServer, batching, u
 export { queryambilid, queryambilidsesion, querymitemkategoribystatus, queryPenawaranBystatus, queryPenawaranBystatusarray, queryInvoiceBystatus, querycabangItemKategoriBystatus, queryCabangPerusahaan, queryrekapanposalesbyemail, queryRekapanitemkategoriByStatusCabangPerusahaanPeriode, queryRekapanunmanageByStatusCabangPerusahaanPeriode, queryRekapancabangitemkategoriByStatusPeriode, queryRekapanPenawaranByStatus, queryRekapanInvoiceByStatus, queryRekapanCabangByPerusahaan } from '../composables/useFirestoreQuery';
 export { createInvoicePenawaran, persistPengeluaranDocuments, createPengeluaran, createInvoice, createPurchaseorder, updatePurchaseorder } from '../composables/useInvoiceAresaDigital';
 export { useLogout } from '../composables/useLogout';
+export { fetchPurchaseOrderIndex, IndexedPurchaseOrder, PurchaseOrderIndexResult } from '../composables/usePurchaseOrderIndex';
 export { romawian, countdeadline, duadigit, makerandom, setsesion, getsesion, makeSlug, countdownday, getDeadlineColor } from '../composables/utils';
 export { usebarangStore } from '../stores/barangStore';
 export { useBeritaAcaraStore } from '../stores/beritaAcaraStore';

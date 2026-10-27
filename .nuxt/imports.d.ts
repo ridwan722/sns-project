@@ -45,7 +45,7 @@ export { usebarangStore } from '../stores/barangStore';
 export { useBeritaAcaraStore } from '../stores/beritaAcaraStore';
 export { usecustomerStore } from '../stores/customerStore';
 export { useinvoiceStore } from '../stores/invoiceStore';
-export { useLeadsStore } from '../stores/leadsStore';
+export { useleadsStore } from '../stores/leadsStore';
 export { useloadingStore } from '../stores/loadingStore';
 export { useNotificationStore } from '../stores/notificationStore';
 export { usePenawaranStore } from '../stores/penawaranStore';
@@ -61,3 +61,4 @@ export { useDate, useLocale, useDefaults, useDisplay, useLayout, useRtl, useThem
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useFirebaseApp } from '../node_modules/nuxt-vuefire/dist/runtime/app/composables';
 export { useFirestore, useDocument, useCollection, useDatabase, useDatabaseList, useDatabaseObject, useFirebaseStorage, useStorageFile, useStorageFileUrl, useStorageFileMetadata } from 'vuefire';
+export { useNuxtDevTools } from '../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';

@@ -798,7 +798,7 @@
                 <td></td>
 
                 <td class="footer-label">
-                  <strong>SUB TOTAL</strong>
+                  <strong>Total</strong>
                 </td>
 
                 <td class="footer-value">
@@ -815,13 +815,13 @@
                 <td></td>
 
                 <td class="footer-label">
-                  <strong>DISCOUNT</strong>
+                  <strong>Discount</strong>
                 </td>
 
                 <td class="footer-value">
-                  <div class="d-flex justify-space-between">
+                  <div class="d-flex justify-space-between font-italic">
                     <span>Rp</span>
-                    <span>- {{ rupiah(invoiceDetail.discount_invoice) }}</span>
+                    <span>{{ rupiah(invoiceDetail.discount_invoice) }}</span>
                   </div>
                 </td>
               </tr>
@@ -849,7 +849,7 @@
                 <td></td>
 
                 <td class="footer-label">
-                  <strong>TOTAL</strong>
+                  <strong>Total</strong>
                 </td>
 
                 <td class="footer-value">

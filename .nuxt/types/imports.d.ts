@@ -207,7 +207,6 @@ declare global {
   const useLayout: typeof import('../../node_modules/vuetify').useLayout
   const useLazyAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useLazyAsyncData
   const useLazyFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch').useLazyFetch
-  const useLeadsStore: typeof import('../../stores/leadsStore').useLeadsStore
   const useLink: typeof import('vue-router').useLink
   const useLoadingIndicator: typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator').useLoadingIndicator
   const useLocale: typeof import('../../node_modules/vuetify').useLocale
@@ -216,6 +215,7 @@ declare global {
   const useNotificationStore: typeof import('../../stores/notificationStore').useNotificationStore
   const useNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt').useNuxtApp
   const useNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData').useNuxtData
+  const useNuxtDevTools: typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools').useNuxtDevTools
   const usePenawaranStore: typeof import('../../stores/penawaranStore').usePenawaranStore
   const usePictureStore: typeof import('../../stores/pictureStore').usePictureStore
   const usePinia: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables').usePinia
@@ -280,6 +280,7 @@ declare global {
   const usebarangStore: typeof import('../../stores/barangStore').usebarangStore
   const usecustomerStore: typeof import('../../stores/customerStore').usecustomerStore
   const useinvoiceStore: typeof import('../../stores/invoiceStore').useinvoiceStore
+  const useleadsStore: typeof import('../../stores/leadsStore').useleadsStore
   const useloadingStore: typeof import('../../stores/loadingStore').useloadingStore
   const usepettyCashStore: typeof import('../../stores/pettyCashStore').usepettyCashStore
   const usetermconditionStore: typeof import('../../stores/termconditionStore').usetermconditionStore
@@ -516,7 +517,6 @@ declare module 'vue' {
     readonly useLayout: UnwrapRef<typeof import('../../node_modules/vuetify')['useLayout']>
     readonly useLazyAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useLazyAsyncData']>
     readonly useLazyFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useLazyFetch']>
-    readonly useLeadsStore: UnwrapRef<typeof import('../../stores/leadsStore')['useLeadsStore']>
     readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
     readonly useLoadingIndicator: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator')['useLoadingIndicator']>
     readonly useLocale: UnwrapRef<typeof import('../../node_modules/vuetify')['useLocale']>
@@ -525,6 +525,7 @@ declare module 'vue' {
     readonly useNotificationStore: UnwrapRef<typeof import('../../stores/notificationStore')['useNotificationStore']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
+    readonly useNuxtDevTools: UnwrapRef<typeof import('../../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools')['useNuxtDevTools']>
     readonly usePenawaranStore: UnwrapRef<typeof import('../../stores/penawaranStore')['usePenawaranStore']>
     readonly usePictureStore: UnwrapRef<typeof import('../../stores/pictureStore')['usePictureStore']>
     readonly usePinia: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']>
@@ -589,6 +590,7 @@ declare module 'vue' {
     readonly usebarangStore: UnwrapRef<typeof import('../../stores/barangStore')['usebarangStore']>
     readonly usecustomerStore: UnwrapRef<typeof import('../../stores/customerStore')['usecustomerStore']>
     readonly useinvoiceStore: UnwrapRef<typeof import('../../stores/invoiceStore')['useinvoiceStore']>
+    readonly useleadsStore: UnwrapRef<typeof import('../../stores/leadsStore')['useleadsStore']>
     readonly useloadingStore: UnwrapRef<typeof import('../../stores/loadingStore')['useloadingStore']>
     readonly usepettyCashStore: UnwrapRef<typeof import('../../stores/pettyCashStore')['usepettyCashStore']>
     readonly usetermconditionStore: UnwrapRef<typeof import('../../stores/termconditionStore')['usetermconditionStore']>

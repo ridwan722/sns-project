@@ -31,6 +31,7 @@ export const AButton: typeof import("../components/a/button.vue").default
 export const ACheckbox: typeof import("../components/a/checkbox.vue").default
 export const ADatePickerNew: typeof import("../components/a/date-picker-new.vue").default
 export const ADatePicker: typeof import("../components/a/date-picker.vue").default
+export const ADateRangeFilter: typeof import("../components/a/date-range-filter.vue").default
 export const AFieldNumberNew: typeof import("../components/a/field-number-new.vue").default
 export const AFieldNumber: typeof import("../components/a/field-number.vue").default
 export const AIconSuccess: typeof import("../components/a/icon-success.vue").default
@@ -91,6 +92,7 @@ export const LazyAButton: LazyComponent<typeof import("../components/a/button.vu
 export const LazyACheckbox: LazyComponent<typeof import("../components/a/checkbox.vue").default>
 export const LazyADatePickerNew: LazyComponent<typeof import("../components/a/date-picker-new.vue").default>
 export const LazyADatePicker: LazyComponent<typeof import("../components/a/date-picker.vue").default>
+export const LazyADateRangeFilter: LazyComponent<typeof import("../components/a/date-range-filter.vue").default>
 export const LazyAFieldNumberNew: LazyComponent<typeof import("../components/a/field-number-new.vue").default>
 export const LazyAFieldNumber: LazyComponent<typeof import("../components/a/field-number.vue").default>
 export const LazyAIconSuccess: LazyComponent<typeof import("../components/a/icon-success.vue").default>
